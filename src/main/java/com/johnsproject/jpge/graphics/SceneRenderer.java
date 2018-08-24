@@ -7,11 +7,11 @@ import java.util.List;
 
 import com.johnsproject.jpge.io.FileIO;
 import com.johnsproject.jpge.utils.ColorUtils;
-import com.johnsproject.jpge.utils.VectorMathUtils;
-import com.johnsproject.jpge.utils.VectorUtils;
+import com.johnsproject.jpge.utils.Vector3MathUtils;
+import com.johnsproject.jpge.utils.Vector3Utils;
 
 public class SceneRenderer{
-	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
+	private static final int vx = Vector3Utils.X, vy = Vector3Utils.Y, vz = Vector3Utils.Z;
 	public enum ProjectionType {
 		orthographic, perspective
 	}	
@@ -228,14 +228,14 @@ public class SceneRenderer{
 		mesh.resetBuffer();
 		for (int i = 0; i < mesh.getBufferedVertexes().length; i++) {
 			int[] vertex = mesh.getBufferedVertex(i);
-			VectorMathUtils.movePointByScale(vertex, objt.getScale());
+			Vector3MathUtils.movePointByScale(vertex, objt.getScale());
 			for (int j = 0; j < vertex[Mesh.BONE_INDEX]; j++) {
 				Transform bone = animation.getBone(j, animation.getCurrentFrame());
-				VectorMathUtils.movePointByScale(vertex, bone.getScale());
-				VectorMathUtils.movePointByAnglesXYZ(vertex, bone.getRotation());
-				VectorUtils.add(vertex, bone.getPosition());
+				Vector3MathUtils.movePointByScale(vertex, bone.getScale());
+				Vector3MathUtils.movePointByAnglesXYZ(vertex, bone.getRotation());
+				Vector3Utils.add(vertex, bone.getPosition());
 			}
-			VectorMathUtils.movePointByAnglesXYZ(vertex, objt.getRotation());
+			Vector3MathUtils.movePointByAnglesXYZ(vertex, objt.getRotation());
 			projectVertex(vertex, objt.getPosition(), camera);
 		}
 		for (int[] polygon : mesh.getPolygons()) {
@@ -276,7 +276,7 @@ public class SceneRenderer{
 			int[][] distances = new int[lights.size()][3];
 			for (int i = 0; i < distances.length; i++) {
 				int[] pos = lights.get(i).getTransform().getPosition();
-				distances[i] = VectorMathUtils.getDistance(pos, sceneObjectPosition);
+				distances[i] = Vector3MathUtils.getDistance(pos, sceneObjectPosition);
 			}
 			return distances;
 		}
@@ -289,8 +289,8 @@ public class SceneRenderer{
 		case perspective: // this projectionType uses depth
 			int[] camRot = camera.getTransform().getRotation(),
 			camPos = camera.getTransform().getPosition();
-			int[] pos = VectorUtils.subtract(VectorUtils.add(vertex, objectPosition),camPos);
-			VectorMathUtils.movePointByAnglesXYZ(pos, camRot);
+			int[] pos = Vector3Utils.subtract(Vector3Utils.add(vertex, objectPosition),camPos);
+			Vector3MathUtils.movePointByAnglesXYZ(pos, camRot);
 			int fov = camera.getFieldOfView(), rescalef = camera.getRescaleFactor();
 			int z = (pos[vz] + fov);
 			if (z <= 0) z = 1;

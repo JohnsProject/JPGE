@@ -2,14 +2,14 @@ package com.johnsproject.jpge.graphics;
 
 import java.util.Arrays;
 
-import com.johnsproject.jpge.utils.VectorUtils;
+import com.johnsproject.jpge.utils.Vector3Utils;
 
 /**
  * @author john
  *
  */
 public class Transform {
-	private final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
+	private final int vx = Vector3Utils.X, vy = Vector3Utils.Y, vz = Vector3Utils.Z;
 	private int[] position;
 	private int[] rotation;
 	private int[] scale;
@@ -72,10 +72,6 @@ public class Transform {
 		scale[vx] = x;
 		scale[vy] = y;
 		scale[vz] = z;
-	}
-	
-	public Transform clone() {
-		return new Transform(new int[position.length], new int[rotation.length], new int[scale.length]);
 	}
 
 	@Override

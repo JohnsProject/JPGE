@@ -2,8 +2,8 @@ package com.johnsproject.jpge.graphics;
 
 import java.util.Arrays;
 
-import com.johnsproject.jpge.utils.VectorMathUtils;
-import com.johnsproject.jpge.utils.VectorUtils;
+import com.johnsproject.jpge.utils.Vector3MathUtils;
+import com.johnsproject.jpge.utils.Vector3Utils;
 
 public class Mesh {
 	
@@ -34,7 +34,7 @@ public class Mesh {
 		this.materials = materials;
 		this.animations = animations;
 		this.currentAnimation = animations[0];
-		this.radius = VectorMathUtils.getRadius(vertexes);
+		this.radius = Vector3MathUtils.getRadius(vertexes);
 	}
 	
 	public int [][] getVertexes(){
@@ -68,7 +68,7 @@ public class Mesh {
 	
 	public void resetBuffer() {
 		for (int i = 0; i < vertexes.length; i++) {
-			VectorUtils.match(vertexesBuffer[i], vertexes[i]);
+			Vector3Utils.match(vertexesBuffer[i], vertexes[i]);
 		}
 	}
 	

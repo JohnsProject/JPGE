@@ -1,7 +1,7 @@
 package com.johnsproject.jpge.utils;
 
 /**
- * The VectorUtils class provides useful functionalities for handling vectors. <br>
+ * The VectorUtils class provides useful functionalities for handling 3D vectors. <br>
  * -Basic math operations. (addition, multiplication...) <br>
  * -Swap. <br>
  * -Min, max. <br>
@@ -10,12 +10,26 @@ package com.johnsproject.jpge.utils;
  * @author John´s Project - John Konrad Ferraz Salomon
  *
  */
-public class VectorUtils {
+public class Vector3Utils {
 	
 	/**
 	 * The default axis indexes of the vectors.
 	 */
 	public static final byte X = 0, Y = 1, Z = 2;
+	
+	
+	/**
+	 * Makes a Vector based on the given values and returns it. 
+	 * The vector can be used as position, rotation or scale vector.
+	 * 
+	 * @param x vector's x value.
+	 * @param y vector's y value.
+	 * @param z vector's z value.
+	 * @return vector made using given values.
+	 */
+	public static int[] make(int x, int y, int z) {
+		return new int[]{x, y, z};
+	}
 	
 	/**
 	 * Adds the values of b to a and returns a.

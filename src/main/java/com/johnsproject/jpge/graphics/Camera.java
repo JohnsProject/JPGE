@@ -8,7 +8,7 @@ import java.awt.image.DataBufferInt;
 
 import com.johnsproject.jpge.graphics.SceneRenderer.ProjectionType;
 import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
-import com.johnsproject.jpge.utils.VectorUtils;
+import com.johnsproject.jpge.utils.Vector3Utils;
 
 public class Camera extends Canvas{
 	private String name;
@@ -27,14 +27,14 @@ public class Camera extends Canvas{
 	private ProjectionType projectionType = ProjectionType.perspective;
 	private RenderingType renderingType = RenderingType.textured;
 	
-	public Camera(String name, int[] position, int[] rotation, int[] screenPosition, int[] rect) {
+	public Camera(String name, Transform transform, int[] screenPosition, int[] rect) {
 		this.name = name;
-		this.transform = new Transform(position, rotation, new int[]{1, 1, 1});
+		this.transform = transform;
 		this.rect = rect;
-		this.halfRect[VectorUtils.X] = rect[VectorUtils.X] / 2;
-		this.halfRect[VectorUtils.Y] = rect[VectorUtils.Y] / 2;
-		this.radio = (rect[VectorUtils.X]*10)/rect[VectorUtils.Y];
-		this.rescaleFactor = Math.abs((rect[VectorUtils.X]+rect[VectorUtils.Y])>>7)+1;
+		this.halfRect[Vector3Utils.X] = rect[Vector3Utils.X] / 2;
+		this.halfRect[Vector3Utils.Y] = rect[Vector3Utils.Y] / 2;
+		this.radio = (rect[Vector3Utils.X]*10)/rect[Vector3Utils.Y];
+		this.rescaleFactor = Math.abs((rect[Vector3Utils.X]+rect[Vector3Utils.Y])>>7)+1;
 		this.setSize(rect[0], rect[1]);
 		this.screenPosition = screenPosition;
 		this.setLocation(screenPosition[0], screenPosition[1]);
@@ -118,8 +118,8 @@ public class Camera extends Canvas{
 	public void setRect(int[] rect) {
 		this.rect = rect;
 		setSize(rect[0], rect[1]);
-		this.halfRect[VectorUtils.X] = rect[VectorUtils.X] / 2;
-		this.halfRect[VectorUtils.Y] = rect[VectorUtils.Y] / 2;
+		this.halfRect[Vector3Utils.X] = rect[Vector3Utils.X] / 2;
+		this.halfRect[Vector3Utils.Y] = rect[Vector3Utils.Y] / 2;
 		changed = true;
 	}
 

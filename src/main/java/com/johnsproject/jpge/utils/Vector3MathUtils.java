@@ -3,14 +3,14 @@ package com.johnsproject.jpge.utils;
 
 /**
  * The VectorMathUtils class provides useful functionalities
- *  for handling vector math problems. <br>
+ *  for handling 3D vector math problems. <br>
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  * 
  */
-public class VectorMathUtils extends MathUtils{
+public class Vector3MathUtils extends MathUtils{
 	private static final byte SHIFT = 10;
-	private static int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
+	private static int vx = Vector3Utils.X, vy = Vector3Utils.Y, vz = Vector3Utils.Z;
 	 
     public static void movePointByAngleZ(int[] position, int angle){
     	int sin = sin(angle), cos = cos(angle);

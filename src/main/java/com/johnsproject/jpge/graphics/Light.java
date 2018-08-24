@@ -12,14 +12,14 @@ public class Light {
 	private LightType lightType = LightType.sun;
 	private int lightStrength = 10;
 	
-	public Light(String name, int[] position, int[] rotation) {
+	public Light(String name, Transform transform) {
 		this.name = name;
-		this.transform = new Transform(position, rotation, new int[] {1, 1, 1});
+		this.transform = transform;
 	}
 	
-	public Light(String name, LightType lightType, int[] position, int[] rotation) {
+	public Light(String name, LightType lightType, Transform transform) {
 		this.name = name;
-		this.transform = new Transform(position, rotation, new int[] {1, 1, 1});
+		this.transform = transform;
 		this.lightType = lightType;
 	}
 	
@@ -46,11 +46,4 @@ public class Light {
 	public void setLightStrength(int lightStrength) {
 		this.lightStrength = lightStrength;
 	}
-
-	public Light clone(){
-		Transform t = transform.clone();
-		Light l = new Light(name, lightType, t.getPosition(), t.getRotation());
-		l.setLightStrength(lightStrength);
-		return l;
-	}	
 }

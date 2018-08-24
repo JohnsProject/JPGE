@@ -71,4 +71,7 @@ v0.14 - 23/08/2018
 -Fixed camera transformation bug
 -Removed transformBuffer from SceneObject
 -Fixed view frustum culling bug
+v0.15 - 24/08/2018
+-Renamed VectorUtils to Vector3Util class
+-Renamed VectorMathUtils to Vector3MathUtils class
 

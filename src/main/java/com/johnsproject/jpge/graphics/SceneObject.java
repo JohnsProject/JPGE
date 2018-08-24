@@ -7,9 +7,9 @@ public class SceneObject {
 	private Mesh mesh;
 	private boolean changed = false;
 
-	public SceneObject(String name, int[] position, int[] rotation, int[] scale, Mesh mesh){
+	public SceneObject(String name, Transform transform, Mesh mesh){
 		this.name = name;
-		this.transform = new Transform(position, rotation, scale);
+		this.transform = transform;
 		this.mesh = mesh;
 		changed = true;
 	}

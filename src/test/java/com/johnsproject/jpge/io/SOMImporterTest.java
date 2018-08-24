@@ -6,7 +6,7 @@ import com.johnsproject.jpge.graphics.Animation;
 import com.johnsproject.jpge.graphics.Material;
 import com.johnsproject.jpge.graphics.Mesh;
 import com.johnsproject.jpge.utils.ColorUtils;
-import com.johnsproject.jpge.utils.VectorUtils;
+import com.johnsproject.jpge.utils.Vector3Utils;
 
 /**
  * Test class for {@link SOMImporter}.
@@ -52,9 +52,9 @@ public class SOMImporterTest {
 		int[][] vertexes = SOMImporter.parseVertexes(rawVertexesData);
 		assert(vertexes.length == rawVertexesData.length/(Mesh.VERTEX_LENGTH-1));
 		assert(vertexes[1].length == Mesh.VERTEX_LENGTH);
-		assert(vertexes[1][VectorUtils.X] == -100);
-		assert(vertexes[1][VectorUtils.Y] == -100);
-		assert(vertexes[1][VectorUtils.Z] == 100);
+		assert(vertexes[1][Vector3Utils.X] == -100);
+		assert(vertexes[1][Vector3Utils.Y] == -100);
+		assert(vertexes[1][Vector3Utils.Z] == 100);
 		assert(vertexes[1][Mesh.BONE_INDEX] == 1);
 	}
 	
@@ -81,8 +81,8 @@ public class SOMImporterTest {
 		int[][] uvs = SOMImporter.parseUVs(rawUVsData);
 		assert(uvs.length == rawUVsData.length/(Mesh.UV_LENGTH));
 		assert(uvs[1].length == Mesh.UV_LENGTH);
-		assert(uvs[1][VectorUtils.X] == 0);
-		assert(uvs[1][VectorUtils.Y] == 100);
+		assert(uvs[1][Vector3Utils.X] == 0);
+		assert(uvs[1][Vector3Utils.Y] == 100);
 	}
 	
 	@Test

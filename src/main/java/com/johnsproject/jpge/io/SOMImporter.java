@@ -10,7 +10,7 @@ import com.johnsproject.jpge.graphics.Mesh;
 import com.johnsproject.jpge.graphics.Transform;
 import com.johnsproject.jpge.graphics.Animation;
 import com.johnsproject.jpge.utils.ColorUtils;
-import com.johnsproject.jpge.utils.VectorUtils;
+import com.johnsproject.jpge.utils.Vector3Utils;
 
 /**
  * The SOMImporter class provides import methods for the som (Scene Object Mesh) file format
@@ -21,7 +21,7 @@ import com.johnsproject.jpge.utils.VectorUtils;
  *
  */
 public class SOMImporter {
-	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
+	private static final int vx = Vector3Utils.X, vy = Vector3Utils.Y, vz = Vector3Utils.Z;
 	
 	
 	/**
