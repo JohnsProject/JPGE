@@ -1,41 +1,60 @@
 package com.johnsproject.jpge.graphics;
 
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.io.IOException;
+import java.io.InputStream;
 
 import com.johnsproject.jpge.io.FileIO;
 
 public class Image {
 	
-	private BufferedImage image;
+	private int[] image = null;
 	private int width = 0, height = 0;
 	
-	public Image (BufferedImage image){
-		this.image = image;
-		this.width = image.getWidth();
-		this.height = image.getHeight();
-	}
-	
-	public Image (String imagePath) throws IOException{
-		this.image = FileIO.loadImage(imagePath);
-		this.width = image.getWidth();
-		this.height = image.getHeight();
-	}
-	
 	public Image (int width, int height){
-		this.image = new BufferedImage(width, height, BufferedImage.TYPE_4BYTE_ABGR_PRE);
-		this.width = image.getWidth();
-		this.height = image.getHeight();
+		BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
+		this.image = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();
+		this.width = img.getWidth();
+		this.height = img.getHeight();
+	}
+	
+	public Image (String path) throws IOException{
+		BufferedImage img = FileIO.loadImage(path);
+		this.image = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();
+		this.width = img.getWidth();
+		this.height = img.getHeight();
+	}
+	
+	public Image (String path, int width, int height) throws IOException{
+		BufferedImage img = FileIO.loadImage(path, width, height);
+		this.image = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();
+		this.width = img.getWidth();
+		this.height = img.getHeight();
+	}
+	
+	public Image (InputStream stream) throws IOException{
+		BufferedImage img = FileIO.loadImage(stream);
+		this.image = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();
+		this.width = img.getWidth();
+		this.height = img.getHeight();
+	}
+	
+	public Image (InputStream stream, int width, int height) throws IOException{
+		BufferedImage img = FileIO.loadImage(stream, width, height);
+		this.image = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();
+		this.width = img.getWidth();
+		this.height = img.getHeight();
 	}
 	
 	public void setPixel(int x, int y, int color){
 		if((x > 0 && y > 0) && (x < width && y < height)) {
-			image.setRGB(x, y, color);
+			image[x + (y*width)] = color;
 		}
 	}
 	
 	public int getPixel(int x, int y){
-		return image.getRGB(x, y);
+		return image[x + (y*width)];
 	}
 	
 	public int getWidth(){
@@ -44,13 +63,5 @@ public class Image {
 	
 	public int getHeight(){
 		return height;
-	}
-	
-	public void reset() {
-		image.getGraphics().clearRect(0, 0, width, height);
-	}
-
-	public BufferedImage getBufferedImage() {
-		return image;
 	}
 }

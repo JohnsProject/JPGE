@@ -73,7 +73,7 @@ public class FileIO {
 	 * @throws IOException
 	 */
 	public static BufferedImage loadImage(String path) throws IOException {
-		BufferedImage image = new BufferedImage(1, 1, 1);
+		BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
 		FileInputStream fileInputStream = null;
 		try {
 			fileInputStream = new FileInputStream(path);
@@ -95,7 +95,7 @@ public class FileIO {
 	 * @throws IOException
 	 */
 	public static BufferedImage loadImage(InputStream stream) throws IOException {
-		BufferedImage image = new BufferedImage(1, 1, 1);
+		BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
 		try {
 			image = ImageIO.read(stream);
 		} finally {}
@@ -125,7 +125,7 @@ public class FileIO {
 			}
 		}
 		Image tmp = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-		BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
 		resized.createGraphics().drawImage(tmp, 0, 0, null);
 		resized.createGraphics().dispose();
 		return resized;
@@ -147,7 +147,7 @@ public class FileIO {
 			image = ImageIO.read(stream);
 		} finally { }
 		Image tmp = image.getScaledInstance(width, height, Image.SCALE_SMOOTH);
-		BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		BufferedImage resized = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
 		resized.createGraphics().drawImage(tmp, 0, 0, null);
 		resized.createGraphics().dispose();
 		return resized;

@@ -24,17 +24,6 @@ public class SceneRenderer{
 	private static final int vx = Vector3Utils.X, vy = Vector3Utils.Y, vz = Vector3Utils.Z;
 	private boolean log = true;
 	
-	public SceneRenderer() {
-		try {
-//			img = convertTo2DWithoutUsingGetRGB(
-//					new Image("/home/john/Development/Java/Workspace/JPGE/bin/ButtonTexture.png").getBufferedImage());
-			//img = new Image("/home/john/Development/JohnsProjectLogo.png");
-			img = new Image(FileIO.loadImage(getClass().getResourceAsStream("/JohnsProjectLogo.png")));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public void render(Scene scene, int lastTime) {
 		for (Camera camera : scene.getCameras()) {
 			camera.reset();
@@ -56,7 +45,6 @@ public class SceneRenderer{
 	}
 	
 	void drawPolygonAffine(long vx1, long vx2, long vx3, int uv1, int uv2, int uv3, Image img, Camera cam) {
-		float w = img.getWidth(), h = img.getHeight();
 		int tmp, x0 = (int)Vector3Utils.getX(vx1), y0 = (int)Vector3Utils.getY(vx1), z0 = (int)Vector3Utils.getZ(vx1),
 				x1 = (int)Vector3Utils.getX(vx2), y1 = (int)Vector3Utils.getY(vx2), z1 = (int)Vector3Utils.getZ(vx2),
 				x2 = (int)Vector3Utils.getX(vx3), y2 = (int)Vector3Utils.getY(vx3), z2 = (int)Vector3Utils.getZ(vx3),
@@ -64,17 +52,17 @@ public class SceneRenderer{
 				u1 = UVUtils.getU(uv2), v1 = UVUtils.getV(uv2),
 				u2 = UVUtils.getU(uv3), v2 = UVUtils.getV(uv3);
 		if (y0 > y1) { tmp = y1; y1 = y0; y0 = tmp; 
-		   				tmp = x1; x1 = x0; x0 = tmp; }
+		   				tmp = x1; x1 = x0; x0 = tmp;
+		   				tmp = v1; v1 = v0; v0 = tmp; 
+		   				tmp = u1; u1 = u0; u0 = tmp;}
 		if (y1 > y2) { tmp = y2; y2 = y1; y1 = tmp; 
-		   				tmp = x2; x2 = x1; x1 = tmp;}
+		   				tmp = x2; x2 = x1; x1 = tmp;
+		   				tmp = v2; v2 = v1; v1 = tmp; 
+		   				tmp = u2; u2 = u1; u1 = tmp;}
 		if (y0 > y1) { tmp = y1; y1 = y0; y0 = tmp; 
-		   				tmp = x1; x1 = x0; x0 = tmp; }
-		if (v0 > v1) { tmp = v1; v1 = v0; v0 = tmp; 
-						tmp = u1; u1 = u0; u0 = tmp; }
-		if (v1 > v2) { tmp = v2; v2 = v1; v1 = tmp; 
-						tmp = u2; u2 = u1; u1 = tmp;}
-		if (v0 > v1) { tmp = v1; v1 = v0; v0 = tmp; 
-						tmp = u1; u1 = u0; u0 = tmp; }
+		   				tmp = x1; x1 = x0; x0 = tmp;
+		   				tmp = v1; v1 = v0; v0 = tmp; 
+		   				tmp = u1; u1 = u0; u0 = tmp;}
 		float dx1 = 0, dx2 = 0, dx3 = 0;
 		float du1 = 0, du2 = 0, du3 = 0, du = 0;
 		float dv1 = 0, dv2 = 0, dv3 = 0, dv = 0;
@@ -93,10 +81,6 @@ public class SceneRenderer{
 	    	du3=((float)(u2-u1)/(float)(y2-y1));
 	    	dv3=((float)(v2-v1)/(float)(y2-y1));
 	    } else dx3=du3=dv3=0;
-	    float iu = 0, iv = 0;
-	    iv = Math.abs((h-1)/(float)(v2-v0));
-	    iu = Math.abs((w-1)/(float)(u2-u0));
-	    if (iu == Float.POSITIVE_INFINITY) iu = 0;
 	    float sx = x0, sv = v0, su = u0,
 	    		ex = x0, eu = u0, ev = v0;
 	    int sy = (int)y0;
@@ -106,25 +90,25 @@ public class SceneRenderer{
 //		}
 	    if(dx1 > dx2) {
 			for (; sy <= y1 - 1; sy++) {
-				drawHLineText((int)sx, (int)ex, sy, z0, su, du, iu, eu, sv, dv, iv, ev, img, cam);
+				drawHLineText((int)sx, (int)ex, sy, z0, su, du, eu, sv, dv, ev, img, cam);
 				sx += dx2; su += du2; sv += dv2;
 				ex += dx1; eu += du1; ev += dv1;
 			}
 			ex = x1;
 			for (; sy <= y2; sy++) {
-				drawHLineText((int)sx, (int)ex, sy, z0, su, du, iu, eu, sv, dv, iv, ev, img, cam);
+				drawHLineText((int)sx, (int)ex, sy, z0, su, du, eu, sv, dv, ev, img, cam);
 				sx += dx2; su += du2; sv += dv2;
 				ex += dx3; eu += du3; ev += dv3;
 			}
 	    }else {
 	    	for (; sy <= y1 - 1; sy++) {
-	    		drawHLineText((int)sx, (int)ex, sy, z0, su, du, iu, eu, sv, dv, iv, ev, img, cam);
+	    		drawHLineText((int)sx, (int)ex, sy, z0, su, du, eu, sv, dv, ev, img, cam);
 				sx += dx1; su += du1; sv += dv1;
 				ex += dx2; eu += du2; ev += dv2;
 			}
 			sx = x1;
 			for (; sy <= y2; sy++) {
-				drawHLineText((int)sx, (int)ex, sy, z0, su, du, iu, eu, sv, dv, iv, ev, img, cam);
+				drawHLineText((int)sx, (int)ex, sy, z0, su, du, eu, sv, dv, ev, img, cam);
 				sx += dx3; su += du3; sv += dv3;
 				ex += dx2; eu += du2; ev += dv2;
 			}
@@ -200,13 +184,14 @@ public class SceneRenderer{
 			camera.setPixel(i, y, z, color);
 	}
 	
-	void drawHLineText(int sx, int ex, int sy, int z, float su, float du, float iu, float eu, float sv, float dv, float iv, float ev, Image img, Camera camera) {
+	void drawHLineText(int sx, int ex, int sy, int z, float su, float du, float eu, float sv, float dv, float ev, Image img, Camera camera) {
 		if (ex-sx > 0) {
 			du = (float)(eu-su)/(float)(ex-sx);
 			dv = (float)(ev-sv)/(float)(ex-sx);
 		}
 		for (int i = sx; i < ex; i ++) {
-			camera.setPixel(i, sy, z, img.getPixel((int)(iu*su), (int)(iv*sv)));
+			//System.out.println("i " + i + ", sy " + sy + ", su " + (int)(su) + ", sv " + (int)(sv));
+			camera.setPixel(i, sy, z, img.getPixel((int)(su), (int)(sv)));
 			su += du; sv += dv;
 		}
 	}
@@ -254,7 +239,6 @@ public class SceneRenderer{
 		}
 	}
 	
-	Image img;
 	void draw(int[] polygon, Mesh mesh, Camera camera) {
 		renderedPolys++;
 		long v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
@@ -263,6 +247,7 @@ public class SceneRenderer{
 		int uv1 = mesh.getUV(polygon[Mesh.UV_1]);
 		int uv2 = mesh.getUV(polygon[Mesh.UV_2]);
 		int uv3 = mesh.getUV(polygon[Mesh.UV_3]);
+		Image img = mesh.getMaterial(0).getTexture();
 		int color = mesh.getMaterial(polygon[Mesh.MATERIAL_INDEX]).getColor();
 		color = ColorUtils.brighter(color, 3);
 		if(camera.getRenderingType() == RenderingType.wireframe) {

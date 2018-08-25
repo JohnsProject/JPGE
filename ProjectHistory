@@ -75,7 +75,14 @@ v0.1 - 24/08/2018
 -Renamed VectorUtils to Vector3Util class
 -Renamed VectorMathUtils to Vector3MathUtils class
 25/08/2018
--Chanded vertex from int[] to long packed like rbg int value in java awt
--Chanded uv from int[] to int packed like rbg int value in java awt
--Changed everything needed to work with the new vertex and uv.
+-Created VertexUtils class
+-Created UVUtils class
+-Changed vertex from int[] to long packed like rbg int value in java awt
+-Changed uv from int[] to int packed like rbg int value in java awt
+-Changed everything needed to work with the new vertex and uv
+------------------------------------------------------------------------
+-Added texture to the Material class
+-Changed Image class pixel storage from BufferedImage to int[]
+-Added default texture adding to SOMImporter
+-Fixed affine texture mapping uv position swapping bug
 

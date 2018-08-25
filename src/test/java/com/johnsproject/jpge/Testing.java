@@ -1,5 +1,7 @@
 package com.johnsproject.jpge;
 
+import java.io.IOException;
+
 import com.johnsproject.jpge.graphics.*;
 import com.johnsproject.jpge.io.*;
 import com.johnsproject.jpge.utils.Vector3Utils;
@@ -43,7 +45,13 @@ public class Testing implements KeyListener {
 		}
 		mesh.playAnimation(0);
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
-		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(0, 0, 500), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(10, 10, 10)), mesh);
+		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(0, 0, 400), Vector3Utils.convert(180, 0, 0), Vector3Utils.convert(1, 1, 1)), mesh);
+		try {
+			sceneObject.getMesh().getMaterial(0).setTexture(new Image("/home/john/Development/Java/JPGE/src/main/resources/Brick.jpg", 101, 101));
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		//sceneObject2 = new SceneObject("test2", new Vector3(0, 0, 150), new Vector3(0, 0, 0), new Vector3(1, 1, 1), mesh2);
 		camera = new Camera("testCam", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)), new int[] {0, 0}, new int[] {w, h});
 		//camera2 = new Camera("testCam2", new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {700, 200}, new int[] {w/2, h/2});	

@@ -11,8 +11,9 @@ public class Material {
 	private int color = 0;
 	private Image texture;
 	
-	public Material(int color){
+	public Material(int color, Image texture){
 		this.color = color;
+		this.texture = texture;
 	}
 
 	public int getColor() {
