@@ -1,7 +1,4 @@
 package com.johnsproject.jpge.graphics;
-
-import java.util.Arrays;
-
 import com.johnsproject.jpge.utils.Vector3Utils;
 
 /**
@@ -9,75 +6,54 @@ import com.johnsproject.jpge.utils.Vector3Utils;
  *
  */
 public class Transform {
-	private final int vx = Vector3Utils.X, vy = Vector3Utils.Y, vz = Vector3Utils.Z;
-	private int[] position;
-	private int[] rotation;
-	private int[] scale;
+	private long position;
+	private long rotation;
+	private long scale;
 	
-	public Transform(int[] position, int[] rotation, int[] scale) {
+	public Transform(long position, long rotation, long scale) {
 		this.position = position;
 		this.rotation = rotation;
 		this.scale = scale;
 	}
 	
 	public void translate(int x, int y, int z) {
-		position[vx] += x;
-		position[vy] += y;
-		position[vz] += z;
+		position = Vector3Utils.add(position, Vector3Utils.convert(x, y, z));
 	}
 	
 	public void rotate(int x, int y, int z) {
-		rotation[vx] += x;
-		rotation[vy] += y;
-		rotation[vz] += z;
+		rotation = Vector3Utils.add(rotation, Vector3Utils.convert(x, y, z));
 	}
 	
-	public void translate(int[] vector) {
-		position[vx] += vector[vx];
-		position[vy] += vector[vy];
-		position[vz] += vector[vz];
+	public void translate(long vector) {
+		position = Vector3Utils.add(position, vector);
 	}
 	
-	public void rotate(int[] vector) {
-		rotation[vx] += vector[vx];
-		rotation[vy] += vector[vy];
-		rotation[vz] += vector[vz];
+	public void rotate(long vector) {
+		rotation = Vector3Utils.add(rotation, vector);
 	}
 
-	public int[] getPosition() {
+	public long getPosition() {
 		return position;
 	}
 
 	public void setPosition(int x, int y, int z) {
-		position[vx] = x;
-		position[vy] = y;
-		position[vz] = z;
+		this.position = Vector3Utils.convert(x, y, z);
 	}
 
-	public int[] getRotation() {
+	public long getRotation() {
 		return rotation;
 	}
 
 	public void setRotation(int x, int y, int z) {
-		rotation[vx] = x;
-		rotation[vy] = y;
-		rotation[vz] = z;
+		this.rotation = Vector3Utils.convert(x, y, z);
 	}
 
-	public int[] getScale() {
+	public long getScale() {
 		return scale;
 	}
 
 	public void setScale(int x, int y, int z) {
-		scale[vx] = x;
-		scale[vy] = y;
-		scale[vz] = z;
-	}
-
-	@Override
-	public String toString() {
-		return "Transform [position=" + Arrays.toString(position) + ", rotation=" + Arrays.toString(rotation)
-				+ ", scale=" + Arrays.toString(scale) + "]";
+		this.scale = Vector3Utils.convert(x, y, z);
 	}
 	
 }

@@ -43,11 +43,11 @@ public class Testing implements KeyListener {
 		}
 		mesh.playAnimation(0);
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
-		sceneObject = new SceneObject("test", new Transform(Vector3Utils.make(0, 0, 500), Vector3Utils.make(0, 0, 0), Vector3Utils.make(1, 1, 1)), mesh);
+		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(0, 0, 500), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(10, 10, 10)), mesh);
 		//sceneObject2 = new SceneObject("test2", new Vector3(0, 0, 150), new Vector3(0, 0, 0), new Vector3(1, 1, 1), mesh2);
-		camera = new Camera("testCam", new Transform(Vector3Utils.make(0, 0, 0), Vector3Utils.make(0, 0, 0), Vector3Utils.make(1, 1, 1)), new int[] {0, 0}, new int[] {w, h});
+		camera = new Camera("testCam", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)), new int[] {0, 0}, new int[] {w, h});
 		//camera2 = new Camera("testCam2", new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {700, 200}, new int[] {w/2, h/2});	
-		light = new Light("testLight", new Transform(Vector3Utils.make(0, 0, 0), Vector3Utils.make(0, 0, 0), Vector3Utils.make(1, 1, 1)));
+		light = new Light("testLight", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)));
 		sceneFrame.getScene().addSceneObject(sceneObject);
 		//sceneFrame.getScene().addSceneObject(sceneObject2);
 		sceneFrame.getScene().addCamera(camera);

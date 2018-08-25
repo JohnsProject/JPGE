@@ -10,7 +10,9 @@ import com.johnsproject.jpge.graphics.Mesh;
 import com.johnsproject.jpge.graphics.Transform;
 import com.johnsproject.jpge.graphics.Animation;
 import com.johnsproject.jpge.utils.ColorUtils;
+import com.johnsproject.jpge.utils.UVUtils;
 import com.johnsproject.jpge.utils.Vector3Utils;
+import com.johnsproject.jpge.utils.VertexUtils;
 
 /**
  * The SOMImporter class provides import methods for the som (Scene Object Mesh) file format
@@ -94,18 +96,17 @@ public class SOMImporter {
 	 * @return an vertex array.
 	 * @throws ImportExeption
 	 */
-	static int[][] parseVertexes(String[] rawVertexesData) throws ImportExeption {
+	static long[] parseVertexes(String[] rawVertexesData) throws ImportExeption {
 		int step = Mesh.VERTEX_LENGTH-1;
-		int[][] vertexes = new int[rawVertexesData.length/step][Mesh.VERTEX_LENGTH];
+		long[] vertexes = new long[rawVertexesData.length/step];
 		if(rawVertexesData.length > 2){
 			for (int i = 0; i < rawVertexesData.length; i+= step) {
-				int[] vertex = new int[Mesh.VERTEX_LENGTH];
-				vertex[vx] = toInt(rawVertexesData[i + vx]);
-				vertex[vy] = toInt(rawVertexesData[i + vy]);
-				vertex[vz] = toInt(rawVertexesData[i + vz]);
-				vertex[Mesh.BONE_INDEX] = toInt(rawVertexesData[i + Mesh.BONE_INDEX]);
-				vertex[Mesh.SHADE_FACTOR] = 0;
-				vertexes[i/step] = vertex;
+				int x = toInt(rawVertexesData[i + vx]);
+				int y = toInt(rawVertexesData[i + vy]);
+				int z = toInt(rawVertexesData[i + vz]);
+				int boneIndex = toInt(rawVertexesData[i + Mesh.BONE_INDEX]);
+				long vector = Vector3Utils.convert(x, y, z);
+				vertexes[i/step] = VertexUtils.convert(vector, boneIndex, 0);
 			}
 		}
 		return vertexes;
@@ -150,19 +151,18 @@ public class SOMImporter {
 	 * @return an uv array.
 	 * @throws ImportExeption
 	 */
-	static int[][] parseUVs(String[] rawUVsData) throws ImportExeption {
+	static int[] parseUVs(String[] rawUVsData) throws ImportExeption {
 		int step = Mesh.UV_LENGTH;
-		int[][] uvs = null;
+		int[] uvs = null;
 		if(rawUVsData.length > 2){
-			uvs = new int[rawUVsData.length/step][Mesh.UV_LENGTH];
+			uvs = new int[rawUVsData.length/step];
 			for (int i = 0; i < rawUVsData.length; i+= step) {
-				int[] uv = new int[Mesh.UV_LENGTH];
-				uv[vx] = toInt(rawUVsData[i + vx]);
-				uv[vy] = toInt(rawUVsData[i + vy]);
-				uvs[i/step] = uv;
+				int u = toInt(rawUVsData[i + vx]);
+				int v = toInt(rawUVsData[i + vy]);
+				uvs[i/step] = UVUtils.convert(u, v);
 			}
 		}else {
-			uvs = new int[1][Mesh.UV_LENGTH];
+			uvs = new int[1];
 		}
 		return uvs;
 	}
@@ -218,11 +218,13 @@ public class SOMImporter {
 			if(bonesCount > 0) {
 				bones = new Transform[bonesCount];
 				for (int i = 0; i < bones.length; i++) {
-					bones[i] = new Transform(new int[] {0,0,0}, new int[] {0,0,0}, new int[] {1,1,1});
+					long vector = Vector3Utils.convert(1, 1, 1);
+					bones[i] = new Transform(vector, vector, vector);
 				}
 			}else {
 				bones = new Transform[1];
-				bones[0] = new Transform(new int[] {0,0,0}, new int[] {0,0,0}, new int[] {1,1,1});
+				long vector = Vector3Utils.convert(1, 1, 1);
+				bones[0] = new Transform(vector, vector, vector);
 			}
 			animations[0] = new Animation("Animation", 1, bonesCount, bones);
 		}
@@ -235,16 +237,17 @@ public class SOMImporter {
 		int framesCount = rawBonesData.length/(step * bonesCount);
 		Transform[] bones = new Transform[bonesCount*framesCount];
 		for (int j = 0; j < rawBonesData.length; j+=step) {
-			int[] pos = new int[3], rot = new int[3], scale = new int[3];
-			pos[vx] = toInt(rawBonesData[j + Mesh.POSITION + vx]);
-			pos[vy] = toInt(rawBonesData[j + Mesh.POSITION + vy]);
-			pos[vz] = toInt(rawBonesData[j + Mesh.POSITION + vz]);
-			rot[vx] = toInt(rawBonesData[j + Mesh.ROTATION + vx]);
-			rot[vy] = toInt(rawBonesData[j + Mesh.ROTATION + vy]);
-			rot[vz] = toInt(rawBonesData[j + Mesh.ROTATION + vz]);
-			scale[vx] = toInt(rawBonesData[j + Mesh.SCALE + vx]);
-			scale[vy] = toInt(rawBonesData[j + Mesh.SCALE + vy]);
-			scale[vz] = toInt(rawBonesData[j + Mesh.SCALE + vz]);
+			long vector = Vector3Utils.convert(0, 0, 0);
+			long pos = vector, rot = vector, scale = vector;
+			pos = Vector3Utils.addX(pos, toInt(rawBonesData[j + Mesh.POSITION + vx]));
+			pos = Vector3Utils.addY(pos, toInt(rawBonesData[j + Mesh.POSITION + vy]));
+			pos = Vector3Utils.addZ(pos, toInt(rawBonesData[j + Mesh.POSITION + vz]));
+			rot = Vector3Utils.addX(rot, toInt(rawBonesData[j + Mesh.ROTATION + vx]));
+			rot = Vector3Utils.addY(rot, toInt(rawBonesData[j + Mesh.ROTATION + vy]));
+			rot = Vector3Utils.addZ(rot, toInt(rawBonesData[j + Mesh.ROTATION + vz]));
+			scale = Vector3Utils.addX(scale, toInt(rawBonesData[j + Mesh.SCALE + vx]));
+			scale = Vector3Utils.addY(scale, toInt(rawBonesData[j + Mesh.SCALE + vy]));
+			scale = Vector3Utils.addZ(scale, toInt(rawBonesData[j + Mesh.SCALE + vz]));
 			bones[j/step] =  new Transform(pos, rot, scale);
 		}
 		return new Animation(animName, framesCount, bonesCount, bones);

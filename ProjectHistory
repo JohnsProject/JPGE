@@ -1,11 +1,11 @@
 Project Start - 28/04/2018 
-v0.1 - 28/05/2018
+28/05/2018
 -Added Perspective projection
-v0.2 - 29/05/2018
+29/05/2018
 -Added BackfaceCulling
 -Added drawing order of components
 -Added Orthographic projection
-v0.3 - 09/06/2018
+09/06/2018
 -Added Blender Mesh importing
 -Added BackfaceCulling with sholeance algorithm (tried to implement zBuffer without success)
 -Added multiple Cameras Rendering
@@ -15,46 +15,46 @@ v0.3 - 09/06/2018
 -Added Vector2 class (for 2D graphics)
 -Added Transform class (for translating, rotating objects)
 -Added GameManager class (updates the engine)
-v0.4 - 13/06/2018
+13/06/2018
 -Added material color importing
 -Changed update method of GameManager from thread to swing timers
 -Fixed awt drawing flickering bug by changing to swing timers
-v0.5 - 16/06/2018
+16/06/2018
 -Added shading
 -Optimized ram usage
-v0.6 - 23/06/2018
+23/06/2018
 -Changed SceneRenderer to draw on BufferedImage of camera instead of making a polygon buffer
 -Optimized ram usage
 -Changed camera from swing JPanel to awt Canvas (performance improved)
 -Changed sceneFrame from swing JFrame to awt Frame (performance improved)
 -Optimized mesh Exporter/Importer
 -Changed KeyInputManager to work "Stand alone" instead of needing a JComponent to work
-v0.7 - 04/07/2018
+04/07/2018
 -Changed Camera ScreenBuffer from Image to BufferedImage
 -Added zBuffering!
 -Changed from Vector3 class to int[][] for performance reasons
 -Changed awt Graphics drawing on Camera to own drawing on BufferedImage
 -Optimized sholeance algorithm
 -Corrected negative Cosinus bug of Calc
-v0.8 - 05/07/2018
+05/07/2018
 -Added SOM_Importer (removed test importing method form Mesh class itself)
 -Added color baking for shading (stoped generating new colors for each polygon)
 -Added ImportExeption (for case of polygons with more than 3 vertexes)
-v0.9 - 07/07/2018
+07/07/2018
 -Changed from Polygon class to int[][]
 -Optimized ram usage a lot
 -Fixed awt Canvas flickering bug by drawing to BufferStrategy.getDrawGraphics instead of calling repaint
 -Added Vector class that makes basic vector operations (addition, multiplication...)
-v0.10 - 14/07/2018
+14/07/2018
 -Added Animation importing/exporting
 -Added SceneAnimator class (animates the Scene)
 -Added animations!!!
-v0.11 - 03/08/2018
+03/08/2018
 -Fixed bug of bone position not changing vertex position
 -Fixed triangle filling bug
 -Added auto triangulation when exporting from Blender
 -Added sample animation/bone creation when object has no animation/bone
-v0.12 - 17/08/2018
+17/08/2018
 -Changed triangle filling algorithm! (10x performance)
 -Created utils package
 -Moved Calc class to MathUtils
@@ -63,15 +63,19 @@ v0.12 - 17/08/2018
 -Created ColorUtils class for handling the int rgba color of awt
 -Created Material class
 -Fixed some small bugs
-v0.13 - 22/08/2018
+22/08/2018
 -Added affine texture mapping!!!
 -Writing pixel of Camera to DataBuffer instead of BufferdImage.setPixel (big performance improvement)
-v0.14 - 23/08/2018
+23/08/2018
 -Fixed perspective projection bug!!!
 -Fixed camera transformation bug
 -Removed transformBuffer from SceneObject
 -Fixed view frustum culling bug
-v0.15 - 24/08/2018
+v0.1 - 24/08/2018
 -Renamed VectorUtils to Vector3Util class
 -Renamed VectorMathUtils to Vector3MathUtils class
+25/08/2018
+-Chanded vertex from int[] to long packed like rbg int value in java awt
+-Chanded uv from int[] to int packed like rbg int value in java awt
+-Changed everything needed to work with the new vertex and uv.
 

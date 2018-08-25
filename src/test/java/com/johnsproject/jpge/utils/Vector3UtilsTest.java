@@ -11,137 +11,104 @@ import org.junit.Test;
 public class Vector3UtilsTest {
 	
 	@Test
-	public void getTest() throws Exception {
-//		int[] aold = new int[]{25, 35, 45};
-//		int[] bold = new int[]{11, 12, 14};
-//		int[] a = new int[]{25, 35, 45};
-//		int[] b = new int[]{11, 12, 14};
-//		assert(Vector3Utils.equals(a, aold));
-//		assert(Vector3Utils.equals(bold, b));
-//		Vector3Utils.swap(a, b);
-//		assert(Vector3Utils.equals(a, bold));
-//		assert(Vector3Utils.equals(aold, b));
+	public void convertTest() throws Exception {
+		System.out.println(1 << 1);
+		int x = 0b00000000000000000001; // 1
+		int y = 0b00000000000000000011; // 3
+		int z = 0b00000000000000000111; // 7
+		
+		long result = (0b000000000000000000000001L << 32) | (0b00000000000000000011L << 16) | 0b00000000000000000111L;
+		long vector = Vector3Utils.convert(x, y, z);
+		assert(result == vector);
 	}
 	
 	@Test
-	public void swapTest() throws Exception {
-		int[] aold = new int[]{25, 35, 45};
-		int[] bold = new int[]{11, 12, 14};
-		int[] a = new int[]{25, 35, 45};
-		int[] b = new int[]{11, 12, 14};
-		assert(Vector3Utils.equals(a, aold));
-		assert(Vector3Utils.equals(bold, b));
-		Vector3Utils.swap(a, b);
-		assert(Vector3Utils.equals(a, bold));
-		assert(Vector3Utils.equals(aold, b));
+	public void getXTest() throws Exception {
+		int x = 0b00000000000000000001; // 1
+		int y = 0b00000000000000000011; // 3
+		int z = 0b00000000000000000111; // 7
+		
+		long vector = Vector3Utils.convert(x, y, z);
+		long gx = Vector3Utils.getX(vector);
+		assert(gx == x);
 	}
 	
 	@Test
-	public void addTest() throws Exception {
-		int d = 2, f = 10;
-		int[] a = new int[]{f, f, f};
-		int[] b = new int[]{d, d, d};
-		int[] c = new int[]{f+d, f+d, f+d};
-		int[] e = Vector3Utils.add(a, b);
-		assert(Vector3Utils.equals(e, c));
-		a = Vector3Utils.match(a, f);
-		e = Vector3Utils.add(a, d);
-		assert(Vector3Utils.equals(e, c));
+	public void getYTest() throws Exception {
+		int x = 0b00000000000000000001; // 1
+		int y = 0b00000000000000000011; // 3
+		int z = 0b00000000000000000111; // 7
+		
+		long vector = Vector3Utils.convert(x, y, z);
+		long gy = Vector3Utils.getY(vector);
+		assert(gy == y);
 	}
 	
 	@Test
-	public void subtractTest() throws Exception {
-		int d = 2, f = 10;
-		int[] a = new int[]{f, f, f};
-		int[] b = new int[]{d, d, d};
-		int[] c = new int[]{f-d, f-d, f-d};
-		int[] e = Vector3Utils.subtract(a, b);
-		assert(Vector3Utils.equals(e, c));
-		a = Vector3Utils.match(a, f);
-		e = Vector3Utils.subtract(a, d);
-		assert(Vector3Utils.equals(e, c));
+	public void getZTest() throws Exception {
+		int x = 0b00000000000000000001; // 1
+		int y = 0b00000000000000000011; // 3
+		int z = 0b00000000000000000111; // 7
+		
+		long vector = Vector3Utils.convert(x, y, z);
+		long gz = Vector3Utils.getZ(vector);
+		assert(gz == z);
 	}
 	
 	@Test
-	public void multiplicationTest() throws Exception {
-		int d = 2, f = 10;
-		int[] a = new int[]{f, f, f};
-		int[] b = new int[]{d, d, d};
-		int[] c = new int[]{f*d, f*d, f*d};
-		int[] e = Vector3Utils.multiply(a, b);
-		assert(Vector3Utils.equals(e, c));
-		a = Vector3Utils.match(a, f);
-		e = Vector3Utils.multiply(a, d);
-		assert(Vector3Utils.equals(e, c));
+	public void addXTest() throws Exception {
+		int x = 2;
+		int y = 2;
+		int z = 2;
+		int x2 = 2;
+		long vector = Vector3Utils.convert(x, y, z);
+		long vector2 = Vector3Utils.addX(vector, x2);
+		assert(Vector3Utils.getX(vector2) == x + x2);
 	}
 	
 	@Test
-	public void divisionTest() throws Exception {
-		int d = 2, f = 10;
-		int[] a = new int[]{f, f, f};
-		int[] b = new int[]{d, d, d};
-		int[] c = new int[]{f/d, f/d, f/d};
-		int[] e = Vector3Utils.divide(a, b);
-		assert(Vector3Utils.equals(e, c));
-		a = Vector3Utils.match(a, f);
-		e = Vector3Utils.divide(a, d);
-		assert(Vector3Utils.equals(e, c));
+	public void addYTest() throws Exception {
+		int x = 2;
+		int y = 2;
+		int z = 2;
+		int y2 = 2;
+		long vector = Vector3Utils.convert(x, y, z);
+		long vector2 = Vector3Utils.addY(vector, y2);
+		assert(Vector3Utils.getY(vector2) == x + y2);
 	}
 	
 	@Test
-	public void minTest() throws Exception {
-		int[] a = new int[]{25, 35, 45};
-		int[] b = new int[]{11, 12, 14};
-		assert(Vector3Utils.equals(Vector3Utils.min(a, b), b));
+	public void addZTest() throws Exception {
+		int x = 2;
+		int y = 2;
+		int z = 2;
+		int z2 = 2;
+		long vector = Vector3Utils.convert(x, y, z);
+		long vector2 = Vector3Utils.addZ(vector, z2);
+		assert(Vector3Utils.getZ(vector2) == x + z2);
 	}
 	
 	@Test
-	public void maxTest() throws Exception {
-		int[] a = new int[]{25, 35, 45};
-		int[] b = new int[]{11, 12, 14};
-		assert(Vector3Utils.equals(Vector3Utils.max(a, b), a));
+	public void addVectorTest() throws Exception {
+		int x1 = 0, y1 = 0, z1 = 0;
+		int x2 = 2, y2 = 2, z2 = 2;
+		long vector1 = Vector3Utils.convert(x1, y1, z1);
+		long vector2 = Vector3Utils.convert(x2, y2, z2);
+		long resultVector = Vector3Utils.add(vector1, vector2);
+		assert(Vector3Utils.getX(resultVector) == x1 + x2);
+		assert(Vector3Utils.getY(resultVector) == y1 + y2);
+		assert(Vector3Utils.getZ(resultVector) == z1 + z2);
 	}
 	
 	@Test
-	public void matchTest() throws Exception {
-		int d = 5;
-		int[] a = new int[]{25, 35, 45};
-		int[] b = new int[]{11, 12, 14};
-		int[] c = new int[]{d, d, d};
-		assert(!Vector3Utils.equals(a, b));
-		Vector3Utils.match(a, b);
-		assert(Vector3Utils.equals(a, b));
-		assert(!Vector3Utils.equals(a, c));
-		Vector3Utils.match(a, d);
-		assert(Vector3Utils.equals(a, c));
-	}
-	
-	@Test
-	public void equalsTest() throws Exception {
-		int[] a = new int[]{25, 35, 45};
-		int[] b = new int[]{25, 35, 45};
-		int[] c = new int[]{11, 12, 14};
-		assert(Vector3Utils.equals(a, b));
-		assert(!Vector3Utils.equals(a, c));
-	}
-	
-	@Test
-	public void invertTest() throws Exception {
-		int[] a = new int[]{25, 35, 45};
-		int[] ap = new int[]{25, 35, 45};
-		int[] an = new int[]{-25, -35, -45};
-		Vector3Utils.invert(a);
-		assert(Vector3Utils.equals(a, an));
-		Vector3Utils.invert(a);
-		assert(Vector3Utils.equals(a, ap));
-	}
-	
-	@Test
-	public void toStringTest() throws Exception {
-		int[] a = new int[]{25, 35, 45};
-		String s = Vector3Utils.toString(a);
-		assert(s.contains(a[Vector3Utils.X] + ""));
-		assert(s.contains(a[Vector3Utils.Y] + ""));
-		assert(s.contains(a[Vector3Utils.Z] + ""));
+	public void subtractVectorTest() throws Exception {
+		int x1 = 2, y1 = 2, z1 = 2;
+		int x2 = 2, y2 = 2, z2 = 2;
+		long vector1 = Vector3Utils.convert(x1, y1, z1);
+		long vector2 = Vector3Utils.convert(x2, y2, z2);
+		long resultVector = Vector3Utils.subtract(vector1, vector2);
+		assert(Vector3Utils.getX(resultVector) == x1 - x2);
+		assert(Vector3Utils.getY(resultVector) == y1 - y2);
+		assert(Vector3Utils.getZ(resultVector) == z1 - z2);
 	}
 }

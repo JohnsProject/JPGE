@@ -7,11 +7,12 @@ import java.util.List;
 
 import com.johnsproject.jpge.io.FileIO;
 import com.johnsproject.jpge.utils.ColorUtils;
+import com.johnsproject.jpge.utils.UVUtils;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
 import com.johnsproject.jpge.utils.Vector3Utils;
+import com.johnsproject.jpge.utils.VertexUtils;
 
 public class SceneRenderer{
-	private static final int vx = Vector3Utils.X, vy = Vector3Utils.Y, vz = Vector3Utils.Z;
 	public enum ProjectionType {
 		orthographic, perspective
 	}	
@@ -20,6 +21,7 @@ public class SceneRenderer{
 		wireframe, solid, textured
 	}
 	
+	private static final int vx = Vector3Utils.X, vy = Vector3Utils.Y, vz = Vector3Utils.Z;
 	private boolean log = true;
 	
 	public SceneRenderer() {
@@ -27,7 +29,7 @@ public class SceneRenderer{
 //			img = convertTo2DWithoutUsingGetRGB(
 //					new Image("/home/john/Development/Java/Workspace/JPGE/bin/ButtonTexture.png").getBufferedImage());
 			//img = new Image("/home/john/Development/JohnsProjectLogo.png");
-			img = new Image(FileIO.loadImage("/home/john/Development/Brick.jpg"));
+			img = new Image(FileIO.loadImage(getClass().getResourceAsStream("/JohnsProjectLogo.png")));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -53,14 +55,14 @@ public class SceneRenderer{
 		}
 	}
 	
-	void drawPolygonAffine(int[] vx1, int[] vx2, int[] vx3, int[] uv1, int[] uv2, int[] uv3, Image img, Camera cam) {
+	void drawPolygonAffine(long vx1, long vx2, long vx3, int uv1, int uv2, int uv3, Image img, Camera cam) {
 		float w = img.getWidth(), h = img.getHeight();
-		int tmp, x0 = vx1[vx], y0 = vx1[vy], z0 = vx1[vz],
-				x1 = vx2[vx], y1 = vx2[vy], z1 = vx1[vz],
-				x2 = vx3[vx], y2 = vx3[vy], z2 = vx1[vz],
-				u0 = uv1[vx], v0 = uv1[vy],
-				u1 = uv2[vx], v1 = uv2[vy],
-				u2 = uv3[vx], v2 = uv3[vy];
+		int tmp, x0 = (int)Vector3Utils.getX(vx1), y0 = (int)Vector3Utils.getY(vx1), z0 = (int)Vector3Utils.getZ(vx1),
+				x1 = (int)Vector3Utils.getX(vx2), y1 = (int)Vector3Utils.getY(vx2), z1 = (int)Vector3Utils.getZ(vx2),
+				x2 = (int)Vector3Utils.getX(vx3), y2 = (int)Vector3Utils.getY(vx3), z2 = (int)Vector3Utils.getZ(vx3),
+				u0 = UVUtils.getU(uv1), v0 = UVUtils.getV(uv1),
+				u1 = UVUtils.getU(uv2), v1 = UVUtils.getV(uv2),
+				u2 = UVUtils.getU(uv3), v2 = UVUtils.getV(uv3);
 		if (y0 > y1) { tmp = y1; y1 = y0; y0 = tmp; 
 		   				tmp = x1; x1 = x0; x0 = tmp; }
 		if (y1 > y2) { tmp = y2; y2 = y1; y1 = tmp; 
@@ -97,7 +99,7 @@ public class SceneRenderer{
 	    if (iu == Float.POSITIVE_INFINITY) iu = 0;
 	    float sx = x0, sv = v0, su = u0,
 	    		ex = x0, eu = u0, ev = v0;
-	    int sy = y0;
+	    int sy = (int)y0;
 //		if (dx2 - dx1 > 0) {
 //			du = (float)(eu-su)/(float)(dx2-dx1);
 //			dv = (float)(ev-sv)/(float)(dx2-dx1);
@@ -129,10 +131,10 @@ public class SceneRenderer{
 	    }
 	}
 	
-	void drawPolygon(int[] vx1, int[] vx2, int[] vx3, int c, Camera cam) {
-		int tmp, x0 = vx1[vx], y0 = vx1[vy], z0 = vx1[vz],
-				x1 = vx2[vx], y1 = vx2[vy],
-				x2 = vx3[vx], y2 = vx3[vy];
+	void drawPolygon(long vx1, long vx2, long vx3, int c, Camera cam) {
+		int tmp, x0 = (int)Vector3Utils.getX(vx1), y0 = (int)Vector3Utils.getY(vx1), z0 = (int)Vector3Utils.getZ(vx1),
+				x1 = (int)Vector3Utils.getX(vx2), y1 = (int)Vector3Utils.getY(vx2),
+				x2 = (int)Vector3Utils.getX(vx3), y2 = (int)Vector3Utils.getY(vx3);
 		if (y0 > y1) { tmp = y1; y1 = y0; y0 = tmp; 
 		   				tmp = x1; x1 = x0; x0 = tmp; }
 		if (y1 > y2) { tmp = y2; y2 = y1; y1 = tmp; 
@@ -159,10 +161,10 @@ public class SceneRenderer{
 			drawHLine(x_left >> shift, x_right >> shift, sy, z0, c, cam);
 	}
 	
-	void drawLine(int[] v1, int[] v2, int color, Camera camera) {
-		int w = v2[vx] - v1[vx];
-		int h = v2[vy] - v1[vy];
-		int d = v2[vz] - v1[vz];
+	void drawLine(long v1, long v2, int color, Camera camera) {
+		int w = (int)Vector3Utils.getX(v2) - (int)Vector3Utils.getX(v1);
+		int h = (int)Vector3Utils.getY(v2) - (int)Vector3Utils.getY(v1);
+		int d = (int)Vector3Utils.getZ(v2) - (int)Vector3Utils.getZ(v1);
 		int dx1 = 0, dy1 = 0, dz1 = 0, dx2 = 0, dy2 = 0, dz2 = 0;
 		if (w < 0) dx1 = -1; else if (w > 0) dx1 = 1;
 		if (h < 0) dy1 = -1; else if (h > 0) dy1 = 1;
@@ -179,7 +181,9 @@ public class SceneRenderer{
 			dx2 = 0;
 		}
 		int numerator = longest >> 1;
-		int x = v1[vx], y = v1[vy], z = v1[vz];
+		int x = (int)Vector3Utils.getX(v1),
+				y = (int)Vector3Utils.getY(v1),
+				z = (int)Vector3Utils.getZ(v1);
 		for (int i = 0; i < longest; i++, numerator += shortest) {
 			camera.setPixel(x, y, z, color);
 			if (numerator > longest) {
@@ -226,17 +230,20 @@ public class SceneRenderer{
 		Animation animation = mesh.getCurrentAnimation();
 		Transform objt = sceneObject.getTransform();
 		mesh.resetBuffer();
-		for (int i = 0; i < mesh.getBufferedVertexes().length; i++) {
-			int[] vertex = mesh.getBufferedVertex(i);
-			Vector3MathUtils.movePointByScale(vertex, objt.getScale());
-			for (int j = 0; j < vertex[Mesh.BONE_INDEX]; j++) {
+		for (int i = 0; i < mesh.getVertexes().length; i++) {
+			long vertex = mesh.getVertex(i);
+			long vector = VertexUtils.getVector(vertex);
+			vector = Vector3MathUtils.movePointByScale(vector, objt.getScale());
+			for (int j = 0; j < VertexUtils.getBoneIndex(vertex); j++) {
 				Transform bone = animation.getBone(j, animation.getCurrentFrame());
-				Vector3MathUtils.movePointByScale(vertex, bone.getScale());
-				Vector3MathUtils.movePointByAnglesXYZ(vertex, bone.getRotation());
-				Vector3Utils.add(vertex, bone.getPosition());
+				vector = Vector3MathUtils.movePointByScale(vector, bone.getScale());
+				vector = Vector3MathUtils.movePointByAnglesXYZ(vector, bone.getRotation());
+				vector = Vector3Utils.add(vector, bone.getPosition());
 			}
-			Vector3MathUtils.movePointByAnglesXYZ(vertex, objt.getRotation());
-			projectVertex(vertex, objt.getPosition(), camera);
+			vector = Vector3MathUtils.movePointByAnglesXYZ(vector, objt.getRotation());
+			vector = projectVertex(vector, objt.getPosition(), camera);
+			vertex = VertexUtils.setVector(vertex, vector);
+			mesh.setBufferedVertex(i, vertex);
 		}
 		for (int[] polygon : mesh.getPolygons()) {
 			if (!cullViewFrustum(polygon, mesh, camera)) {
@@ -250,12 +257,12 @@ public class SceneRenderer{
 	Image img;
 	void draw(int[] polygon, Mesh mesh, Camera camera) {
 		renderedPolys++;
-		int[] v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
-		int[] v2 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_2]);
-		int[] v3 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_3]);
-		int[] uv1 = mesh.getUV(polygon[Mesh.UV_1]);
-		int[] uv2 = mesh.getUV(polygon[Mesh.UV_2]);
-		int[] uv3 = mesh.getUV(polygon[Mesh.UV_3]);
+		long v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
+		long v2 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_2]);
+		long v3 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_3]);
+		int uv1 = mesh.getUV(polygon[Mesh.UV_1]);
+		int uv2 = mesh.getUV(polygon[Mesh.UV_2]);
+		int uv3 = mesh.getUV(polygon[Mesh.UV_3]);
 		int color = mesh.getMaterial(polygon[Mesh.MATERIAL_INDEX]).getColor();
 		color = ColorUtils.brighter(color, 3);
 		if(camera.getRenderingType() == RenderingType.wireframe) {
@@ -271,50 +278,52 @@ public class SceneRenderer{
 		}
 	}
 
-	int[][] getLightDistances(int[] sceneObjectPosition, List<Light> lights) {
-		if (lights.size() > 0) {
-			int[][] distances = new int[lights.size()][3];
-			for (int i = 0; i < distances.length; i++) {
-				int[] pos = lights.get(i).getTransform().getPosition();
-				distances[i] = Vector3MathUtils.getDistance(pos, sceneObjectPosition);
-			}
-			return distances;
-		}
-		return null;
-	}
+//	int[][] getLightDistances(int[] sceneObjectPosition, List<Light> lights) {
+//		if (lights.size() > 0) {
+//			int[][] distances = new int[lights.size()][3];
+//			for (int i = 0; i < distances.length; i++) {
+//				int[] pos = lights.get(i).getTransform().getPosition();
+//				distances[i] = Vector3MathUtils.getDistance(pos, sceneObjectPosition);
+//			}
+//			return distances;
+//		}
+//		return null;
+//	}
 
-	void projectVertex(int[] vertex, int[] objectPosition, Camera camera) {
-		int px = 0, py = 0, pz = 0;
+	long projectVertex(long vertex, long objectPosition, Camera camera) {
+		long px = 0, py = 0, pz = 0;
 		switch (camera.getProjectionType()) {
 		case perspective: // this projectionType uses depth
-			int[] camRot = camera.getTransform().getRotation(),
+			long camRot = camera.getTransform().getRotation(),
 			camPos = camera.getTransform().getPosition();
-			int[] pos = Vector3Utils.subtract(Vector3Utils.add(vertex, objectPosition),camPos);
-			Vector3MathUtils.movePointByAnglesXYZ(pos, camRot);
+			long pos = Vector3Utils.add(vertex, objectPosition);
+			pos = Vector3Utils.subtract(pos, camPos);
+			pos = Vector3MathUtils.movePointByAnglesXYZ(pos, camRot);
 			int fov = camera.getFieldOfView(), rescalef = camera.getRescaleFactor();
-			int z = (pos[vz] + fov);
+			long z = (Vector3Utils.getZ(pos) + fov);
 			if (z <= 0) z = 1;
-			px = ((pos[vx]) * rescalef * fov) / z;
-			py = ((pos[vy]) * rescalef * fov) / z;
+			px = ((Vector3Utils.getX(pos)) * rescalef * fov) / z;
+			py = ((Vector3Utils.getY(pos)) * rescalef * fov) / z;
 			pz = z;
 			break;
 		case orthographic: // this projectionType ignores depth
-			px = ((vertex[vx] * camera.getRescaleFactor()) >> 7);
-			py = ((vertex[vy] * camera.getRescaleFactor()) >> 7);
-			pz = vertex[vz] + objectPosition[vz];
+			px = ((Vector3Utils.getX(vertex) * camera.getRescaleFactor()) >> 7);
+			py = ((Vector3Utils.getY(vertex) * camera.getRescaleFactor()) >> 7);
+			pz = Vector3Utils.getZ(vertex) + Vector3Utils.getZ(objectPosition);
 			break;
 		}
-		vertex[vx] = (px>>1) + camera.getHalfRect()[vx] + objectPosition[vx];
-		vertex[vy] = (py>>1) + camera.getHalfRect()[vy] + objectPosition[vy];
-		vertex[vz] = pz;
+		long x = (px>>1) + camera.getHalfRect()[vx] + Vector3Utils.getX(objectPosition);
+		long y = (py>>1) + camera.getHalfRect()[vy] + Vector3Utils.getY(objectPosition);
+		long z = pz;
+		return Vector3Utils.convert(x, y, z);
 	}
 	
 	boolean cullViewFrustum(int[] polygon, Mesh mesh, Camera camera) {
-		int[] v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
+		long v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
 		int ncp = camera.getNearClippingPlane();
 		int fcp = camera.getFarClippingPlane();
 		int w = camera.getWidth(), h = camera.getHeight();
-		int x = v1[vx], y = v1[vy], z = v1[vz];
+		int x = (int)Vector3Utils.getX(v1), y = (int)Vector3Utils.getY(v1), z = (int)Vector3Utils.getZ(v1);
 		if (x > -400 && x < w+400 && y > -400 && y < h+400 && z > ncp && z < fcp)
 			return false;
 		return true;
@@ -322,11 +331,13 @@ public class SceneRenderer{
 	
 	//backface culling with sholeance algorithm
 	boolean cullBackface(int[] polygon, Mesh mesh) {
-		int[] v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]),
+		long v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]),
 				v2 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_2]),
 				v3 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_3]);
-		int a = ((v2[vx] - v1[vx])*(v3[vy] - v1[vy])
-				- (v3[vx] - v1[vx])*(v2[vy] - v1[vy])) >> 1;
+		int v1x = (int)Vector3Utils.getX(v1), v1y = (int)Vector3Utils.getY(v1);
+		int v2x = (int)Vector3Utils.getX(v2), v2y = (int)Vector3Utils.getY(v2);
+		int v3x = (int)Vector3Utils.getX(v3), v3y = (int)Vector3Utils.getY(v3);
+		int a = ((v2x - v1x) * (v3y - v1y) - (v3x - v1x) * (v2y - v1y)) >> 1;
 		if (a < 0) return false;
 		return true;
 	}
