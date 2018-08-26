@@ -9,7 +9,7 @@ import com.johnsproject.jpge.graphics.Material;
 import com.johnsproject.jpge.graphics.Mesh;
 import com.johnsproject.jpge.graphics.Transform;
 import com.johnsproject.jpge.graphics.Animation;
-import com.johnsproject.jpge.graphics.Image;
+import com.johnsproject.jpge.graphics.Texture;
 import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.UVUtils;
 import com.johnsproject.jpge.utils.Vector3Utils;
@@ -185,11 +185,11 @@ public class SOMImporter {
 			for (int i = 0; i < rawMaterialsData.length; i+=4) {
 				int r = toInt(rawMaterialsData[i]), g = toInt(rawMaterialsData[i+1]),
 					b = toInt(rawMaterialsData[i+2]), a = toInt(rawMaterialsData[i+3]);
-				materials[i/4] = new Material(ColorUtils.convert(r, g, b, a), new Image(101, 101));
+				materials[i/4] = new Material(ColorUtils.convert(r, g, b, a), new Texture(101, 101));
 			}
 		}else {
 			materials = new Material[1];
-			materials[0] = new Material(ColorUtils.convert(100, 100, 100, 255), new Image(101, 101));
+			materials[0] = new Material(ColorUtils.convert(100, 100, 100, 255), new Texture(101, 101));
 		}
 		return materials;
 	}

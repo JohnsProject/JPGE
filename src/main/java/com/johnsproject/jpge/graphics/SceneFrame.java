@@ -33,7 +33,7 @@ public class SceneFrame extends Frame implements CameraListener, UpdateListener{
 	void initializeFrame(){
 		this.setResizable(false);
 		this.setVisible(true);
-		renderer = new SceneRenderer();
+		renderer = new SceneRenderer(getWidth(), getHeight());
 		animator = new SceneAnimator();
 		try {
 			setIconImage(FileIO.loadImage(getClass().getResourceAsStream("/JohnsProjectLogo.png")));

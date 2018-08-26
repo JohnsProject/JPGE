@@ -22,7 +22,6 @@ public class Camera extends Canvas{
 	private Transform transform;
 	private BufferedImage screenBuffer;
 	private int[] screenBufferData;
-	private int[] zBuffer = null;
 	private boolean changed = false;
 	private ProjectionType projectionType = ProjectionType.perspective;
 	private RenderingType renderingType = RenderingType.textured;
@@ -41,7 +40,6 @@ public class Camera extends Canvas{
 		screenBuffer = new BufferedImage(rect[0], rect[1], BufferedImage.TYPE_INT_ARGB_PRE);
 		screenBuffer.setAccelerationPriority(1);
 		screenBufferData = ((DataBufferInt)screenBuffer.getRaster().getDataBuffer()).getData();
-		zBuffer = new int[(rect[0]*rect[1])];
 		this.changed = true;
 	}
 	
@@ -55,32 +53,14 @@ public class Camera extends Canvas{
 		s.show();
 	} 
 	
-	public void setPixel(int x, int y, int z, int color){
+	public void setPixel(int x, int y, int color){
 		if((x > 0 && y > 0) && (x < rect[0] && y < rect[1])) {
-			int pos = x + (y*rect[0]);
-			if(zBuffer[pos] >= z) {
-				zBuffer[pos] = (farClippingPlane - z) << 10;
-				screenBufferData[x + (y * rect[0])] = color;
-				//screenBuffer.setRGB(x, y, color);
-			}
+			screenBufferData[x + (y * rect[0])] = color;
 		}
-	}
-	
-	public int getZ(int x, int y) {
-		return zBuffer[x + (y*rect[0])];
 	}
 	
 	public Graphics getScreenGraphics() {
 		return screenBuffer.getGraphics();
-	} 
-	
-	public void reset() {
-		screenBuffer.getGraphics().clearRect(0, 0, rect[0], rect[1]);
-		if(zBuffer != null) {
-			for (int i = 0; i < zBuffer.length; i++) {
-				zBuffer[i] = 1000000000;
-			}
-		}
 	}
 
 	public int[] getRect() {
@@ -89,6 +69,10 @@ public class Camera extends Canvas{
 	
 	public int[] getHalfRect() {
 		return this.halfRect;
+	}
+	
+	public int[] getScreenPosition() {
+		return this.screenPosition;
 	}
 	
 	public int getRadio() {

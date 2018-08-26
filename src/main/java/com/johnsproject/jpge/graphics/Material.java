@@ -9,9 +9,9 @@ package com.johnsproject.jpge.graphics;
 public class Material {
 
 	private int color = 0;
-	private Image texture;
+	private Texture texture;
 	
-	public Material(int color, Image texture){
+	public Material(int color, Texture texture){
 		this.color = color;
 		this.texture = texture;
 	}
@@ -24,11 +24,11 @@ public class Material {
 		this.color = color;
 	}
 	
-	public Image getTexture() {
+	public Texture getTexture() {
 		return texture;
 	}
 
-	public void setTexture(Image texture) {
+	public void setTexture(Texture texture) {
 		this.texture = texture;
 	}
 }

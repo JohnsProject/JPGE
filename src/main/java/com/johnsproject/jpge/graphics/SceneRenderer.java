@@ -2,10 +2,8 @@ package com.johnsproject.jpge.graphics;
 
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.io.IOException;
 import java.util.List;
 
-import com.johnsproject.jpge.io.FileIO;
 import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.UVUtils;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
@@ -21,13 +19,22 @@ public class SceneRenderer{
 		wireframe, solid, textured
 	}
 	
-	private static final int SHIFT = 10;
+	private int[] zBuffer = null;
+	private int width = 0, height = 0;
+	private static final int SHIFT = 20;
 	private static final int VX = Vector3Utils.X, VY = Vector3Utils.Y, VZ = Vector3Utils.Z;
 	private boolean log = true;
 	
+	public SceneRenderer(int width, int height) {
+		zBuffer = new int[width*height];
+		this.width = width;
+		this.height = height;
+	}
+	
 	public void render(Scene scene, int lastTime) {
+		resetZBuffer();
 		for (Camera camera : scene.getCameras()) {
-			camera.reset();
+			camera.getScreenGraphics().clearRect(0, 0, camera.getRect()[VX],  camera.getRect()[VY]);
 			int maxPolys = 0;
 			for (SceneObject sceneObject : scene.getSceneObjects()) {
 				if (sceneObject.changed() || camera.changed()) {
@@ -45,7 +52,7 @@ public class SceneRenderer{
 		}
 	}
 	
-	void drawPolygonAffine(long vx1, long vx2, long vx3, int uv1, int uv2, int uv3, Image img, Camera cam) {
+	void drawPolygonAffine(long vx1, long vx2, long vx3, int uv1, int uv2, int uv3, Texture img, Camera cam) {
 		int tmp, x0 = Vector3Utils.getX(vx1), y0 = Vector3Utils.getY(vx1), z0 = Vector3Utils.getZ(vx1),
 				x1 = Vector3Utils.getX(vx2), y1 = Vector3Utils.getY(vx2), z1 = Vector3Utils.getZ(vx2),
 				x2 = Vector3Utils.getX(vx3), y2 = Vector3Utils.getY(vx3), z2 = Vector3Utils.getZ(vx3),
@@ -165,7 +172,7 @@ public class SceneRenderer{
 				y = (int)Vector3Utils.getY(v1),
 				z = (int)Vector3Utils.getZ(v1);
 		for (int i = 0; i < longest; i++, numerator += shortest) {
-			camera.setPixel(x, y, z, color);
+			setPixel(x, y, z, color, camera);
 			if (numerator > longest) {
 				numerator -= longest;
 				x += dx1; y += dy1; z += dz1;
@@ -177,17 +184,34 @@ public class SceneRenderer{
 
 	void drawHLine(int x1, int x2, int y, int z, int color, Camera camera) {
 		for (int i = x1; i < x2; i ++)
-			camera.setPixel(i, y, z, color);
+			setPixel(i, y, z, color, camera);
 	}
 	
-	void drawHLineText(int sx, int ex, int sy, int z, int su, int du, int eu, int sv, int dv, int ev, Image img, Camera camera) {
+	void drawHLineText(int sx, int ex, int sy, int z, int su, int du, int eu, int sv, int dv, int ev, Texture img, Camera camera) {
 		if (ex-sx > 0) {
 			du = (eu-su)/(ex-sx);
 			dv = (ev-sv)/(ex-sx);
 		}
 		for (int i = sx; i < ex; i ++) {
-			camera.setPixel(i, sy, z, img.getPixel(su>>SHIFT, sv>>SHIFT));
+			setPixel(i, sy, z, img.getPixel(Math.abs(su>>SHIFT), Math.abs(sv>>SHIFT)), camera);
 			su += du; sv += dv;
+		}
+	}
+	
+	void setPixel(int x, int y, int z, int color, Camera camera) {
+		int[] camPos = camera.getScreenPosition();
+		int pos = (x + camPos[VX]) + ((y + camPos[VY])*width);
+		if(zBuffer[pos] >= z) {
+			zBuffer[pos] = z;
+			camera.setPixel(x, y, color);
+		}
+	}
+	
+	public void resetZBuffer() {
+		if(zBuffer != null) {
+			for (int i = 0; i < zBuffer.length; i++) {
+				zBuffer[i] = 1000000000;
+			}
 		}
 	}
 	
@@ -242,7 +266,7 @@ public class SceneRenderer{
 		int uv1 = mesh.getUV(polygon[Mesh.UV_1]);
 		int uv2 = mesh.getUV(polygon[Mesh.UV_2]);
 		int uv3 = mesh.getUV(polygon[Mesh.UV_3]);
-		Image img = mesh.getMaterial(0).getTexture();
+		Texture img = mesh.getMaterial(0).getTexture();
 		int color = mesh.getMaterial(polygon[Mesh.MATERIAL_INDEX]).getColor();
 		color = ColorUtils.brighter(color, 3);
 		if(camera.getRenderingType() == RenderingType.wireframe) {
@@ -292,8 +316,8 @@ public class SceneRenderer{
 			pz = Vector3Utils.getZ(vertex) + Vector3Utils.getZ(objectPosition);
 			break;
 		}
-		long x = (px>>1) + camera.getHalfRect()[VX] + Vector3Utils.getX(objectPosition);
-		long y = (py>>1) + camera.getHalfRect()[VY] + Vector3Utils.getY(objectPosition);
+		long x = (px>>2) + camera.getHalfRect()[VX] + Vector3Utils.getX(objectPosition);
+		long y = (py>>2) + camera.getHalfRect()[VY] + Vector3Utils.getY(objectPosition);
 		long z = pz;
 		return Vector3Utils.convert(x, y, z);
 	}
