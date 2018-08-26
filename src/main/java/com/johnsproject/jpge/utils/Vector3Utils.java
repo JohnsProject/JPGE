@@ -38,7 +38,7 @@ public class Vector3Utils {
 	 * @param vector the vector to read from.
 	 * @return vector's x value.
 	 */
-	public static long getX(long vector) {
+	public static short getX(long vector) {
 		return (short)((vector >> XSHIFT) & HEX);
 	}
 	
@@ -48,7 +48,7 @@ public class Vector3Utils {
 	 * @param vector the vector to read from.
 	 * @return vector's y value.
 	 */
-	public static long getY(long vector) {
+	public static short getY(long vector) {
 		return (short)((vector >> YSHIFT) & HEX);
 	}
 	
@@ -58,7 +58,7 @@ public class Vector3Utils {
 	 * @param vector the vector to read from.
 	 * @return vector's z value.
 	 */
-	public static long getZ(long vector) {
+	public static short getZ(long vector) {
 		return (short)((vector) & HEX);
 	}
 	

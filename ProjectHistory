@@ -80,9 +80,12 @@ v0.1 - 24/08/2018
 -Changed vertex from int[] to long packed like rbg int value in java awt
 -Changed uv from int[] to int packed like rbg int value in java awt
 -Changed everything needed to work with the new vertex and uv
-------------------------------------------------------------------------
+26/08/2018
 -Added texture to the Material class
 -Changed Image class pixel storage from BufferedImage to int[]
 -Added default texture adding to SOMImporter
 -Fixed affine texture mapping uv position swapping bug
+--------------------------------------------------------------
+-Changed affine texture mapper to work only with integers!
+-Fixed some affine texture mapping bugs
 

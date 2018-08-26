@@ -47,7 +47,8 @@ public class Testing implements KeyListener {
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
 		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(0, 0, 400), Vector3Utils.convert(180, 0, 0), Vector3Utils.convert(1, 1, 1)), mesh);
 		try {
-			sceneObject.getMesh().getMaterial(0).setTexture(new Image("/home/john/Development/Java/JPGE/src/main/resources/Brick.jpg", 101, 101));
+			//sceneObject.getMesh().getMaterial(0).setTexture(new Image(getClass().getResourceAsStream("/JohnsProjectLogo.png"), 101, 101));
+			sceneObject.getMesh().getMaterial(0).setTexture(new Image("/home/john/Development/Brick.jpg", 101, 101));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
