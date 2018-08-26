@@ -9,22 +9,6 @@ import com.johnsproject.jpge.utils.Vector3Utils;
 public class Testing implements KeyListener {
 	
 	public static void main(String[] args) {
-//		int t = Math.round(((Runtime.getRuntime().totalMemory()/ 1024) / 1024));
-//		int m = Math.round(((Runtime.getRuntime().maxMemory()/ 1024) / 1024));
-//		int m4 = m/4;
-//		if (t < m4) {
-//			try {
-//				 String separator = System.getProperty("file.separator");
-//				    String classpath = System.getProperty("java.class.path");
-//				    String path = System.getProperty("java.home") + separator + "bin" + separator + "java";
-//				    ProcessBuilder processBuilder = 
-//				            new ProcessBuilder(path, "-Xms" + (m4+10) + "m", "-Xmx" + m + "m", "-cp", classpath, Testing.class.getName());
-//				    Process process = processBuilder.start();
-//				    System.exit(0);
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//		}
 		new Testing();
 	}
 	
@@ -47,8 +31,8 @@ public class Testing implements KeyListener {
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
 		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(0, 0, 1000), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(1, 1, 1)), mesh);
 		try {
-			//sceneObject.getMesh().getMaterial(0).setTexture(new Image(getClass().getResourceAsStream("/JohnsProjectLogo.png"), 101, 101));
-			sceneObject.getMesh().getMaterial(0).setTexture(new Texture("/home/john/Development/Brick.jpg", 101, 101));
+			sceneObject.getMesh().getMaterial(0).setTexture(new Texture(getClass().getResourceAsStream("/JohnsProject.png"), 101, 101));
+			//sceneObject.getMesh().getMaterial(0).setTexture(new Texture("/home/john/Development/Brick.jpg", 101, 101));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

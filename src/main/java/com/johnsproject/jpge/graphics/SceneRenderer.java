@@ -54,8 +54,8 @@ public class SceneRenderer{
 	
 	void drawPolygonAffine(long vx1, long vx2, long vx3, int uv1, int uv2, int uv3, Texture img, Camera cam) {
 		int tmp, x0 = Vector3Utils.getX(vx1), y0 = Vector3Utils.getY(vx1), z0 = Vector3Utils.getZ(vx1),
-				x1 = Vector3Utils.getX(vx2), y1 = Vector3Utils.getY(vx2), z1 = Vector3Utils.getZ(vx2),
-				x2 = Vector3Utils.getX(vx3), y2 = Vector3Utils.getY(vx3), z2 = Vector3Utils.getZ(vx3),
+				x1 = Vector3Utils.getX(vx2), y1 = Vector3Utils.getY(vx2),
+				x2 = Vector3Utils.getX(vx3), y2 = Vector3Utils.getY(vx3),
 				u0 = UVUtils.getU(uv1), v0 = UVUtils.getV(uv1),
 				u1 = UVUtils.getU(uv2), v1 = UVUtils.getV(uv2),
 				u2 = UVUtils.getU(uv3), v2 = UVUtils.getV(uv3);
@@ -71,6 +71,7 @@ public class SceneRenderer{
 		   				tmp = x1; x1 = x0; x0 = tmp;
 		   				tmp = v1; v1 = v0; v0 = tmp; 
 		   				tmp = u1; u1 = u0; u0 = tmp;}
+		if (y1 == y0) y1 += 1;
 		int dx1 = 0, dx2 = 0, dx3 = 0;
 		int du1 = 0, du2 = 0, du3 = 0, du = 0;
 		int dv1 = 0, dv2 = 0, dv3 = 0, dv = 0;
@@ -92,60 +93,96 @@ public class SceneRenderer{
 	    int sx = x0<<SHIFT, sv = v0<<SHIFT, su = u0<<SHIFT,
 	    		ex = x0<<SHIFT, eu = u0<<SHIFT, ev = v0<<SHIFT;
 	    int sy = y0;
-	    for (; sy <= y1 - 1; sy++) {
-			drawHLineText(sx>>SHIFT, ex>>SHIFT, sy, z0, su, du, eu, sv, dv, ev, img, cam);
-			sx += dx2; su += du2; sv += dv2;
-			ex += dx1; eu += du1; ev += dv1;
+	    if (dx1 > dx2) {
+		    for (; sy <= y1 - 1; sy++) {
+				drawHLineText(sx>>SHIFT, ex>>SHIFT, sy, z0, su, du, eu, sv, dv, ev, img, cam);
+				sx += dx2; su += du2; sv += dv2;
+				ex += dx1; eu += du1; ev += dv1;
+			}
+			ex = x1<<SHIFT;
+			for (; sy <= y2; sy++) {
+				drawHLineText(sx>>SHIFT, ex>>SHIFT, sy, z0, su, du, eu, sv, dv, ev, img, cam);
+				sx += dx2; su += du2; sv += dv2;
+				ex += dx3; eu += du3; ev += dv3;
+			}
+	    }else{
+			for (; sy <= y1 - 1; sy++) {
+	    		drawHLineText(sx>>SHIFT, ex>>SHIFT, sy, z0, su, du, eu, sv, dv, ev, img, cam);
+				sx += dx1; su += du1; sv += dv1;
+				ex += dx2; eu += du2; ev += dv2;
+			}
+			sx = x1<<SHIFT;
+			for (; sy <= y2; sy++) {
+				drawHLineText(sx>>SHIFT, ex>>SHIFT, sy, z0, su, du, eu, sv, dv, ev, img, cam);
+				sx += dx3; su += du3; sv += dv3;
+				ex += dx2; eu += du2; ev += dv2;
+			}
+	    }
+//	    cam.getScreenGraphics().drawString("0 Vertex (" + x0 + ", " + y0 + ")", x0, y0);
+//	    cam.getScreenGraphics().drawString("1 Vertex (" + x1 + ", " + y1 + ")", x1, y1+20);
+//	    cam.getScreenGraphics().drawString("2 Vertex (" + x2 + ", " + y2 + ")", x2, y2+40);
+	}
+	
+	void drawHLineText(int sx, int ex, int sy, int z, int su, int du, int eu, int sv, int dv, int ev, Texture img, Camera camera) {
+		du = Math.abs(du); sv = Math.abs(sv);
+		if (ex-sx > 0) {
+			du = (eu-su)/(ex-sx);
+			dv = (ev-sv)/(ex-sx);
 		}
-		ex = x1<<SHIFT;
-		for (; sy <= y2; sy++) {
-			drawHLineText(sx>>SHIFT, ex>>SHIFT, sy, z0, su, du, eu, sv, dv, ev, img, cam);
-			sx += dx2; su += du2; sv += dv2;
-			ex += dx3; eu += du3; ev += dv3;
-		}
-		sx = x0<<SHIFT; sv = v0<<SHIFT; su = u0<<SHIFT; sy = y0;
-	    ex = x0<<SHIFT; eu = u0<<SHIFT; ev = v0<<SHIFT;
-		for (; sy <= y1 - 1; sy++) {
-    		drawHLineText(sx>>SHIFT, ex>>SHIFT, sy, z0, su, du, eu, sv, dv, ev, img, cam);
-			sx += dx1; su += du1; sv += dv1;
-			ex += dx2; eu += du2; ev += dv2;
-		}
-		sx = x1<<SHIFT;
-		for (; sy <= y2; sy++) {
-			drawHLineText(sx>>SHIFT, ex>>SHIFT, sy, z0, su, du, eu, sv, dv, ev, img, cam);
-			sx += dx3; su += du3; sv += dv3;
-			ex += dx2; eu += du2; ev += dv2;
-		}
+		for (int i = sx; i < ex; i++, su += du, sv += dv)
+			setPixel(i, sy, z, img.getPixel(su>>SHIFT, sv>>SHIFT), camera);
 	}
 	
 	void drawPolygon(long vx1, long vx2, long vx3, int c, Camera cam) {
 		int tmp, x0 = Vector3Utils.getX(vx1), y0 = Vector3Utils.getY(vx1), z0 = Vector3Utils.getZ(vx1),
-				x1 = Vector3Utils.getX(vx2), y1 = Vector3Utils.getY(vx2),
-				x2 = Vector3Utils.getX(vx3), y2 = Vector3Utils.getY(vx3);
+				x1 = Vector3Utils.getX(vx2), y1 = Vector3Utils.getY(vx2), z1 = Vector3Utils.getZ(vx2),
+				x2 = Vector3Utils.getX(vx3), y2 = Vector3Utils.getY(vx3), z2 = Vector3Utils.getZ(vx3);
 		if (y0 > y1) { tmp = y1; y1 = y0; y0 = tmp; 
-		   				tmp = x1; x1 = x0; x0 = tmp; }
+		   				tmp = x1; x1 = x0; x0 = tmp;
+		   				tmp = z1; z1 = z0; z0 = tmp;}
 		if (y1 > y2) { tmp = y2; y2 = y1; y1 = tmp; 
-		   				tmp = x2; x2 = x1; x1 = tmp;}
+		   				tmp = x2; x2 = x1; x1 = tmp;
+		   				tmp = z2; z2 = z1; z1 = tmp;}
 		if (y0 > y1) { tmp = y1; y1 = y0; y0 = tmp; 
-		   				tmp = x1; x1 = x0; x0 = tmp; }
+		   				tmp = x1; x1 = x0; x0 = tmp;
+		   				tmp = z1; z1 = z0; z0 = tmp;}
+		if (y1 == y0) y1 += 1;
 		int dx1 = 0, dx2 = 0, dx3 = 0;
+		int dz1 = 0, dz2 = 0, dz3 = 0;
 		int y1y0 = y1-y0, y2y0 = y2-y0, y2y1 = y2-y1;
-	    if (y1y0 > 0) dx1=(((x1-x0)<<SHIFT)/(y1y0)); else dx1=0;
-	    if (y2y0 > 0) dx2=(((x2-x0)<<SHIFT)/(y2y0)); else dx2=0;
-	    if (y2y1 > 0) dx3=(((x2-x1)<<SHIFT)/(y2y1)); else dx3=0;
-	    int x_left = x0<<SHIFT, x_right = x0<<SHIFT;
+	    if (y1y0 > 0) {
+	    	dx1=(((x1-x0)<<SHIFT)/(y1y0));
+	    	dz1=(((z1-z0)<<SHIFT)/(y1y0));
+	    } else dx1=0;
+	    if (y2y0 > 0) { 
+	    	dx2=(((x2-x0)<<SHIFT)/(y2y0));
+	    	dz1=(((z2-z0)<<SHIFT)/(y2y0));
+	    }else dx2=0;
+	    if (y2y1 > 0) {
+	    	dx3=(((x2-x1)<<SHIFT)/(y2y1));
+	    	dz3=(((z2-z1)<<SHIFT)/(y2y1));
+	    } else dx3=0;
+	    int sx = x0<<SHIFT, ex = x0<<SHIFT;
+	    int sz = z0<<SHIFT, ez = z0<<SHIFT;
 	    int sy = y0;
-	    for (; sy <= y1 - 1; sy++, x_left += dx2, x_right += dx1)
-			drawHLine(x_left >> SHIFT, x_right >> SHIFT, sy, z0, c, cam);
-		x_right = x1 << SHIFT;
-		for (; sy <= y2; sy++, x_left += dx2, x_right += dx3)
-			drawHLine(x_left >> SHIFT, x_right >> SHIFT, sy, z0, c, cam);
-		x_left = x0<<SHIFT; x_right = x0<<SHIFT; sy = y0;
-    	for (; sy <= y1 - 1; sy++, x_left += dx1, x_right += dx2)
-			drawHLine(x_left >> SHIFT, x_right >> SHIFT, sy, z0, c, cam);
-    	x_left = x1 << SHIFT;
-		for (; sy <= y2; sy++, x_left += dx3, x_right += dx2)
-			drawHLine(x_left >> SHIFT, x_right >> SHIFT, sy, z0, c, cam);
+	    if (dx1 > dx2) {
+		    for (; sy <= y1; sy++, sx += dx2, ex += dx1)
+				drawHLine(sx >> SHIFT, ex >> SHIFT, sy, z0, c, cam);
+			ex = x1 << SHIFT;
+			for (; sy <= y2; sy++, sx += dx2, ex += dx3)
+				drawHLine(sx >> SHIFT, ex >> SHIFT, sy, z0, c, cam);
+	    }else {
+	    	for (; sy <= y1; sy++, sx += dx1, ex += dx2)
+				drawHLine(sx >> SHIFT, ex >> SHIFT, sy, z0, c, cam);
+	    	sx = x1 << SHIFT;
+			for (; sy <= y2; sy++, sx += dx3, ex += dx2)
+				drawHLine(sx >> SHIFT, ex >> SHIFT, sy, z0, c, cam);
+	    }
+	}
+	
+	void drawHLine(int x1, int x2, int y, int z, int color, Camera camera) {
+		for (int i = x1; i < x2; i ++)
+			setPixel(i, y, z, color, camera);
 	}
 	
 	void drawLine(long v1, long v2, int color, Camera camera) {
@@ -179,22 +216,6 @@ public class SceneRenderer{
 			} else {
 				x += dx2; y += dy2; z += dz2;
 			}
-		}
-	}
-
-	void drawHLine(int x1, int x2, int y, int z, int color, Camera camera) {
-		for (int i = x1; i < x2; i ++)
-			setPixel(i, y, z, color, camera);
-	}
-	
-	void drawHLineText(int sx, int ex, int sy, int z, int su, int du, int eu, int sv, int dv, int ev, Texture img, Camera camera) {
-		if (ex-sx > 0) {
-			du = (eu-su)/(ex-sx);
-			dv = (ev-sv)/(ex-sx);
-		}
-		for (int i = sx; i < ex; i ++) {
-			setPixel(i, sy, z, img.getPixel(Math.abs(su>>SHIFT), Math.abs(sv>>SHIFT)), camera);
-			su += du; sv += dv;
 		}
 	}
 	
