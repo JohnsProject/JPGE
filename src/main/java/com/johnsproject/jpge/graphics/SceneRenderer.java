@@ -52,7 +52,7 @@ public class SceneRenderer{
 		}
 	}
 	
-	void drawPolygonAffine(long vx1, long vx2, long vx3, int uv1, int uv2, int uv3, Texture img, Camera cam) {
+	void drawPolygonPerspective(long vx1, long vx2, long vx3, int uv1, int uv2, int uv3, Texture img, Camera cam) {
 		int tmp, x0 = Vector3Utils.getX(vx1), y0 = Vector3Utils.getY(vx1), z0 = Vector3Utils.getZ(vx1),
 				x1 = Vector3Utils.getX(vx2), y1 = Vector3Utils.getY(vx2), z1 = Vector3Utils.getZ(vx2),
 				x2 = Vector3Utils.getX(vx3), y2 = Vector3Utils.getY(vx3), z2 = Vector3Utils.getZ(vx3),
@@ -74,12 +74,13 @@ public class SceneRenderer{
 		int w = img.getWidth()-1, h = img.getHeight()-1;
 		u0 = (u0*w)/100; u1 = (u1*w)/100; u2 = (u2*w)/100;
 		v0 = (v0*h)/100; v1 = (v1*h)/100; v2 = (v2*h)/100;
-//		System.out.println("u0 " + u0 + ", u1 " + u1 + ", u2 " + u2);
-//		System.out.println("v0 " + v0 + ", v1 " + v1 + ", v2 " + v2);
+		u0 /= z0; v0 /= z0;
+		u1 /= z1; v1 /= z1;
+		u2 /= z2; v2 /= z2;
 		if (y1 == y0) y1 += 1;
 		int z = z0;
-	    if (z1 > z && z1 > z2) z = z1;
-	    if (z2 > z && z2 > z1) z = z2;
+		if (z0 > z1) z = z1;
+	    if (z1 > z2) z = z2;
 		int dx1 = 0, dx2 = 0, dx3 = 0;
 		int du1 = 0, du2 = 0, du3 = 0, du = 0;
 		int dv1 = 0, dv2 = 0, dv3 = 0, dv = 0;
@@ -103,25 +104,112 @@ public class SceneRenderer{
 	    int sy = y0;
 	    if (dx1 > dx2) {
 		    for (; sy <= y1 - 1; sy++) {
-				drawHLineText(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
+		    	drawHLinePerspective(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
 				sx += dx2; su += du2; sv += dv2;
 				ex += dx1; eu += du1; ev += dv1;
 			}
 			ex = x1<<SHIFT;
 			for (; sy <= y2; sy++) {
-				drawHLineText(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
+				drawHLinePerspective(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
 				sx += dx2; su += du2; sv += dv2;
 				ex += dx3; eu += du3; ev += dv3;
 			}
 	    }else{
 			for (; sy <= y1 - 1; sy++) {
-	    		drawHLineText(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
+				drawHLinePerspective(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
 				sx += dx1; su += du1; sv += dv1;
 				ex += dx2; eu += du2; ev += dv2;
 			}
 			sx = x1<<SHIFT;
 			for (; sy <= y2; sy++) {
-				drawHLineText(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
+				drawHLinePerspective(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
+				sx += dx3; su += du3; sv += dv3;
+				ex += dx2; eu += du2; ev += dv2;
+			}
+	    }
+//	    cam.getScreenGraphics().drawString("0 Vertex (" + x0 + ", " + y0 + ")", x0, y0);
+//	    cam.getScreenGraphics().drawString("1 Vertex (" + x1 + ", " + y1 + ")", x1, y1+20);
+//	    cam.getScreenGraphics().drawString("2 Vertex (" + x2 + ", " + y2 + ")", x2, y2+40);
+	}
+		
+	void drawHLinePerspective(int sx, int ex, int sy, int z, int su, int du, int eu, int sv, int dv, int ev, Texture img, Camera camera) {
+		du = Math.abs(du); sv = Math.abs(sv);
+		if (ex-sx > 0) {
+			du = (eu-su)/(ex-sx);
+			dv = (ev-sv)/(ex-sx);
+		}
+		for (int i = sx; i < ex; i++, su += du, sv += dv)
+			setPixel(i, sy, z, img.getPixel(su>>SHIFT, sv>>SHIFT), camera);
+	}
+	
+	void drawPolygonAffine(long vx1, long vx2, long vx3, int uv1, int uv2, int uv3, Texture img, Camera cam) {
+		int tmp, x0 = Vector3Utils.getX(vx1), y0 = Vector3Utils.getY(vx1), z0 = Vector3Utils.getZ(vx1),
+				x1 = Vector3Utils.getX(vx2), y1 = Vector3Utils.getY(vx2), z1 = Vector3Utils.getZ(vx2),
+				x2 = Vector3Utils.getX(vx3), y2 = Vector3Utils.getY(vx3), z2 = Vector3Utils.getZ(vx3),
+				u0 = UVUtils.getU(uv1), v0 = UVUtils.getV(uv1),
+				u1 = UVUtils.getU(uv2), v1 = UVUtils.getV(uv2),
+				u2 = UVUtils.getU(uv3), v2 = UVUtils.getV(uv3);
+		if (y0 > y1) { tmp = y1; y1 = y0; y0 = tmp; 
+		   				tmp = x1; x1 = x0; x0 = tmp;
+		   				tmp = v1; v1 = v0; v0 = tmp; 
+		   				tmp = u1; u1 = u0; u0 = tmp;}
+		if (y1 > y2) { tmp = y2; y2 = y1; y1 = tmp; 
+		   				tmp = x2; x2 = x1; x1 = tmp;
+		   				tmp = v2; v2 = v1; v1 = tmp; 
+		   				tmp = u2; u2 = u1; u1 = tmp;}
+		if (y0 > y1) { tmp = y1; y1 = y0; y0 = tmp; 
+		   				tmp = x1; x1 = x0; x0 = tmp;
+		   				tmp = v1; v1 = v0; v0 = tmp; 
+		   				tmp = u1; u1 = u0; u0 = tmp;}
+		int w = img.getWidth()-1, h = img.getHeight()-1;
+		u0 = (u0*w)/100; u1 = (u1*w)/100; u2 = (u2*w)/100;
+		v0 = (v0*h)/100; v1 = (v1*h)/100; v2 = (v2*h)/100;
+		if (y1 == y0) y1 += 1;
+		int z = z0;
+		if (z0 > z1) z = z1;
+	    if (z1 > z2) z = z2;
+		int dx1 = 0, dx2 = 0, dx3 = 0;
+		int du1 = 0, du2 = 0, du3 = 0, du = 0;
+		int dv1 = 0, dv2 = 0, dv3 = 0, dv = 0;
+	    if (y1-y0 > 0) {
+	    	dx1=(((x1-x0)<<SHIFT)/(y1-y0));
+	    	du1=(((u1-u0)<<SHIFT)/(y1-y0));
+	    	dv1=(((v1-v0)<<SHIFT)/(y1-y0));
+	    } else dx1=du1=dv1=0;
+	    if (y2-y0 > 0) {
+	    	dx2=(((x2-x0)<<SHIFT)/(y2-y0));
+	    	du2=(((u2-u0)<<SHIFT)/(y2-y0));
+	    	dv2=(((v2-v0)<<SHIFT)/(y2-y0));
+	    } else dx2=du2=dv2=0;
+	    if (y2-y1 > 0) {
+	    	dx3=(((x2-x1)<<SHIFT)/(y2-y1));
+	    	du3=(((u2-u1)<<SHIFT)/(y2-y1));
+	    	dv3=(((v2-v1)<<SHIFT)/(y2-y1));
+	    } else dx3=du3=dv3=0;
+	    int sx = x0<<SHIFT, sv = v0<<SHIFT, su = u0<<SHIFT,
+	    		ex = x0<<SHIFT, eu = u0<<SHIFT, ev = v0<<SHIFT;
+	    int sy = y0;
+	    if (dx1 > dx2) {
+		    for (; sy <= y1 - 1; sy++) {
+		    	drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
+				sx += dx2; su += du2; sv += dv2;
+				ex += dx1; eu += du1; ev += dv1;
+			}
+			ex = x1<<SHIFT;
+			for (; sy <= y2; sy++) {
+				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
+				sx += dx2; su += du2; sv += dv2;
+				ex += dx3; eu += du3; ev += dv3;
+			}
+	    }else{
+			for (; sy <= y1 - 1; sy++) {
+				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
+				sx += dx1; su += du1; sv += dv1;
+				ex += dx2; eu += du2; ev += dv2;
+			}
+			sx = x1<<SHIFT;
+			for (; sy <= y2; sy++) {
+				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
 				sx += dx3; su += du3; sv += dv3;
 				ex += dx2; eu += du2; ev += dv2;
 			}
@@ -131,14 +219,15 @@ public class SceneRenderer{
 //	    cam.getScreenGraphics().drawString("2 Vertex (" + x2 + ", " + y2 + ")", x2, y2+40);
 	}
 	
-	void drawHLineText(int sx, int ex, int sy, int z, int su, int du, int eu, int sv, int dv, int ev, Texture img, Camera camera) {
+	void drawHLineAffine(int sx, int ex, int sy, int z, int su, int du, int eu, int sv, int dv, int ev, Texture img, Camera camera) {
 		du = Math.abs(du); sv = Math.abs(sv);
 		if (ex-sx > 0) {
 			du = (eu-su)/(ex-sx);
 			dv = (ev-sv)/(ex-sx);
 		}
 		for (int i = sx; i < ex; i++, su += du, sv += dv)
-			setPixel(i, sy, z, img.getPixel(su>>SHIFT, sv>>SHIFT), camera);
+			if((i > 0 && sy > 0) && (i < width && sy < height))
+				setPixel(i, sy, z, img.getPixel(su>>SHIFT, sv>>SHIFT), camera);
 	}
 	
 	void drawPolygon(long vx1, long vx2, long vx3, int c, Camera cam) {
@@ -156,8 +245,8 @@ public class SceneRenderer{
 		   				tmp = z1; z1 = z0; z0 = tmp;}
 		if (y1 == y0) y1 += 1;
 		int z = z0;
-	    if (z1 > z && z1 > z2) z = z1;
-	    if (z2 > z && z2 > z1) z = z2;
+	    if (z0 > z1) z = z1;
+	    if (z1 > z2) z = z2;
 		int dx1 = 0, dx2 = 0, dx3 = 0;
 		int y1y0 = y1-y0, y2y0 = y2-y0, y2y1 = y2-y1;
 	    if (y1y0 > 0) {
@@ -226,15 +315,15 @@ public class SceneRenderer{
 	}
 	
 	void setPixel(int x, int y, int z, int color, Camera camera) {
-		if((x > 0 && y > 0) && (x < width && y < height)) {
+		//if((x > 0 && y > 0) && (x < width && y < height)) {
 			int[] camPos = camera.getScreenPosition();
 			int pos = (x + camPos[VX]) + ((y + camPos[VY])*width);
-			int pz = camera.getNearClippingPlane()-(z*z);
+			int pz = camera.getNearClippingPlane()-z;
 			if(zBuffer[pos] < pz) {
 				zBuffer[pos] = pz;
 				camera.setPixel(x, y, color);
 			}
-		}
+		//}
 	}
 	
 	public void resetZBuffer() {
@@ -307,6 +396,7 @@ public class SceneRenderer{
 		}
 		if(camera.getRenderingType() == RenderingType.textured) {
 			drawPolygonAffine(v1, v2, v3, uv1, uv2, uv3, img, camera);
+			//drawPolygonPerspective(v1, v2, v3, uv1, uv2, uv3, img, camera);
 		}
 	}
 

@@ -15,7 +15,7 @@ public class Camera extends Canvas{
 	private int[] screenPosition;
 	private int[] rect, halfRect = new int[2];
 	private int FieldOfView = 90;
-	private int nearClippingPlane = 50;
+	private int nearClippingPlane = 200;
 	private int farClippingPlane = 9000;
 	private int radio;
 	private int rescaleFactor;

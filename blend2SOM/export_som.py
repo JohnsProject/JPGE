@@ -1,38 +1,3 @@
-# ##### BEGIN GPL LICENSE BLOCK #####
-#
-#  This program is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU General Public License
-#  as published by the Free Software Foundation; either version 2
-#  of the License, or (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program; if not, write to the Free Software Foundation,
-#  Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
-#
-# ##### END GPL LICENSE BLOCK #####
-
-# <pep8-80 compliant>
-
-"""
-This script exports a Mesh to a RAW triangle format file.
-
-The raw triangle format is very simple; it has no verts or faces lists.
-It's just a simple ascii text file with the vertices of each triangle
-listed on each line. In addition, also quads can be exported as a line
-of 12 values (this was the default before blender 2.5). Now default
-settings will triangulate the mesh.
-
-Usage:
-Execute this script from the "File->Export" menu. You can select
-whether modifiers should be applied and if the mesh is triangulated.
-
-"""
-
 import bpy
 import math
 import bmesh
