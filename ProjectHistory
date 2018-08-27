@@ -90,4 +90,7 @@ v0.1 - 24/08/2018
 -Moved zBuffer from Camera to SceneRenderer
 -Changed Image class name to Texture
 -Fixed affine texture mapping texture deformation bug!!
+27/08/2018
+-Optimized zbuffer
+-Added affine texture mapper texture to uv size interpolation
 

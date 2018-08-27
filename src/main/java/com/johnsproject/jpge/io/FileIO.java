@@ -73,11 +73,14 @@ public class FileIO {
 	 * @throws IOException
 	 */
 	public static BufferedImage loadImage(String path) throws IOException {
-		BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
+		BufferedImage image = null;
 		FileInputStream fileInputStream = null;
 		try {
 			fileInputStream = new FileInputStream(path);
-			image = ImageIO.read(fileInputStream);
+			BufferedImage tmp = ImageIO.read(fileInputStream);
+			image = new BufferedImage(tmp.getWidth(), tmp.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
+			image.getGraphics().drawImage(tmp, 0, 0, null);
+			image.getGraphics().dispose();
 		} finally {
 			if (fileInputStream != null) {
 				fileInputStream.close();
@@ -95,9 +98,12 @@ public class FileIO {
 	 * @throws IOException
 	 */
 	public static BufferedImage loadImage(InputStream stream) throws IOException {
-		BufferedImage image = new BufferedImage(1, 1, BufferedImage.TYPE_INT_ARGB_PRE);
+		BufferedImage image = null;
 		try {
-			image = ImageIO.read(stream);
+			BufferedImage tmp = ImageIO.read(stream);
+			image = new BufferedImage(tmp.getWidth(), tmp.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
+			image.getGraphics().drawImage(tmp, 0, 0, null);
+			image.getGraphics().dispose();
 		} finally {}
 		image.flush();
 		return image;
@@ -114,7 +120,7 @@ public class FileIO {
 	 * @throws IOException
 	 */
 	public static BufferedImage loadImage(String path, int width, int height) throws IOException {
-		BufferedImage image = new BufferedImage(1, 1, 1);
+		BufferedImage image = null;
 		FileInputStream fileInputStream = null;
 		try {
 			fileInputStream = new FileInputStream(path);

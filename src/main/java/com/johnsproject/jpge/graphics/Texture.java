@@ -48,9 +48,7 @@ public class Texture {
 	}
 	
 	public void setPixel(int x, int y, int color){
-		if((x > 0 && y > 0) && (x < width && y < height)) {
-			image[x + (y*width)] = color;
-		}
+		image[x + (y*width)] = color;
 	}
 	
 	public int getPixel(int x, int y){
