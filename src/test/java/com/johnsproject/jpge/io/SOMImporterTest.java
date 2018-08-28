@@ -6,7 +6,7 @@ import com.johnsproject.jpge.graphics.Animation;
 import com.johnsproject.jpge.graphics.Material;
 import com.johnsproject.jpge.graphics.Mesh;
 import com.johnsproject.jpge.utils.ColorUtils;
-import com.johnsproject.jpge.utils.UVUtils;
+import com.johnsproject.jpge.utils.Vector2Utils;
 import com.johnsproject.jpge.utils.Vector3Utils;
 import com.johnsproject.jpge.utils.VertexUtils;
 
@@ -82,8 +82,8 @@ public class SOMImporterTest {
 		String[] rawUVsData = rawData.split("UVs<")[1].split(">UVs", 2)[0].split(",");
 		int[] uvs = SOMImporter.parseUVs(rawUVsData);
 		assert(uvs.length == rawUVsData.length/(Mesh.UV_LENGTH));
-		assert(UVUtils.getU(uvs[1]) == 0);
-		assert(UVUtils.getV(uvs[1]) == 100);
+		assert(Vector2Utils.getX(uvs[1]) == 0);
+		assert(Vector2Utils.getY(uvs[1]) == 100);
 	}
 	
 	@Test

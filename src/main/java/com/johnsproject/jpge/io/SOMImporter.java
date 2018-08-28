@@ -11,7 +11,7 @@ import com.johnsproject.jpge.graphics.Transform;
 import com.johnsproject.jpge.graphics.Animation;
 import com.johnsproject.jpge.graphics.Texture;
 import com.johnsproject.jpge.utils.ColorUtils;
-import com.johnsproject.jpge.utils.UVUtils;
+import com.johnsproject.jpge.utils.Vector2Utils;
 import com.johnsproject.jpge.utils.Vector3Utils;
 import com.johnsproject.jpge.utils.VertexUtils;
 
@@ -160,7 +160,7 @@ public class SOMImporter {
 			for (int i = 0; i < rawUVsData.length; i+= step) {
 				int u = toInt(rawUVsData[i + vx]);
 				int v = toInt(rawUVsData[i + vy]);
-				uvs[i/step] = UVUtils.convert(u, v);
+				uvs[i/step] = Vector2Utils.convert(u, v);
 			}
 		}else {
 			uvs = new int[1];

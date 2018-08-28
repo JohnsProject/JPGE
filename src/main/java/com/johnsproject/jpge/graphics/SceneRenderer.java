@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 import java.util.List;
 
 import com.johnsproject.jpge.utils.ColorUtils;
-import com.johnsproject.jpge.utils.UVUtils;
+import com.johnsproject.jpge.utils.Vector2Utils;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
 import com.johnsproject.jpge.utils.Vector3Utils;
 import com.johnsproject.jpge.utils.VertexUtils;
@@ -56,9 +56,9 @@ public class SceneRenderer{
 		int tmp, x0 = Vector3Utils.getX(vx1), y0 = Vector3Utils.getY(vx1), z0 = Vector3Utils.getZ(vx1),
 				x1 = Vector3Utils.getX(vx2), y1 = Vector3Utils.getY(vx2), z1 = Vector3Utils.getZ(vx2),
 				x2 = Vector3Utils.getX(vx3), y2 = Vector3Utils.getY(vx3), z2 = Vector3Utils.getZ(vx3),
-				u0 = UVUtils.getU(uv1), v0 = UVUtils.getV(uv1),
-				u1 = UVUtils.getU(uv2), v1 = UVUtils.getV(uv2),
-				u2 = UVUtils.getU(uv3), v2 = UVUtils.getV(uv3);
+				u0 = Vector2Utils.getX(uv1), v0 = Vector2Utils.getY(uv1),
+				u1 = Vector2Utils.getX(uv2), v1 = Vector2Utils.getY(uv2),
+				u2 = Vector2Utils.getX(uv3), v2 = Vector2Utils.getY(uv3);
 		if (y0 > y1) { tmp = y1; y1 = y0; y0 = tmp; 
 		   				tmp = x1; x1 = x0; x0 = tmp;
 		   				tmp = v1; v1 = v0; v0 = tmp; 
@@ -139,16 +139,17 @@ public class SceneRenderer{
 			dv = (ev-sv)/(ex-sx);
 		}
 		for (int i = sx; i < ex; i++, su += du, sv += dv)
-			setPixel(i, sy, z, img.getPixel(su>>SHIFT, sv>>SHIFT), camera);
+			if((i > 0 && sy > 0) && (i < width && sy < height))
+				setPixel(i, sy, z, img.getPixel(su>>SHIFT, sv>>SHIFT), camera);
 	}
 	
 	void drawPolygonAffine(long vx1, long vx2, long vx3, int uv1, int uv2, int uv3, Texture img, Camera cam) {
 		int tmp, x0 = Vector3Utils.getX(vx1), y0 = Vector3Utils.getY(vx1), z0 = Vector3Utils.getZ(vx1),
 				x1 = Vector3Utils.getX(vx2), y1 = Vector3Utils.getY(vx2), z1 = Vector3Utils.getZ(vx2),
 				x2 = Vector3Utils.getX(vx3), y2 = Vector3Utils.getY(vx3), z2 = Vector3Utils.getZ(vx3),
-				u0 = UVUtils.getU(uv1), v0 = UVUtils.getV(uv1),
-				u1 = UVUtils.getU(uv2), v1 = UVUtils.getV(uv2),
-				u2 = UVUtils.getU(uv3), v2 = UVUtils.getV(uv3);
+				u0 = Vector2Utils.getX(uv1), v0 = Vector2Utils.getY(uv1),
+				u1 = Vector2Utils.getX(uv2), v1 = Vector2Utils.getY(uv2),
+				u2 = Vector2Utils.getX(uv3), v2 = Vector2Utils.getY(uv3);
 		if (y0 > y1) { tmp = y1; y1 = y0; y0 = tmp; 
 		   				tmp = x1; x1 = x0; x0 = tmp;
 		   				tmp = v1; v1 = v0; v0 = tmp; 
@@ -277,7 +278,8 @@ public class SceneRenderer{
 	
 	void drawHLine(int sx, int ex, int sy, int z, int color, Camera camera) {
 		for (int i = sx; i < ex; i ++)
-			setPixel(i, sy, z, color, camera);
+			if((i > 0 && sy > 0) && (i < width && sy < height))
+				setPixel(i, sy, z, color, camera);
 	}
 	
 	void drawLine(long v1, long v2, int color, Camera camera) {
@@ -414,14 +416,14 @@ public class SceneRenderer{
 
 	long projectVertex(long vertex, long objectPosition, Camera camera) {
 		long px = 0, py = 0, pz = 0;
+		int fov = camera.getFieldOfView(), rescalef = camera.getRescaleFactor();
+		long camRot = camera.getTransform().getRotation(),
+				camPos = camera.getTransform().getPosition();
+		long pos = Vector3Utils.add(vertex, objectPosition);
+		pos = Vector3Utils.subtract(pos, camPos);
+		pos = Vector3MathUtils.movePointByAnglesXYZ(pos, camRot);
 		switch (camera.getProjectionType()) {
 		case perspective: // this projectionType uses depth
-			long camRot = camera.getTransform().getRotation(),
-			camPos = camera.getTransform().getPosition();
-			long pos = Vector3Utils.add(vertex, objectPosition);
-			pos = Vector3Utils.subtract(pos, camPos);
-			pos = Vector3MathUtils.movePointByAnglesXYZ(pos, camRot);
-			int fov = camera.getFieldOfView(), rescalef = camera.getRescaleFactor();
 			long z = (Vector3Utils.getZ(pos) + fov);
 			if (z <= 0) z = 1;
 			px = ((Vector3Utils.getX(pos)) * rescalef * fov) / z;
@@ -429,13 +431,13 @@ public class SceneRenderer{
 			pz = z + (Vector3Utils.getZ(pos)<<1);
 			break;
 		case orthographic: // this projectionType ignores depth
-			px = ((Vector3Utils.getX(vertex) * camera.getRescaleFactor()) >> 7);
-			py = ((Vector3Utils.getY(vertex) * camera.getRescaleFactor()) >> 7);
-			pz = Vector3Utils.getZ(vertex) + Vector3Utils.getZ(objectPosition);
+			px = (Vector3Utils.getX(pos) * rescalef)>>5;
+			py = (Vector3Utils.getY(pos) * rescalef)>>5;
+			pz = Vector3Utils.getZ(pos) + Vector3Utils.getZ(objectPosition);
 			break;
 		}
-		long x = (px>>2) + camera.getHalfRect()[VX] + Vector3Utils.getX(objectPosition);
-		long y = (py>>2) + camera.getHalfRect()[VY] + Vector3Utils.getY(objectPosition);
+		long x = (px) + camera.getHalfRect()[VX] + Vector3Utils.getX(objectPosition);
+		long y = (py) + camera.getHalfRect()[VY] + Vector3Utils.getY(objectPosition);
 		long z = pz;
 		return Vector3Utils.convert(x, y, z);
 	}

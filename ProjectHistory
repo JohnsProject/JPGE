@@ -94,4 +94,10 @@ v0.1 - 24/08/2018
 -Optimized zbuffer
 -Added affine texture mapper texture to uv size interpolation
 -Fixed zbuffer bug
+28/08/2018
+-Renamed UVUtils to Vector2Utils
+-Added MouseInputManager class (handles mouse events)
+-Added MouseListener interface (sends mouse events)
+-Added MouseEvent class (contains event data)
+-Optimized KeyInputManager
 

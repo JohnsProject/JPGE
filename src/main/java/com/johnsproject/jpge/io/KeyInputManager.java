@@ -2,6 +2,7 @@ package com.johnsproject.jpge.io;
 
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,11 +20,6 @@ public class KeyInputManager implements UpdateListener {
 
 	private static KeyInputManager instance;
 
-	private List<KeyListener> keyListeners = new ArrayList<KeyListener>();
-	private Map<Integer, Character> pressedKeys = new HashMap<Integer, Character>();
-
-	Semaphore semaphore = new Semaphore(1);
-
 	public static KeyInputManager getInstance() {
 		if (instance == null) {
 			instance = new KeyInputManager();
@@ -31,15 +27,22 @@ public class KeyInputManager implements UpdateListener {
 		return instance;
 	}
 
+	JPGEKeyEvent keyEvent = new JPGEKeyEvent(' ', 0);
+	
+	private List<JPGEKeyListener> keyListeners = new ArrayList<JPGEKeyListener>();
+	private Map<Integer, Character> pressedKeys = new HashMap<Integer, Character>();
+
+	Semaphore semaphore = new Semaphore(1);
+	
 	public KeyInputManager() {
 		EventDispatcher.getInstance().addUpdateListener(this);
 		GameManager.getInstance();
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 
 			@Override
-			public boolean dispatchKeyEvent(java.awt.event.KeyEvent e) {
+			public boolean dispatchKeyEvent(KeyEvent e) {
 				switch (e.getID()) {
-				case java.awt.event.KeyEvent.KEY_PRESSED:
+				case KeyEvent.KEY_PRESSED:
 					if (getSemaphore()) {
 						if (!pressedKeys.containsKey(e.getKeyCode())) {
 							pressedKeys.put(e.getKeyCode(), e.getKeyChar());
@@ -48,9 +51,10 @@ public class KeyInputManager implements UpdateListener {
 					}
 					break;
 
-				case java.awt.event.KeyEvent.KEY_RELEASED:
-					for (KeyListener keyListener : keyListeners) {
-						KeyEvent keyEvent = new KeyEvent(e.getKeyChar(), e.getKeyCode());
+				case KeyEvent.KEY_RELEASED:
+					for (JPGEKeyListener keyListener : keyListeners) {
+						keyEvent.setKey(e.getKeyChar());
+						keyEvent.setKeyCode(e.getKeyCode());
 						keyListener.keyReleased(keyEvent);
 					}
 					if (getSemaphore()) {
@@ -66,12 +70,12 @@ public class KeyInputManager implements UpdateListener {
 
 	@Override
 	public void update(UpdateEvent event) {
-		// TODO Auto-generated method stub
 		if (event.getUpdateType() == UpdateType.input) {
 			if (getSemaphore()) {
-				for (KeyListener keyListener : keyListeners) {
-					for (int key : pressedKeys.keySet()) {
-						KeyEvent keyEvent = new KeyEvent(pressedKeys.get(key).charValue(), key);
+				for (int key : pressedKeys.keySet()) {
+					for (JPGEKeyListener keyListener : keyListeners) {
+						keyEvent.setKey(pressedKeys.get(key).charValue());
+						keyEvent.setKeyCode(key);
 						keyListener.keyPressed(keyEvent);
 					}
 				}
@@ -80,7 +84,7 @@ public class KeyInputManager implements UpdateListener {
 		}
 	}
 
-	public void addKeyListener(KeyListener listener) {
+	public void addKeyListener(JPGEKeyListener listener) {
 		if (getSemaphore()) {
 			keyListeners.add(listener);
 			semaphore.release();
@@ -101,42 +105,5 @@ public class KeyInputManager implements UpdateListener {
 	public String toString() {
 		return "KeyInputManager [keyListeners=" + keyListeners + ", pressedKeys=" + pressedKeys + ", semaphore="
 				+ semaphore + "]";
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((keyListeners == null) ? 0 : keyListeners.hashCode());
-		result = prime * result + ((pressedKeys == null) ? 0 : pressedKeys.hashCode());
-		result = prime * result + ((semaphore == null) ? 0 : semaphore.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		KeyInputManager other = (KeyInputManager) obj;
-		if (keyListeners == null) {
-			if (other.keyListeners != null)
-				return false;
-		} else if (!keyListeners.equals(other.keyListeners))
-			return false;
-		if (pressedKeys == null) {
-			if (other.pressedKeys != null)
-				return false;
-		} else if (!pressedKeys.equals(other.pressedKeys))
-			return false;
-		if (semaphore == null) {
-			if (other.semaphore != null)
-				return false;
-		} else if (!semaphore.equals(other.semaphore))
-			return false;
-		return true;
 	}
 }

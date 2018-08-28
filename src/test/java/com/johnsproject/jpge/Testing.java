@@ -4,11 +4,12 @@ import java.io.IOException;
 
 import com.johnsproject.jpge.graphics.*;
 import com.johnsproject.jpge.io.*;
+import com.johnsproject.jpge.utils.Vector2Utils;
 import com.johnsproject.jpge.utils.Vector3Utils;
 
-public class Testing implements KeyListener {
+public class Testing implements JPGEKeyListener, JPGEMouseListener {
 	
-	public static void main(String[] args) {
+	public static void main(String[] args){
 		new Testing();
 	}
 	
@@ -29,14 +30,13 @@ public class Testing implements KeyListener {
 		}
 		mesh.playAnimation(0);
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
-		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(0, 0, 1000), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(1, 1, 1)), mesh);
+		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(0, 0, 1000), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(5, 5, 5)), mesh);
 		try {
 			Texture t = new Texture(getClass().getResourceAsStream("/JohnsProject.png"));
 			//Texture t = new Texture("/home/john/Dokumente/Earth.jpeg");
 			sceneObject.getMesh().getMaterial(0).setTexture(t);
 			//sceneObject.getMesh().getMaterial(0).setTexture(new Texture("/home/john/Development/Brick.jpg", 101, 101));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		//sceneObject2 = new SceneObject("test2", new Vector3(0, 0, 150), new Vector3(0, 0, 0), new Vector3(1, 1, 1), mesh2);
@@ -51,9 +51,10 @@ public class Testing implements KeyListener {
 		sceneFrame.getScene().addLight(light);
 		//sceneObject.getMesh().playAnimation(1);
 		KeyInputManager.getInstance().addKeyListener(this);
+		MouseInputManager.getInstance().addMouseListener(this);
 	}
 
-	public void keyPressed(KeyEvent event) {
+	public void keyPressed(JPGEKeyEvent event) {
 		switch (event.getKey()) {
 		case 'w':
 			camera.getTransform().translate(0, 0, 6);
@@ -100,7 +101,34 @@ public class Testing implements KeyListener {
 		}
 	}
 
-	public void keyReleased(KeyEvent event) {
-		// TODO Auto-generated method stub
+	public void keyReleased(JPGEKeyEvent event) {
+	}
+
+	boolean dragged = false;
+	int postition = 0;
+	@Override
+	public void leftClick(JPGEMouseEvent event) {
+		dragged = !dragged;
+		postition = event.getPosition();
+	}
+
+	@Override
+	public void middleClick(JPGEMouseEvent event) {
+		
+	}
+
+	@Override
+	public void rightClick(JPGEMouseEvent event) {
+		
+	}
+
+	@Override
+	public void positionUpdate(JPGEMouseEvent event) {
+		if (dragged) {
+			int x = (w/2)-Vector2Utils.getX(event.getPosition());
+			int y = (h/2)-Vector2Utils.getY(event.getPosition());
+			int z = Vector3Utils.getZ(camera.getTransform().getRotation());
+			sceneObject.getTransform().rotate(x>>15, y>>15, z);
+		}
 	}
 }
