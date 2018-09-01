@@ -86,38 +86,38 @@ public class ColorUtilsTest {
 	}
 	
 	@Test
-	public void changeRedTest() throws Exception {
+	public void addRedTest() throws Exception {
 		int cc = ColorUtils.convert(50, 50, 50, 50);
-		cc = ColorUtils.changeRed(cc, +20);
+		cc = ColorUtils.addRed(cc, +20);
 		assert(70 == ColorUtils.getRed(cc));
-		cc = ColorUtils.changeRed(cc, -20);
+		cc = ColorUtils.addRed(cc, -20);
 		assert(50 == ColorUtils.getRed(cc));
 	}
 	
 	@Test
-	public void changeGreenTest() throws Exception {
+	public void addGreenTest() throws Exception {
 		int cc = ColorUtils.convert(50, 50, 50, 50);
-		cc = ColorUtils.changeGreen(cc, +20);
+		cc = ColorUtils.addGreen(cc, +20);
 		assert(70 == ColorUtils.getGreen(cc));
-		cc = ColorUtils.changeGreen(cc, -20);
+		cc = ColorUtils.addGreen(cc, -20);
 		assert(50 == ColorUtils.getGreen(cc));
 	}
 	
 	@Test
-	public void changeBlueTest() throws Exception {
+	public void addBlueTest() throws Exception {
 		int cc = ColorUtils.convert(50, 50, 50, 50);
-		cc = ColorUtils.changeBlue(cc, +20);
+		cc = ColorUtils.addBlue(cc, +20);
 		assert(70 == ColorUtils.getBlue(cc));
-		cc = ColorUtils.changeBlue(cc, -20);
+		cc = ColorUtils.addBlue(cc, -20);
 		assert(50 == ColorUtils.getBlue(cc));
 	}
 	
 	@Test
-	public void changeAlphaTest() throws Exception {
+	public void addAlphaTest() throws Exception {
 		int cc = ColorUtils.convert(50, 50, 50, 50);
-		cc = ColorUtils.changeAlpha(cc, +20);
+		cc = ColorUtils.addAlpha(cc, +20);
 		assert(70 == ColorUtils.getAlpha(cc));
-		cc = ColorUtils.changeAlpha(cc, -20);
+		cc = ColorUtils.addAlpha(cc, -20);
 		assert(50 == ColorUtils.getAlpha(cc));
 	}
 	
@@ -125,13 +125,17 @@ public class ColorUtilsTest {
 	public void darkerTest() throws Exception {
 		int c = ColorUtils.convert(50, 50, 50, 50);
 		int cc = ColorUtils.darker(c, 2);
-		assert(c > cc);
+		assert (ColorUtils.getBlue(cc) < ColorUtils.getBlue(c));
+		assert (ColorUtils.getGreen(cc) < ColorUtils.getGreen(c));
+		assert (ColorUtils.getRed(cc) < ColorUtils.getRed(c));
 	}
 	
 	@Test
 	public void brighterTest() throws Exception {
 		int c = ColorUtils.convert(50, 50, 50, 50);
 		int cc = ColorUtils.brighter(c, 2);
-		assert(c < cc);
+		assert (ColorUtils.getBlue(cc) > ColorUtils.getBlue(c));
+		assert (ColorUtils.getGreen(cc) > ColorUtils.getGreen(c));
+		assert (ColorUtils.getRed(cc) > ColorUtils.getRed(c));
 	}
 }

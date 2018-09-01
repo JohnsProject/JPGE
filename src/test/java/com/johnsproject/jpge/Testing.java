@@ -19,7 +19,7 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 	Camera camera;
 	Camera camera2;
 	Light light;
-	int w = 1440, h = 1024;
+	int w = 1024, h = 720;
 	public Testing() {
 		sceneFrame = new SceneFrame(w, h);
 		Mesh mesh = null;
@@ -30,7 +30,7 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 		}
 		mesh.playAnimation(0);
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
-		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(0, 0, 1000), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(5, 5, 5)), mesh);
+		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(0, 0, 1000), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(1, 1, 1)), mesh);
 		try {
 			Texture t = new Texture(getClass().getResourceAsStream("/JohnsProject.png"));
 			//Texture t = new Texture("/home/john/Dokumente/Earth.jpeg");
@@ -40,7 +40,7 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 			e.printStackTrace();
 		}
 		//sceneObject2 = new SceneObject("test2", new Vector3(0, 0, 150), new Vector3(0, 0, 0), new Vector3(1, 1, 1), mesh2);
-		camera = new Camera("testCam", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)), new int[] {0, 0}, new int[] {w, h});
+		camera = new Camera("testCam", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)), Vector2Utils.convert(0, 0), Vector2Utils.convert(w, h));
 		//camera2 = new Camera("testCam2", new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {700, 200}, new int[] {w/2, h/2});	
 		light = new Light("testLight", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)));
 		sceneFrame.getScene().addSceneObject(sceneObject);

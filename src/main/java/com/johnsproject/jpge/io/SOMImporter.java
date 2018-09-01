@@ -13,6 +13,7 @@ import com.johnsproject.jpge.graphics.Texture;
 import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.Vector2Utils;
 import com.johnsproject.jpge.utils.Vector3Utils;
+import com.johnsproject.jpge.utils.VectorMathUtils;
 import com.johnsproject.jpge.utils.VertexUtils;
 
 /**
@@ -238,17 +239,18 @@ public class SOMImporter {
 		int framesCount = rawBonesData.length/(step * bonesCount);
 		Transform[] bones = new Transform[bonesCount*framesCount];
 		for (int j = 0; j < rawBonesData.length; j+=step) {
-			long vector = Vector3Utils.convert(0, 0, 0);
-			long pos = vector, rot = vector, scale = vector;
-			pos = Vector3Utils.addX(pos, toInt(rawBonesData[j + Mesh.POSITION + vx]));
-			pos = Vector3Utils.addY(pos, toInt(rawBonesData[j + Mesh.POSITION + vy]));
-			pos = Vector3Utils.addZ(pos, toInt(rawBonesData[j + Mesh.POSITION + vz]));
-			rot = Vector3Utils.addX(rot, toInt(rawBonesData[j + Mesh.ROTATION + vx]));
-			rot = Vector3Utils.addY(rot, toInt(rawBonesData[j + Mesh.ROTATION + vy]));
-			rot = Vector3Utils.addZ(rot, toInt(rawBonesData[j + Mesh.ROTATION + vz]));
-			scale = Vector3Utils.addX(scale, toInt(rawBonesData[j + Mesh.SCALE + vx]));
-			scale = Vector3Utils.addY(scale, toInt(rawBonesData[j + Mesh.SCALE + vy]));
-			scale = Vector3Utils.addZ(scale, toInt(rawBonesData[j + Mesh.SCALE + vz]));
+			int px = toInt(rawBonesData[j + Mesh.POSITION + vx]);
+			int py = toInt(rawBonesData[j + Mesh.POSITION + vy]);
+			int pz = toInt(rawBonesData[j + Mesh.POSITION + vz]);
+			int rx = toInt(rawBonesData[j + Mesh.ROTATION + vx]);
+			int ry = toInt(rawBonesData[j + Mesh.ROTATION + vy]);
+			int rz = toInt(rawBonesData[j + Mesh.ROTATION + vz]);
+			int sx = toInt(rawBonesData[j + Mesh.SCALE + vx]);
+			int sy = toInt(rawBonesData[j + Mesh.SCALE + vy]);
+			int sz = toInt(rawBonesData[j + Mesh.SCALE + vz]);
+			long pos = Vector3Utils.convert(px, py, pz);
+			long rot = Vector3Utils.convert(rx, ry, rz);
+			long scale = Vector3Utils.convert(sx, sy, sz);
 			bones[j/step] =  new Transform(pos, rot, scale);
 		}
 		return new Animation(animName, framesCount, bonesCount, bones);

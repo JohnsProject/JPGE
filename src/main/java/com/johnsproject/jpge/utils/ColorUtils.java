@@ -121,57 +121,49 @@ public class ColorUtils {
 	}
 	
 	/**
-	 * Changes the blue value of the java awt int color and returns it.
-	 * If value > 0 then the blue value will be added and if value < 0 
-	 * it will be subtracted.
+	 * Adds the given value to the blue value of the java awt int color and returns it.
 	 * 
 	 * @param color the color to read from.
 	 * @param value the blue value.
 	 * @return the modified color.
 	 */
-	public static int changeBlue(int color, int value) {
+	public static int addBlue(int color, int value) {
 		int r = getRed(color), g = getGreen(color), b = getBlue(color), a = getAlpha(color);
 		return convert(r, g, b + value, a);
 	}
 	
 	/**
-	 * Changes the green value of the java awt int color and returns it.
-	 * If value > 0 then the green value will be added and if value < 0 
-	 * it will be subtracted.
+	 * Adds the given value to the green value of the java awt int color and returns it.
 	 * 
 	 * @param color the color to read from.
 	 * @param value the green value.
 	 * @return the modified color.
 	 */
-	public static int changeGreen(int color, int value) {
+	public static int addGreen(int color, int value) {
 		int r = getRed(color), g = getGreen(color), b = getBlue(color), a = getAlpha(color);
 		return convert(r, g + value, b, a);
 	}
 	
 	/**
-	 * Changes the red value of the java awt int color and returns it.
-	 * If value > 0 then the red value will be added and if value < 0 
-	 * it will be subtracted.
+	 * Adds the given value to the red value of the java awt int color and returns it.
 	 * 
 	 * @param color the color to read from.
 	 * @param value the red value.
 	 * @return the modified color.
 	 */
-	public static int changeRed(int color, int value) {
+	public static int addRed(int color, int value) {
 		int r = getRed(color), g = getGreen(color), b = getBlue(color), a = getAlpha(color);
 		return convert(r + value, g, b, a);
 	}
 	
 	/**
-	 * Changes the alpha value of the java awt int color and returns it.
-	 * If value > 0 then the alpha value will be added and if value < 0 
-	 * it will be subtracted.
+	 * Adds the given value to the alpha value of the java awt int color and returns it.
 	 * 
 	 * @param color the color to read from.
 	 * @param value the alpha value.
 	 * @return the modified color.
 	 */
-	public static int changeAlpha(int color, int value) {
+	public static int addAlpha(int color, int value) {
 		int r = getRed(color), g = getGreen(color), b = getBlue(color), a = getAlpha(color);
 		return convert(r, g, b, a + value);
 	}

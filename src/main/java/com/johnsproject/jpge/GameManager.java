@@ -19,7 +19,7 @@ public class GameManager {
 		return instance;
 	}
 	
-	private int targetFPS = 60;
+	private int targetFPS = 30;
 	private int inputUpdateRate = 30;
 	private int physicsUpdateRate = 30;
 	

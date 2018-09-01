@@ -1,14 +1,10 @@
 package com.johnsproject.jpge.utils;
 
 /**
- * The VectorUtils class provides useful functionalities for handling 3D vectors. <br>
- * -Basic math operations. (addition, multiplication...) <br>
- * -Swap. <br>
- * -Min, max. <br>
- * -Equals, match. <br>
- * -To string. <br>
+ * The Vector3Utils class provides methods for generating and reading 3d vectors.
+ * This 3d vectors can be used as 3d position, rotation and scale.
+ * 
  * @author John´s Project - John Konrad Ferraz Salomon
- *
  */
 public class Vector3Utils {
 	
@@ -16,36 +12,37 @@ public class Vector3Utils {
 	 * The default axis indexes of the vectors.
 	 */
 	public static final byte X = 0, Y = 1, Z = 2;
-	private static final int XSHIFT = 32, YSHIFT = 16;
+	private static final int ZSHIFT = 32, YSHIFT = 16;
 	private static final int HEX = 0xFFFF;
 	
 	/**
-	 * Makes a Vector based on the given values and returns it. 
+	 * Generates a vector based on the given values and returns it. 
 	 * The vector can be used as position, rotation or scale vector.
+	 * (Bits 0-15 are x, 16-31 are y, 32-47 are z)
 	 * 
 	 * @param x vector's x value.
 	 * @param y vector's y value.
 	 * @param z vector's z value.
-	 * @return vector made using given values.
+	 * @return vector generated from given values.
 	 */
 	public static long convert(long x, long y, long z) {
-		return ((x & HEX) << XSHIFT) | ((y & HEX) << YSHIFT) | (z & HEX);
+		return ((z & HEX) << ZSHIFT) | ((y & HEX) << YSHIFT) | (x & HEX);
 	}
 	
 	/**
-	 * Reads the x value of the vector and returns it.
+	 * Reads the x value of the given vector and returns it in the range -32768-32767.
 	 * 
-	 * @param vector the vector to read from.
+	 * @param vector vector to read from.
 	 * @return vector's x value.
 	 */
 	public static short getX(long vector) {
-		return (short)((vector >> XSHIFT) & HEX);
+		return (short)(vector & HEX);
 	}
 	
 	/**
-	 * Reads the y value of the vector and returns it.
+	 * Reads the y value of the given vector and returns it in the range -32768-32767.
 	 * 
-	 * @param vector the vector to read from.
+	 * @param vector vector to read from.
 	 * @return vector's y value.
 	 */
 	public static short getY(long vector) {
@@ -53,177 +50,49 @@ public class Vector3Utils {
 	}
 	
 	/**
-	 * Reads the z value of the vector and returns it.
+	 * Reads the z value of the given vector and returns it in the range -32768-32767.
 	 * 
-	 * @param vector the vector to read from.
+	 * @param vector vector to read from.
 	 * @return vector's z value.
 	 */
 	public static short getZ(long vector) {
-		return (short)((vector) & HEX);
+		return (short)((vector >> ZSHIFT) & HEX);
 	}
 	
 	/**
-	 * Adds the given value to the vectors x value and returns it.
+	 * Sets the given value as the vectors x value and returns it.
 	 * 
-	 * @param vector the vector to change.
-	 * @param value value to add.
+	 * @param vector vector to change.
+	 * @param value value to set.
 	 * @return vector with changed x value.
 	 */
-	public static long addX(long vector, long value) {
-		long x = getX(vector), y = getY(vector), z = getZ(vector);
-		return convert(x + value, y, z);
+	public static long setX(long vector, long value) {
+		long y = getY(vector), z = getZ(vector);
+		return convert(value, y, z);
 	}
 	
 	/**
-	 * Adds the given value to the vectors y value and returns it.
+	 * Sets the given value as the vectors y value and returns it.
 	 * 
-	 * @param vector the vector to change.
-	 * @param value value to add.
+	 * @param vector vector to change.
+	 * @param value value to set.
 	 * @return vector with changed y value.
 	 */
-	public static long addY(long vector, long value) {
-		long x = getX(vector), y = getY(vector), z = getZ(vector);
-		return convert(x, y + value, z);
+	public static long setY(long vector, long value) {
+		long x = getX(vector), z = getZ(vector);
+		return convert(x, value, z);
 	}
 	
 	/**
-	 * Adds the given value to the vectors z value and returns it.
+	 * Sets the given value as the vectors z value and returns it.
 	 * 
-	 * @param vector the vector to change.
-	 * @param value value to add.
+	 * @param vector vector to change.
+	 * @param value value to set.
 	 * @return vector with changed z value.
 	 */
-	public static long addZ(long vector, long value) {
-		long x = getX(vector), y = getY(vector), z = getZ(vector);
-		return convert(x, y, z + value);
-	}
-	
-	/**
-	 * Adds the values of b to a and returns a.
-	 * 
-	 * @param a summand vector.
-	 * @param b summand vector.
-	 * @return a.
-	 */
-	public static long add(long a, long b) {
-		long ax = getX(a), ay = getY(a), az = getZ(a);
-		long bx = getX(b), by = getY(b), bz = getZ(b);
-		return convert(ax + bx, ay + by, az + bz);
-	}
-	
-	/**
-	 * Subtracts the values of b from a and returns a.
-	 * 
-	 * @param a minuend vector.
-	 * @param b subtrahend vector.
-	 * @return a.
-	 */
-	public static long subtract(long a, long b) {
-		long ax = getX(a), ay = getY(a), az = getZ(a);
-		long bx = getX(b), by = getY(b), bz = getZ(b);
-		return convert(ax - bx, ay - by, az - bz);
-	}
-	
-	/**
-	 * Multiplies the values of a and b and returns a.
-	 * 
-	 * @param a multiplier vector.
-	 * @param b multiplicand vector.
-	 * @return a.
-	 */
-	public static long multiply(long a, long b) {
-		long ax = getX(a), ay = getY(a), az = getZ(a);
-		long bx = getX(b), by = getY(b), bz = getZ(b);
-		return convert(ax * bx, ay * by, az * bz);
-	}
-	
-	/**
-	 * Divides the values of b from a and returns a.
-	 * 
-	 * @param a dividend vector.
-	 * @param b divisor vector.
-	 * @return a.
-	 */
-	public static long divide(long a, long b) {
-		long ax = getX(a), ay = getY(a), az = getZ(a);
-		long bx = getX(b), by = getY(b), bz = getZ(b);
-		return convert(ax / bx, ay / by, az / bz);
-	}
-	
-	/**
-	 * Adds the values of b to a and returns a.
-	 * 
-	 * @param a summand vector.
-	 * @param b summand value.
-	 * @return a.
-	 */
-	public static long add(long a, int b) {
-		long ax = getX(a), ay = getY(a), az = getZ(a);
-		return convert(ax + b, ay + b, az + b);
-	}
-	
-	/**
-	 * Subtracts the values of b from a and returns a.
-	 * 
-	 * @param a minuend vector.
-	 * @param b subtrahend value.
-	 * @return a.
-	 */
-	public static long subtract(long a, int b) {
-		long ax = getX(a), ay = getY(a), az = getZ(a);
-		return convert(ax - b, ay - b, az - b);
-	}
-	
-	/**
-	 * Multiplies the values of a and b and returns a.
-	 * 
-	 * @param a multiplier vector.
-	 * @param b multiplicand value.
-	 * @return a.
-	 */
-	public static long multiply(long a, int b) {
-		long ax = getX(a), ay = getY(a), az = getZ(a);
-		return convert(ax * b, ay * b, az * b);
-	}
-	
-	/**
-	 * Divides the values of b from a and returns a.
-	 * 
-	 * @param a dividend vector.
-	 * @param b divisor value.
-	 * @return a.
-	 */
-	public static long divide(long a, int b) {
-		long ax = getX(a), ay = getY(a), az = getZ(a);
-		return convert(ax / b, ay / b, az / b);
-	}
-
-	/**
-	 * Checks witch of the vectors are greater and returns it.
-	 * 
-	 * @param a first vector.
-	 * @param b second vector.
-	 * @return the greatest vector.
-	 */
-	public static long max(long a, int b) {
-		long asum = getX(a) + getY(a) + getZ(a);
-		long bsum = getX(b) + getY(b) + getZ(b);
-		if(asum > bsum) return a;
-		else return b;
-	}
-	
-	/**
-	 * Checks witch of the vectors are smaller and returns it.
-	 * 
-	 * @param a first vector.
-	 * @param b second vector.
-	 * @return the smallest vector.
-	 */
-	public static long min(long a, int b) {
-		long asum = getX(a) + getY(a) + getZ(a);
-		long bsum = getX(b) + getY(b) + getZ(b);
-		if(asum > bsum) return b;
-		else return a;
+	public static long setZ(long vector, long value) {
+		long x = getX(vector), y = getY(vector);
+		return convert(x, y, value);
 	}
 	
 	/**
