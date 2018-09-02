@@ -21,6 +21,11 @@ public class Transform {
 		position = VectorMathUtils.add(position, Vector3Utils.convert(x, y, z));
 	}
 	
+	public void translateLocal(int x, int y, int z) {
+		long dist = Vector3Utils.convert(x, y, z);
+		position = VectorMathUtils.add(position, Vector3Utils.convert(x, y, z));
+	}
+	
 	public void rotate(int x, int y, int z) {
 		rotation = VectorMathUtils.add(rotation, Vector3Utils.convert(x, y, z));
 	}

@@ -57,22 +57,22 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 	public void keyPressed(JPGEKeyEvent event) {
 		switch (event.getKey()) {
 		case 'w':
-			camera.getTransform().translate(0, 0, 6);
+			camera.getTransform().translateLocal(0, 0, 6);
 			break;
 		case 's':
-			camera.getTransform().translate(0, 0, -6);
+			camera.getTransform().translateLocal(0, 0, -6);
 			break;
 		case 'a':
-			camera.getTransform().translate(-6, 0, 0);
+			camera.getTransform().translateLocal(-6, 0, 0);
 			break;
 		case 'd':
-			camera.getTransform().translate(6, 0, 0);
+			camera.getTransform().translateLocal(6, 0, 0);
 			break;
 		case 'e':
-			camera.getTransform().translate(0, 6, 0);
+			camera.getTransform().translateLocal(0, 6, 0);
 			break;
 		case 'y':
-			camera.getTransform().translate(0, -6, 0);
+			camera.getTransform().translateLocal(0, -6, 0);
 			break;
 		case 'b':
 			sceneObject.getTransform().rotate(0, 4, 0);

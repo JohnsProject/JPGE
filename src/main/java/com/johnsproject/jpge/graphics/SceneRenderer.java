@@ -228,15 +228,9 @@ public class SceneRenderer{
 	void drawPolygon(int x1, int y1, int x2, int y2 ,int x3, int y3, int z, int c, Camera cam) {
 		int dx1 = 0, dx2 = 0, dx3 = 0;
 		int y1y0 = y2-y1, y2y0 = y3-y1, y2y1 = y3-y2;
-	    if (y1y0 > 0) {
-	    	dx1=(((x2-x1)<<SHIFT)/(y1y0));
-	    } else dx1=0;
-	    if (y2y0 > 0) { 
-	    	dx2=(((x3-x1)<<SHIFT)/(y2y0));
-	    }else dx2=0;
-	    if (y2y1 > 0) {
-	    	dx3=(((x3-x2)<<SHIFT)/(y2y1));
-	    } else dx3=0;
+	    if (y1y0 > 0) { dx1=(((x2-x1)<<SHIFT)/(y1y0)); } else dx1=0;
+	    if (y2y0 > 0) { dx2=(((x3-x1)<<SHIFT)/(y2y0)); }else dx2=0;
+	    if (y2y1 > 0) { dx3=(((x3-x2)<<SHIFT)/(y2y1)); } else dx3=0;
 	    int sx = x1<<SHIFT, ex = x1<<SHIFT;
 	    int sy = y1;
 	    if (dx1 > dx2) {
@@ -286,7 +280,7 @@ public class SceneRenderer{
 	    	dv3=(((v3-v2)<<SHIFT)/(y3-y2));
 	    } else dx3=du3=dv3=0;
 	    int sx = x1<<SHIFT, sv = v1<<SHIFT, su = u1<<SHIFT,
-	    		ex = x1<<SHIFT, eu = u1<<SHIFT, ev = v1<<SHIFT;
+	    	ex = x1<<SHIFT, eu = u1<<SHIFT, ev = v1<<SHIFT;
 	    int sy = y1;
 	    if (dx1 > dx2) {
 		    for (; sy <= y2 - 1; sy++) {

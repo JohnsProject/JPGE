@@ -10,14 +10,14 @@ package com.johnsproject.jpge.utils;
  */
 public class MathUtils {
 
-	private static short[] valuesSin = {
-			01, 17, 34, 52, 69, 87, 104, 121, 139, 156, 173, 190, 207, 224, 241, 258, 
-			275, 292, 309, 325, 342, 358, 374, 390, 406, 422, 438, 453, 469, 484, 499, 
-			515, 529, 544, 559, 573, 587, 601, 615, 629, 642, 656, 669, 681, 694, 707, 
-			719, 731, 743, 754, 766, 777, 788, 798, 809, 819, 829, 838, 848, 857, 866, 
-			874, 882, 891, 898, 906, 913, 920, 927, 933, 939, 945, 951, 956, 961, 965, 
-			970, 974, 978, 981, 984, 987, 990, 992, 994, 996, 997, 998, 999, 999, 1000 
-	};
+	private static short[] valuesSin = {0, 17, 35, 53, 71, 89, 107, 124, 142, 160, 177, 195, 212, 230, 247, 265, 
+			282, 299, 316, 333, 350, 366, 383, 400, 416, 432, 448, 464, 480, 496, 511, 
+			527, 542, 557, 572, 587, 601, 616, 630, 644, 658, 671, 685, 698, 711, 724, 
+			736, 748, 760, 772, 784, 795, 806, 817, 828, 838, 848, 858, 868, 877, 886, 
+			895, 904, 912, 920, 928, 935, 942, 949, 955, 962, 968, 973, 979, 984, 989, 
+			993, 997, 1001, 1005, 1008, 1011, 1014, 1016, 1018, 1020, 1021, 1022, 1023, 1023, 1024, 
+			};
+
 	
 	/**
 	 * This value is used to normalize the values that needs to be modified by sin, cos.
@@ -30,7 +30,6 @@ public class MathUtils {
 	 * </code>
 	 */
 	public static final byte SHIFT = 10;
-
 	
 	/**
 	 * Returns the sine value of the given angle.
@@ -57,8 +56,7 @@ public class MathUtils {
 			result = -valuesSin[a - 180];
 		else if (a > 270 && a <= 360)
 			result = -valuesSin[360 - a];
-		if (angle < 0)
-			return -result;
+		if (angle < 0) return -result;
 		return result;
 	}
 
@@ -104,7 +102,7 @@ public class MathUtils {
 	 * @return tangent of angle.
 	 */
 	public static int tan(int angle) {
-		return (sin(angle) << SHIFT)/ cos(angle);
+		return (sin(angle) * 1000)/ cos(angle);
 	}
 
 	/**

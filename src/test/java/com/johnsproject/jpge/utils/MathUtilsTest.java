@@ -28,7 +28,7 @@ public class MathUtilsTest {
 //		int langle = 0;
 //		System.out.print("private static short[] valuesSin = {");
 //		for (int angle = 0; angle < 91; angle++) {
-//			System.out.print((int)(Math.sin(Math.toRadians(angle))*1000) + ", ");
+//			System.out.print((int)(Math.sin(Math.toRadians(angle))*1024) + ", ");
 //			if (angle >= langle + 15) {
 //				System.out.println("");
 //				langle = angle;
@@ -39,11 +39,11 @@ public class MathUtilsTest {
 	
 	@Test
 	public void sinTest() throws Exception {
-		int value = 200, precision = 5;
+		int value = 200, precision = 1;
 		for (int angle = 0; angle < 360; angle++) {
-			int mi = (value * MathUtils.sin(angle)) >> MathUtils.SHIFT;
+			int mi = ((value * MathUtils.sin(angle)) >> MathUtils.SHIFT);
 			int mf = (int)((value * Math.sin(Math.toRadians(angle))));
-			//System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
+			System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
 			assert(mi <= mf + precision);
 			assert(mi >= mf - precision);
 		}
@@ -51,11 +51,11 @@ public class MathUtilsTest {
 	
 	@Test
 	public void cosTest() throws Exception {
-		int value = 200, precision = 5;
+		int value = 200, precision = 1;
 		for (int angle = 0; angle < 360; angle++) {
 			int mi = (value * MathUtils.cos(angle)) >> MathUtils.SHIFT;
 			int mf = (int)((value * Math.cos(Math.toRadians(angle))));
-			//System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
+			System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
 			assert(mi <= mf + precision);
 			assert(mi >= mf - precision);
 		}
@@ -63,11 +63,12 @@ public class MathUtilsTest {
 	
 	@Test
 	public void tanTest() throws Exception {
-		int value = 200, precision = 500;
+		int value = 200, precision = 300;
+		// until 90 because 90 is infinity
 		for (int angle = 0; angle < 90; angle++) {
 			int mi = (value * MathUtils.tan(angle)) >> MathUtils.SHIFT;
 			int mf = (int)((value * Math.tan(Math.toRadians(angle))));
-			//System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
+			System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
 			assert(mi <= mf + precision);
 			assert(mi >= mf - precision);
 		}

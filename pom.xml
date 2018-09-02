@@ -6,7 +6,7 @@
 
 	<groupId>com.johnsproject</groupId>	
 	<artifactId>JPGE</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1</version>
 	<packaging>jar</packaging>
 
 	<name>John's Project Game Engine</name>

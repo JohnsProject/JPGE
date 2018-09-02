@@ -58,17 +58,11 @@ class SOMExporter(bpy.types.Operator, ExportHelper):
 			description="Use transformed mesh data from each object",
 			default=False,
 			)
-	triangulate = BoolProperty(
-			name="Triangulate",
-			description="Triangulate quads",
-			default=True,
-			)
 
 	def execute(self, context):
 		from . import export_som
 		export_som.write(self.filepath,
-						 self.apply_modifiers,
-						 self.triangulate,
+						 self.apply_modifiers
 						 )
 
 		return {'FINISHED'}

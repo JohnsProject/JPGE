@@ -5,8 +5,7 @@ import bmesh
 bonesCount = 0
 
 def write(filepath,
-			applyMods=False,
-			triangulate=True
+			applyMods=False
 			):
 #   bpy.ops.object.mode_set(mode = 'EDIT')
 	scene = bpy.context.scene
@@ -45,13 +44,13 @@ def write(filepath,
 						   animData.addBone(bone)
 					animsData.append(animData)  
 		if me is not None:
-			if triangulate:
-				bm = bmesh.new()
-				bm.from_mesh(me)
-				bmesh.ops.triangulate(bm, faces=bm.faces)
-				bm.to_mesh(me)
-				bm.free()
-				del bm
+			bm = bmesh.new()
+			bm.from_mesh(me)
+			bmesh.ops.subdivide_edges(bm, edges=bm.edges, use_grid_fill=True, cuts=1)
+			bmesh.ops.triangulate(bm, faces=bm.faces)
+			bm.to_mesh(me)
+			bm.free()
+			del bm
 			for vertex in me.vertices:
 				meshData.addVertex(vertex.undeformed_co[0]*100)
 				meshData.addVertex(vertex.undeformed_co[1]*100)
