@@ -109,5 +109,20 @@ v0.1 - 24/08/2018
 -Renamed Vector3MathUtils to VectorMathUtils because it handles 3d and 2d vectors
 -Changed Camera 2d vectors from int[] to int of Vector2Utils
 02/09/2018
--Fixed sine, cosine precision bug of MathUtils class.
--Added surface subdivision to blender som exporter to fix affine texture mapping displacement. (like ps1 did :D)
+-Fixed sine, cosine precision bug of MathUtils class
+-Added surface subdivision to blender som exporter to fix affine texture mapping displacement (like ps1 did :D)
+-Improved MathUtils sine, cosine, tangent performance
+-Improved affine texture mapper performance (added bitshift to uv interpolation)
+03/09/2018
+-Added comments to the Animation class.
+-Added comments to the Mesh class.
+-Added comments to the Light class.
+-Added comments to the Scene class.
+-Added comments to the Camera class.
+-Added comments to the Texture class.
+-Added comments to the Material class.
+-Added comments to the Transform class.
+-Added comments to the SceneFrame class.
+-Added comments to the SceneObject class.
+-Added comments to the SceneAnimator class.
+-Added comments to the SceneRenderer class.

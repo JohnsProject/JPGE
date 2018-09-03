@@ -13,7 +13,6 @@ import com.johnsproject.jpge.graphics.Texture;
 import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.Vector2Utils;
 import com.johnsproject.jpge.utils.Vector3Utils;
-import com.johnsproject.jpge.utils.VectorMathUtils;
 import com.johnsproject.jpge.utils.VertexUtils;
 
 /**
@@ -211,6 +210,8 @@ public class SOMImporter {
 		Animation[] animations = null;
 		if(rawAnimationsData.length > 1){
 			animations = new Animation[rawAnimationsData.length-1];
+			System.out.println(rawAnimationsData.length);
+			System.out.println(animations.length);
 			for (int i = 1; i < rawAnimationsData.length; i++) {
 				animations[i-1] = parseAnimation(rawAnimationsData[i].split(">Animation", 2)[0], step, bonesCount);
 			}
@@ -239,15 +240,16 @@ public class SOMImporter {
 		int framesCount = rawBonesData.length/(step * bonesCount);
 		Transform[] bones = new Transform[bonesCount*framesCount];
 		for (int j = 0; j < rawBonesData.length; j+=step) {
+			// y and z axis are swapped in blender
 			int px = toInt(rawBonesData[j + Mesh.POSITION + vx]);
-			int py = toInt(rawBonesData[j + Mesh.POSITION + vy]);
-			int pz = toInt(rawBonesData[j + Mesh.POSITION + vz]);
+			int py = toInt(rawBonesData[j + Mesh.POSITION + vz]);
+			int pz = toInt(rawBonesData[j + Mesh.POSITION + vy]);
 			int rx = toInt(rawBonesData[j + Mesh.ROTATION + vx]);
-			int ry = toInt(rawBonesData[j + Mesh.ROTATION + vy]);
-			int rz = toInt(rawBonesData[j + Mesh.ROTATION + vz]);
+			int ry = toInt(rawBonesData[j + Mesh.ROTATION + vz]);
+			int rz = toInt(rawBonesData[j + Mesh.ROTATION + vy]);
 			int sx = toInt(rawBonesData[j + Mesh.SCALE + vx]);
-			int sy = toInt(rawBonesData[j + Mesh.SCALE + vy]);
-			int sz = toInt(rawBonesData[j + Mesh.SCALE + vz]);
+			int sy = toInt(rawBonesData[j + Mesh.SCALE + vz]);
+			int sz = toInt(rawBonesData[j + Mesh.SCALE + vy]);
 			long pos = Vector3Utils.convert(px, py, pz);
 			long rot = Vector3Utils.convert(rx, ry, rz);
 			long scale = Vector3Utils.convert(sx, sy, sz);

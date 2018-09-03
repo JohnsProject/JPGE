@@ -46,7 +46,7 @@ def write(filepath,
 		if me is not None:
 			bm = bmesh.new()
 			bm.from_mesh(me)
-			bmesh.ops.subdivide_edges(bm, edges=bm.edges, use_grid_fill=True, cuts=1)
+			#bmesh.ops.subdivide_edges(bm, edges=bm.edges, use_grid_fill=True, cuts=1)
 			bmesh.ops.triangulate(bm, faces=bm.faces)
 			bm.to_mesh(me)
 			bm.free()
@@ -67,8 +67,8 @@ def write(filepath,
 				meshData.addPolygon(polygon)
 			if me.uv_layers.active is not None:
 				for uvl in me.uv_layers.active.data:
-					meshData.addUV(uvl.uv[0]*100)
-					meshData.addUV(uvl.uv[1]*100)
+					meshData.addUV(uvl.uv[0]*128)
+					meshData.addUV(uvl.uv[1]*128)
 			for mat_slot in obj.material_slots:
 				meshData.addMaterial(mat_slot)  	  
 			if is_tmp_mesh:

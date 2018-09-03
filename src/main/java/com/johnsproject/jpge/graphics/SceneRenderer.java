@@ -4,12 +4,18 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.List;
 
-import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.Vector2Utils;
 import com.johnsproject.jpge.utils.VectorMathUtils;
 import com.johnsproject.jpge.utils.Vector3Utils;
 import com.johnsproject.jpge.utils.VertexUtils;
 
+/**
+ * The SceneRenderer class renders the {@link Scene} assigned to the {@link SceneFrame}.
+ * It renders what is in the view of all {@link Camera Cameras} of the {@link Scene}
+ *  into the view buffer of the {@link Camera Cameras} that is then show by the {@link SceneFrame}.
+ *
+ * @author John´s Project - John Konrad Ferraz Salomon
+ */
 public class SceneRenderer{
 	public enum ProjectionType {
 		orthographic, perspective
@@ -33,7 +39,7 @@ public class SceneRenderer{
 	public void render(Scene scene, int lastTime) {
 		resetZBuffer();
 		for (Camera camera : scene.getCameras()) {
-			camera.getScreenGraphics().clearRect(0, 0, Vector2Utils.getX(camera.getRect()),  Vector2Utils.getY(camera.getRect()));
+			camera.getViewGraphics().clearRect(0, 0, Vector2Utils.getX(camera.getScreenSize()),  Vector2Utils.getY(camera.getScreenSize()));
 			int maxPolys = 0;
 			for (SceneObject sceneObject : scene.getSceneObjects()) {
 				if (sceneObject.changed() || camera.changed()) {
@@ -42,7 +48,7 @@ public class SceneRenderer{
 				maxPolys += sceneObject.getMesh().getPolygons().length;
 			}
 			camera.changed(false);
-			if(log) logData((Graphics2D)camera.getScreenGraphics(), maxPolys, lastTime);
+			if(log) logData((Graphics2D)camera.getViewGraphics(), maxPolys, lastTime);
 			camera.drawBuffer();
 		}
 		renderedPolys = 0;
@@ -53,19 +59,19 @@ public class SceneRenderer{
 	
 	void render(SceneObject sceneObject, Camera camera, List<Light> lights) {
 		Mesh mesh = sceneObject.getMesh();
-		Animation animation = mesh.getCurrentAnimation();
+//		Animation animation = mesh.getCurrentAnimation();
 		Transform objt = sceneObject.getTransform();
 		mesh.resetBuffer();
 		for (int i = 0; i < mesh.getVertexes().length; i++) {
 			long vertex = mesh.getVertex(i);
 			long vector = VertexUtils.getVector(vertex);
 			vector = VectorMathUtils.movePointByScale(vector, objt.getScale());
-			for (int j = 0; j < VertexUtils.getBoneIndex(vertex); j++) {
-				Transform bone = animation.getBone(j, animation.getCurrentFrame());
-				vector = VectorMathUtils.movePointByScale(vector, bone.getScale());
-				vector = VectorMathUtils.movePointByAnglesXYZ(vector, bone.getRotation());
-				vector = VectorMathUtils.add(vector, bone.getPosition());
-			}
+//			for (int j = 0; j <= VertexUtils.getBoneIndex(vertex); j++) {
+//				Transform bone = animation.getBone(j, animation.getCurrentFrame());
+//				vector = VectorMathUtils.movePointByScale(vector, bone.getScale());
+//				vector = VectorMathUtils.movePointByAnglesXYZ(vector, bone.getRotation());
+//				//vector = VectorMathUtils.add(vector, bone.getPosition());
+//			}
 			vector = VectorMathUtils.movePointByAnglesXYZ(vector, objt.getRotation());
 			vector = projectVertex(vector, objt.getPosition(), camera);
 			vertex = VertexUtils.setVector(vertex, vector);
@@ -83,7 +89,7 @@ public class SceneRenderer{
 
 	long projectVertex(long vertex, long objectPosition, Camera camera) {
 		long px = 0, py = 0, pz = 0;
-		int fov = camera.getFieldOfView(), rescalef = camera.getRescaleFactor();
+		int fov = camera.getFieldOfView(), rescalef = camera.getScaleFactor();
 		long camRot = camera.getTransform().getRotation(),
 				camPos = camera.getTransform().getPosition();
 		long pos = VectorMathUtils.add(vertex, objectPosition);
@@ -103,8 +109,8 @@ public class SceneRenderer{
 			pz = Vector3Utils.getZ(pos) + Vector3Utils.getZ(objectPosition);
 			break;
 		}
-		long x = (px) + Vector2Utils.getX(camera.getHalfRect()) + Vector3Utils.getX(objectPosition);
-		long y = (py) + Vector2Utils.getY(camera.getHalfRect()) + Vector3Utils.getY(objectPosition);
+		long x = (px) + Vector2Utils.getX(camera.getHalfScreenSize()) + Vector3Utils.getX(objectPosition);
+		long y = (py) + Vector2Utils.getY(camera.getHalfScreenSize()) + Vector3Utils.getY(objectPosition);
 		long z = pz;
 		return Vector3Utils.convert(x, y, z);
 	}
@@ -259,11 +265,11 @@ public class SceneRenderer{
 	void drawPolygonAffine(int x1, int y1, int x2, int y2, int x3, int y3, int z,
 							int u1, int v1, int u2, int v2, int u3, int v3, Texture img, Camera cam) {
 		int w = img.getWidth()-1, h = img.getHeight()-1;
-		u1 = (u1*w)/100; u2 = (u2*w)/100; u3 = (u3*w)/100;
-		v1 = (v1*h)/100; v2 = (v2*h)/100; v3 = (v3*h)/100;
+		u1 = (u1*w)>>7; u2 = (u2*w)>>7; u3 = (u3*w)>>7;
+		v1 = (v1*h)>>7; v2 = (v2*h)>>7; v3 = (v3*h)>>7;
 		int dx1 = 0, dx2 = 0, dx3 = 0;
-		int du1 = 0, du2 = 0, du3 = 0, du = 0;
-		int dv1 = 0, dv2 = 0, dv3 = 0, dv = 0;
+		int du1 = 0, du2 = 0, du3 = 0, du = 0, dui = 0;
+		int dv1 = 0, dv2 = 0, dv3 = 0, dv = 0, dvi = 0;
 	    if (y2-y1 > 0) {
 	    	dx1=(((x2-x1)<<SHIFT)/(y2-y1));
 	    	du1=(((u2-u1)<<SHIFT)/(y2-y1));
@@ -279,30 +285,40 @@ public class SceneRenderer{
 	    	du3=(((u3-u2)<<SHIFT)/(y3-y2));
 	    	dv3=(((v3-v2)<<SHIFT)/(y3-y2));
 	    } else dx3=du3=dv3=0;
+//	    if (x2-x1 > 0) {
+//			du = ((u2-u1)<<SHIFT)/(x2-x1);
+//			dv = ((v2-v1)<<SHIFT)/(x2-x1);
+//		}
+//	    if (x2-x1 > 0) {
+//			dui = ((u3-u2)<<SHIFT)/(x2-x1);
+//			dvi = ((v3-v2)<<SHIFT)/(x2-x1);
+//		}
+//	    System.out.println("du " + du + ", dv " + dv);
+//	    System.out.println("dui " + dui + ", dvi " + dvi);
 	    int sx = x1<<SHIFT, sv = v1<<SHIFT, su = u1<<SHIFT,
 	    	ex = x1<<SHIFT, eu = u1<<SHIFT, ev = v1<<SHIFT;
 	    int sy = y1;
 	    if (dx1 > dx2) {
 		    for (; sy <= y2 - 1; sy++) {
-		    	drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
+		    	drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, du>>SHIFT, eu, sv, dv>>SHIFT, ev, img, cam);
 				sx += dx2; su += du2; sv += dv2;
 				ex += dx1; eu += du1; ev += dv1;
 			}
 			ex = x2<<SHIFT;
 			for (; sy <= y3; sy++) {
-				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
+				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, dui>>SHIFT, eu, sv, dvi>>SHIFT, ev, img, cam);
 				sx += dx2; su += du2; sv += dv2;
 				ex += dx3; eu += du3; ev += dv3;
 			}
 	    }else{
 			for (; sy <= y2 - 1; sy++) {
-				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
+				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, du>>SHIFT, eu, sv, dv>>SHIFT, ev, img, cam);
 				sx += dx1; su += du1; sv += dv1;
 				ex += dx2; eu += du2; ev += dv2;
 			}
 			sx = x2<<SHIFT;
 			for (; sy <= y3; sy++) {
-				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, du, eu, sv, dv, ev, img, cam);
+				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, dui>>SHIFT, eu, sv, dvi>>SHIFT, ev, img, cam);
 				sx += dx3; su += du3; sv += dv3;
 				ex += dx2; eu += du2; ev += dv2;
 			}
@@ -310,14 +326,16 @@ public class SceneRenderer{
 	}
 	
 	void drawHLineAffine(int sx, int ex, int sy, int z, int su, int du, int eu, int sv, int dv, int ev, Texture img, Camera camera) {
-		du = Math.abs(du); sv = Math.abs(sv);
+		du = Math.abs(du); dv = Math.abs(dv);
+		su = Math.abs(su); sv = Math.abs(sv);
 		if (ex-sx > 0) {
 			du = (eu-su)/(ex-sx);
 			dv = (ev-sv)/(ex-sx);
 		}
+//		System.out.println("du2 " + du + ", dv2 " + dv);
 		if(sy > 0 && sy < height) {
 			for (int i = sx; i < ex; i++, su += du, sv += dv) {
-				if(i > 0 && i < width)setPixel(i, sy, z, img.getPixel(su>>SHIFT, sv>>SHIFT), camera);
+				if(i > 1 && i < width-1)setPixel(i, sy, z, img.getPixel(su>>SHIFT, sv>>SHIFT), camera);
 			}
 		}
 	}

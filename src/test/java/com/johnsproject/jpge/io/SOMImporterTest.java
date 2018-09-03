@@ -5,6 +5,7 @@ import org.junit.Test;
 import com.johnsproject.jpge.graphics.Animation;
 import com.johnsproject.jpge.graphics.Material;
 import com.johnsproject.jpge.graphics.Mesh;
+import com.johnsproject.jpge.graphics.Transform;
 import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.Vector2Utils;
 import com.johnsproject.jpge.utils.Vector3Utils;
@@ -52,7 +53,6 @@ public class SOMImporterTest {
 		String rawData = template.replace(" ", "").replace("\n", "");
 		String[] rawVertexesData = rawData.split("Vertexes<")[1].split(">Vertexes", 2)[0].split(",");
 		long[] vertexes = SOMImporter.parseVertexes(rawVertexesData);
-		assert(vertexes.length == rawVertexesData.length/(Mesh.VERTEX_LENGTH-1));
 		long vector = VertexUtils.getVector(vertexes[1]);
 		assert(Vector3Utils.getX(vector) == -100);
 		assert(Vector3Utils.getY(vector) == -100);
@@ -65,7 +65,6 @@ public class SOMImporterTest {
 		String rawData = template.replace(" ", "").replace("\n", "");
 		String[] rawPolygonsData = rawData.split("Polygons<")[1].split(">Polygons", 2)[0].split(",");
 		int[][] polygons = SOMImporter.parsePolygons(rawPolygonsData);
-		//assert(polygons.length == rawPolygonsData.length/(Mesh.POLYGON_LENGTH-1));
 		assert(polygons[1].length == Mesh.POLYGON_LENGTH);
 		assert(polygons[1][Mesh.VERTEX_1] == 3);
 		assert(polygons[1][Mesh.VERTEX_2] == 6);
@@ -81,7 +80,6 @@ public class SOMImporterTest {
 		String rawData = template.replace(" ", "").replace("\n", "");
 		String[] rawUVsData = rawData.split("UVs<")[1].split(">UVs", 2)[0].split(",");
 		int[] uvs = SOMImporter.parseUVs(rawUVsData);
-		assert(uvs.length == rawUVsData.length/(Mesh.UV_LENGTH));
 		assert(Vector2Utils.getX(uvs[1]) == 0);
 		assert(Vector2Utils.getY(uvs[1]) == 100);
 	}
@@ -91,7 +89,6 @@ public class SOMImporterTest {
 		String rawData = template.replace(" ", "").replace("\n", "");
 		String[] rawMaterialsData = rawData.split("Materials<")[1].split(">Materials", 2)[0].split(",");
 		Material[] materials = SOMImporter.parseMaterials(rawMaterialsData);
-		assert(materials.length == rawMaterialsData.length/(Mesh.MATERIAL_LENGTH));
 		int color = materials[0].getColor();
 		assert(ColorUtils.getRed(color) == 0);
 		assert(ColorUtils.getGreen(color) == 133);
@@ -99,15 +96,21 @@ public class SOMImporterTest {
 		assert(ColorUtils.getAlpha(color) == 255);
 	}
 	
-//	@Test
-//	public void parseAnimationsTest() throws Exception {
-//		String rawData = template.replace(" ", "").replace("\n", "");
-//		String[] rawAnimationsData = rawData.split("UVs<")[1].split(">UVs", 2)[0].split(",");
-//		Animation[] animations = SOMImporter.parseAnimations(rawAnimationsData);
-//		assert(animations.length == rawAnimationsData.length/(Mesh));
-//		assert(animations[1].length == Mesh.UV_LENGTH);
-//		assert(animations[1][VectorUtils.X] == 0);
-//		assert(animations[1][VectorUtils.Y] == 100);
-//	}
+	@Test
+	public void parseAnimationsTest() throws Exception {
+		String rawData = template.replace(" ", "").replace("\n", "");
+		String[] rawAnimationsData = rawData.split("Animations<")[1].split(">Animations", 2)[0].split("Animation<");
+		Animation[] animations = SOMImporter.parseAnimations(rawAnimationsData);
+		assert (animations[0].getName().equals("Action"));
+		assert (animations[0].getBonesCount() == 2);
+		Transform bone1 = animations[0].getBone(0, 0);
+		Transform bone2 = animations[0].getBone(1, 0);
+		assert (bone1.getPosition() == Vector3Utils.convert(0, 0, 0));
+		assert (bone1.getRotation() == Vector3Utils.convert(0, 0, 0));
+		assert (bone1.getScale() == Vector3Utils.convert(1, 1, 1));
+		assert (bone2.getPosition() == Vector3Utils.convert(0, 0, 25));
+		assert (bone2.getRotation() == Vector3Utils.convert(75, 0, 0));
+		assert (bone2.getScale() == Vector3Utils.convert(1, 1, 1));
+	}
 	
 }

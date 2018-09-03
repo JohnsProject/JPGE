@@ -49,7 +49,7 @@ public class GameManager {
 		graphicsTimer = new Timer(0, null);
 		graphicsTimer.setInitialDelay((1000/targetFPS));
 		graphicsTimer.addActionListener(new ActionListener() {
-			int delay = (1000/targetFPS);
+			//int delay = (1000/targetFPS);
 			int lastElapsed = 0;
 	        public void actionPerformed(ActionEvent evt) {
 	        	int before = (int)System.nanoTime();

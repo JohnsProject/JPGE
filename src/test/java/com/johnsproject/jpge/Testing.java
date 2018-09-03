@@ -30,7 +30,7 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 		}
 		mesh.playAnimation(0);
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
-		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(0, 0, 1000), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(1, 1, 1)), mesh);
+		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(0, 0, 1000), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(5, 5, 5)), mesh);
 		try {
 			Texture t = new Texture(getClass().getResourceAsStream("/JohnsProject.png"));
 			//Texture t = new Texture("/home/john/Dokumente/Earth.jpeg");

@@ -10,12 +10,13 @@ package com.johnsproject.jpge.utils;
  */
 public class MathUtils {
 
-	private static short[] valuesSin = {0, 17, 35, 53, 71, 89, 107, 124, 142, 160, 177, 195, 212, 230, 247, 265, 
-			282, 299, 316, 333, 350, 366, 383, 400, 416, 432, 448, 464, 480, 496, 511, 
-			527, 542, 557, 572, 587, 601, 616, 630, 644, 658, 671, 685, 698, 711, 724, 
-			736, 748, 760, 772, 784, 795, 806, 817, 828, 838, 848, 858, 868, 877, 886, 
-			895, 904, 912, 920, 928, 935, 942, 949, 955, 962, 968, 973, 979, 984, 989, 
-			993, 997, 1001, 1005, 1008, 1011, 1014, 1016, 1018, 1020, 1021, 1022, 1023, 1023, 1024, 
+	// sin table from 0-90 degrees
+	private static byte[] valuesSin = {0, 2, 4, 6, 8, 11, 13, 15, 17, 20, 22, 24, 26, 28, 30, 33, 
+			35, 37, 39, 41, 43, 45, 47, 50, 52, 54, 56, 58, 60, 62, 63, 
+			65, 67, 69, 71, 73, 75, 77, 78, 80, 82, 83, 85, 87, 88, 90, 
+			92, 93, 95, 96, 98, 99, 100, 102, 103, 104, 106, 107, 108, 109, 110, 
+			111, 113, 114, 115, 116, 116, 117, 118, 119, 120, 121, 121, 122, 123, 123, 
+			124, 124, 125, 125, 126, 126, 126, 127, 127, 127, 127, 127, 127, 127, 127, 
 			};
 
 	
@@ -29,7 +30,7 @@ public class MathUtils {
 	 * <br> i = (i * MathUtils.sin(angle)) >> MathUtils.SHIFT;
 	 * </code>
 	 */
-	public static final byte SHIFT = 10;
+	public static final byte SHIFT = 7;
 	
 	/**
 	 * Returns the sine value of the given angle.
@@ -102,7 +103,7 @@ public class MathUtils {
 	 * @return tangent of angle.
 	 */
 	public static int tan(int angle) {
-		return (sin(angle) * 1000)/ cos(angle);
+		return (sin(angle)<<SHIFT)/ cos(angle);
 	}
 
 	/**
