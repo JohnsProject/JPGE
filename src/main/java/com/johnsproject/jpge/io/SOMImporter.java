@@ -124,7 +124,7 @@ public class SOMImporter {
 	 * @throws ImportExeption
 	 */
 	static int[][] parsePolygons(String[] rawPolygonsData) throws ImportExeption {
-		int step = Mesh.POLYGON_LENGTH;
+		int step = Mesh.POLYGON_LENGTH-1;
 		int[][] polygons = new int[rawPolygonsData.length/step][Mesh.POLYGON_LENGTH];
 		if(rawPolygonsData.length > 2){
 			for (int i = 0; i < rawPolygonsData.length; i+=step) {

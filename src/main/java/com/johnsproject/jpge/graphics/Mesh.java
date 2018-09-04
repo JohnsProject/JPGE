@@ -20,8 +20,8 @@ public class Mesh {
 	private long[] vertexesBuffer;
 	public static final byte VERTEX_1 = 0, VERTEX_2 = 1, VERTEX_3 = 2;
 	public static final byte UV_1 = 4, UV_2 = 5, UV_3 = 6;
-	public static final byte MATERIAL_INDEX = 3;
-	public static final byte POLYGON_LENGTH = 7;
+	public static final byte MATERIAL_INDEX = 3, CULLED = 7;
+	public static final byte POLYGON_LENGTH = 8;
 	private int[][] polygons;
 	public static final byte UV_LENGTH = 2;
 	private int[] uvs;

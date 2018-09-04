@@ -135,4 +135,20 @@ v0.1 - 24/08/2018
 -Added comments to the UpdateEvent class
 -Changed GameManager update from swing Timers to Threads
 -Changed KeyInputManager thread synchronizing from semaphores to synchronized list
+04/09/2018
 -Changed SceneRenderer to work with 2 threads, 1 for transformations, and other for drawing (needs to be refactored, its a mess now)
+-Added SceneRasterizer class
+-Changed graphics update type of UpdateEvent to render and rasterize update type
+-Changed graphicsUpdate thread of GameManager to renderUpdate and rasterizeUpdate
+-Now the SceneRenderer does the transformations and the SceneRasterizer draws the Scene
+-Performance improved with this new graphics pipeline!!!
+-Updated SceneRenderer comments and added comments to the SceneRasterizer class
+
+
+
+
+
+
+
+
+

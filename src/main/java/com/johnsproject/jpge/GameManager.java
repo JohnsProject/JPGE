@@ -14,16 +14,19 @@ public class GameManager {
 		return instance;
 	}
 	
-	private int targetFPS = 30;
+	private int targetFPS = 60;
+	private int renderUpdateRate = 60;
 	private int inputUpdateRate = 30;
 	private int physicsUpdateRate = 30;
 	
-	private Thread graphicsThread;
+	private Thread rasterizeThread;
+	private Thread renderThread;
 	private Thread inputThread;
 	private Thread physicsThread;
 	
 	public GameManager() {
-		updateGraphics();
+		updateRaterizer();
+		updateRenderer();
 		updateInput();
 		updatePhysics();
 	}
@@ -40,14 +43,14 @@ public class GameManager {
 //		physicsTimer.stop();
 //	}
 	
-	void updateGraphics() {
-		graphicsThread = new Thread(new Runnable() {
+	void updateRaterizer() {
+		rasterizeThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				int lastElapsed = 0, before = 0;
 				while (true) {
 					before = (int)System.nanoTime();
-					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.graphics));
+					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.rasterize));
 					lastElapsed = (int)System.nanoTime() - before;
 					try {
 						Thread.sleep(1000/targetFPS);
@@ -57,7 +60,27 @@ public class GameManager {
 				}
 			}
 		});
-		graphicsThread.start();
+		rasterizeThread.start();
+	}
+	
+	void updateRenderer() {
+		renderThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				int lastElapsed = 0, before = 0;
+				while (true) {
+					before = (int)System.nanoTime();
+					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.render));
+					lastElapsed = (int)System.nanoTime() - before;
+					try {
+						Thread.sleep(1000/renderUpdateRate);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		renderThread.start();
 	}
 	
 	void updateInput() {

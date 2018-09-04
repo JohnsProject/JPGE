@@ -12,7 +12,8 @@ public class UpdateEvent {
 	private UpdateType type;
 	
 	public enum UpdateType{
-		graphics,
+		render,
+		rasterize,
 		input,
 		physics
 	}
