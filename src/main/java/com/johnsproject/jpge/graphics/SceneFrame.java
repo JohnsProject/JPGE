@@ -65,7 +65,7 @@ public class SceneFrame extends Frame implements CameraListener, UpdateListener{
 			e.printStackTrace();
 		}
 		//this.addKeyListener(KeyInputManager.getInstance());
-		EventDispatcher.getInstance().addCameraListener(this);
+		GraphicsEventDispatcher.getInstance().addCameraListener(this);
 		com.johnsproject.jpge.event.EventDispatcher.getInstance().addUpdateListener(this);
 		GameManager.getInstance();
 		this.setLayout(null);

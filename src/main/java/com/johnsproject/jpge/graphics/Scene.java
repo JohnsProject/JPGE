@@ -97,7 +97,7 @@ public class Scene {
 	public void addCamera(Camera camera){
 		synchronized (cameras) {
 			cameras.add(camera);
-			EventDispatcher.getInstance().dispatchAddEvent(new CameraEvent(camera));
+			GraphicsEventDispatcher.getInstance().dispatchAddEvent(new CameraEvent(camera));
 		}
 	}
 	
@@ -108,7 +108,7 @@ public class Scene {
 	 */
 	public void removeCamera(Camera camera){
 		synchronized (cameras) {
-			EventDispatcher.getInstance().dispatchRemoveEvent(new CameraEvent(camera));
+			GraphicsEventDispatcher.getInstance().dispatchRemoveEvent(new CameraEvent(camera));
 			cameras.remove(camera);
 		}
 	}

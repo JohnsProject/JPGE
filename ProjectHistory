@@ -114,15 +114,25 @@ v0.1 - 24/08/2018
 -Improved MathUtils sine, cosine, tangent performance
 -Improved affine texture mapper performance (added bitshift to uv interpolation)
 03/09/2018
--Added comments to the Animation class.
--Added comments to the Mesh class.
--Added comments to the Light class.
--Added comments to the Scene class.
--Added comments to the Camera class.
--Added comments to the Texture class.
--Added comments to the Material class.
--Added comments to the Transform class.
--Added comments to the SceneFrame class.
--Added comments to the SceneObject class.
--Added comments to the SceneAnimator class.
--Added comments to the SceneRenderer class.
+-Added comments to the Animation class
+-Added comments to the Mesh class
+-Added comments to the Light class
+-Added comments to the Scene class
+-Added comments to the Camera class
+-Added comments to the Texture class
+-Added comments to the Material class
+-Added comments to the Transform class
+-Added comments to the SceneFrame class
+-Added comments to the SceneObject class
+-Added comments to the SceneAnimator class
+-Added comments to the SceneRenderer class
+-Added comments to the CameraEvent class
+-Renamed EventDispatcher of graphics event package to GraphicsEventDispatcher
+-Added comments to the CameraListener interface
+-Added comments to the GraphicsEventDispatcher class
+-Added comments to the EventDispatcher class
+-Added comments to the UpdateListener interface
+-Added comments to the UpdateEvent class
+-Changed GameManager update from swing Timers to Threads
+-Changed KeyInputManager thread synchronizing from semaphores to synchronized list
+-Changed SceneRenderer to work with 2 threads, 1 for transformations, and other for drawing (needs to be refactored, its a mess now)

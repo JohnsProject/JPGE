@@ -4,11 +4,10 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.TimeUnit;
 
 import com.johnsproject.jpge.GameManager;
 import com.johnsproject.jpge.event.EventDispatcher;
@@ -29,10 +28,8 @@ public class KeyInputManager implements UpdateListener {
 
 	JPGEKeyEvent keyEvent = new JPGEKeyEvent(' ', 0);
 	
-	private List<JPGEKeyListener> keyListeners = new ArrayList<JPGEKeyListener>();
-	private Map<Integer, Character> pressedKeys = new HashMap<Integer, Character>();
-
-	Semaphore semaphore = new Semaphore(1);
+	private List<JPGEKeyListener> keyListeners = Collections.synchronizedList(new ArrayList<JPGEKeyListener>());
+	private Map<Integer, Character> pressedKeys = Collections.synchronizedMap(new HashMap<Integer, Character>());
 	
 	public KeyInputManager() {
 		EventDispatcher.getInstance().addUpdateListener(this);
@@ -43,23 +40,23 @@ public class KeyInputManager implements UpdateListener {
 			public boolean dispatchKeyEvent(KeyEvent e) {
 				switch (e.getID()) {
 				case KeyEvent.KEY_PRESSED:
-					if (getSemaphore()) {
+					synchronized (pressedKeys) {
 						if (!pressedKeys.containsKey(e.getKeyCode())) {
 							pressedKeys.put(e.getKeyCode(), e.getKeyChar());
 						}
-						semaphore.release();
 					}
 					break;
 
 				case KeyEvent.KEY_RELEASED:
-					for (JPGEKeyListener keyListener : keyListeners) {
-						keyEvent.setKey(e.getKeyChar());
-						keyEvent.setKeyCode(e.getKeyCode());
-						keyListener.keyReleased(keyEvent);
-					}
-					if (getSemaphore()) {
-						pressedKeys.remove(e.getKeyCode());
-						semaphore.release();
+					synchronized (keyListeners) {
+						synchronized (pressedKeys) {
+							for (JPGEKeyListener keyListener : keyListeners) {
+								keyEvent.setKey(e.getKeyChar());
+								keyEvent.setKeyCode(e.getKeyCode());
+								keyListener.keyReleased(keyEvent);
+							}
+							pressedKeys.remove(e.getKeyCode());
+						}
 					}
 					break;
 				}
@@ -71,39 +68,28 @@ public class KeyInputManager implements UpdateListener {
 	@Override
 	public void update(UpdateEvent event) {
 		if (event.getUpdateType() == UpdateType.input) {
-			if (getSemaphore()) {
-				for (int key : pressedKeys.keySet()) {
-					for (JPGEKeyListener keyListener : keyListeners) {
-						keyEvent.setKey(pressedKeys.get(key).charValue());
-						keyEvent.setKeyCode(key);
-						keyListener.keyPressed(keyEvent);
+			synchronized (keyListeners) {
+				synchronized (pressedKeys) {
+					for (int key : pressedKeys.keySet()) {
+						for (JPGEKeyListener keyListener : keyListeners) {
+							keyEvent.setKey(pressedKeys.get(key).charValue());
+							keyEvent.setKeyCode(key);
+							keyListener.keyPressed(keyEvent);
+						}
 					}
 				}
-				semaphore.release();
 			}
 		}
 	}
 
 	public void addKeyListener(JPGEKeyListener listener) {
-		if (getSemaphore()) {
+		synchronized (keyListeners) {
 			keyListeners.add(listener);
-			semaphore.release();
 		}
-	}
-
-	public boolean getSemaphore() {
-		boolean permit = false;
-		try {
-			permit = semaphore.tryAcquire(1, TimeUnit.SECONDS);
-		} catch (InterruptedException e) {
-			throw new IllegalStateException(e);
-		}
-		return permit;
 	}
 
 	@Override
 	public String toString() {
-		return "KeyInputManager [keyListeners=" + keyListeners + ", pressedKeys=" + pressedKeys + ", semaphore="
-				+ semaphore + "]";
+		return "KeyInputManager [keyListeners=" + keyListeners + ", pressedKeys=" + pressedKeys + "]";
 	}
 }

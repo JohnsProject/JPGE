@@ -3,7 +3,6 @@ package com.johnsproject.jpge.graphics;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.util.List;
-
 import com.johnsproject.jpge.utils.Vector2Utils;
 import com.johnsproject.jpge.utils.VectorMathUtils;
 import com.johnsproject.jpge.utils.Vector3Utils;
@@ -29,31 +28,67 @@ public class SceneRenderer{
 	private int width = 0, height = 0;
 	private static final int SHIFT = 20;
 	private boolean log = true;
+	private Scene scene = null;
+	private Thread drawThread = new Thread(new Runnable() {
+		
+		@Override
+		public void run() {
+			int maxPolys = 0, renderedPolys = 0;
+			while(true) {
+				if (scene != null) {
+					synchronized (scene) {
+						for (Camera camera : scene.getCameras()) {
+							camera.getViewGraphics().clearRect(0, 0, Vector2Utils.getX(camera.getScreenSize()),  Vector2Utils.getY(camera.getScreenSize()));
+							for (SceneObject obj : scene.getSceneObjects()) {
+								Mesh mesh = obj.getMesh();
+								for (int[] polygon : mesh.getPolygons()) {
+									if (!cullViewFrustum(polygon, mesh, camera)) {
+										if (!cullBackface(polygon, mesh)) {
+											draw(polygon, mesh, camera);
+											renderedPolys++;
+										}
+									}
+									maxPolys++;
+								}
+							}
+							if(log) logData((Graphics2D)camera.getViewGraphics(), renderedPolys, maxPolys, 0);
+							camera.drawBuffer();
+						}
+						resetZBuffer();
+					}
+				}
+				maxPolys = 0;
+				renderedPolys = 0;
+				try {
+					Thread.sleep(16);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	});
 	
 	public SceneRenderer(int width, int height) {
 		zBuffer = new int[width*height];
 		this.width = width;
 		this.height = height;
+		drawThread.start();
 	}
 	
 	public void render(Scene scene, int lastTime) {
-		resetZBuffer();
-		for (Camera camera : scene.getCameras()) {
-			camera.getViewGraphics().clearRect(0, 0, Vector2Utils.getX(camera.getScreenSize()),  Vector2Utils.getY(camera.getScreenSize()));
-			int maxPolys = 0;
-			for (SceneObject sceneObject : scene.getSceneObjects()) {
-				if (sceneObject.changed() || camera.changed()) {
-					render(sceneObject, camera, scene.getLights());
+		this.scene = scene;
+		synchronized (this.scene) {	
+			for (Camera camera : scene.getCameras()) {
+				for (SceneObject sceneObject : scene.getSceneObjects()) {
+					if (sceneObject.changed() || camera.changed()) {
+						render(sceneObject, camera, scene.getLights());
+					}
 				}
-				maxPolys += sceneObject.getMesh().getPolygons().length;
+				camera.changed(false);
 			}
-			camera.changed(false);
-			if(log) logData((Graphics2D)camera.getViewGraphics(), maxPolys, lastTime);
-			camera.drawBuffer();
-		}
-		renderedPolys = 0;
-		for (SceneObject sceneObject : scene.getSceneObjects()) {
-			sceneObject.changed(false);
+			for (SceneObject sceneObject : scene.getSceneObjects()) {
+				sceneObject.changed(false);
+			}
 		}
 	}
 	
@@ -78,13 +113,13 @@ public class SceneRenderer{
 			//System.out.println(VertexUtils.toString(vertex));
 			mesh.setBufferedVertex(i, vertex);
 		}
-		for (int[] polygon : mesh.getPolygons()) {
-			if (!cullViewFrustum(polygon, mesh, camera)) {
-				if (!cullBackface(polygon, mesh)) {
-					draw(polygon, mesh, camera);
-				}
-			}
-		}
+//		for (int[] polygon : mesh.getPolygons()) {
+//			if (!cullViewFrustum(polygon, mesh, camera)) {
+//				if (!cullBackface(polygon, mesh)) {
+//					draw(polygon, mesh, camera);
+//				}
+//			}
+//		}
 	}
 
 	long projectVertex(long vertex, long objectPosition, Camera camera) {
@@ -139,8 +174,9 @@ public class SceneRenderer{
 		return true;
 	}
 	
+	
+	
 	void draw(int[] polygon, Mesh mesh, Camera camera) {
-		renderedPolys++;
 		long vt1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
 		long vt2 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_2]);
 		long vt3 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_3]);
@@ -339,10 +375,9 @@ public class SceneRenderer{
 			}
 		}
 	}
-	
-	private int renderedPolys = 0;
+
 	private final Color backColor = new Color(160, 160, 160, 160);
-	void logData(Graphics2D buffer, int maxPolys, int lastTime) {
+	void logData(Graphics2D buffer, int renderedPolys, int maxPolys, int lastTime) {
 		 buffer.setColor(backColor);
 		 buffer.fillRect(5, 38, 230, 50);
 		 buffer.setColor(Color.WHITE);

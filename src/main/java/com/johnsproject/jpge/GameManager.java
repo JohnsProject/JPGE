@@ -1,10 +1,5 @@
 package com.johnsproject.jpge;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.Timer;
-
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
@@ -23,9 +18,9 @@ public class GameManager {
 	private int inputUpdateRate = 30;
 	private int physicsUpdateRate = 30;
 	
-	private Timer graphicsTimer;
-	private Timer inputTimer;
-	private Timer physicsTimer;
+	private Thread graphicsThread;
+	private Thread inputThread;
+	private Thread physicsThread;
 	
 	public GameManager() {
 		updateGraphics();
@@ -33,60 +28,75 @@ public class GameManager {
 		updatePhysics();
 	}
 	
-	public void play() {
-		graphicsTimer.start();
-		inputTimer.start();
-		physicsTimer.start();
-	}
+//	public void play() {
+//		graphicsThread.start();
+//		inputTimer.start();
+//		physicsTimer.start();
+//	}
 	
-	public void pause() {
-		graphicsTimer.stop();
-		inputTimer.stop();
-		physicsTimer.stop();
-	}
+//	public void pause() {
+//		graphicsTimer.();
+//		inputTimer.stop();
+//		physicsTimer.stop();
+//	}
 	
 	void updateGraphics() {
-		graphicsTimer = new Timer(0, null);
-		graphicsTimer.setInitialDelay((1000/targetFPS));
-		graphicsTimer.addActionListener(new ActionListener() {
-			//int delay = (1000/targetFPS);
-			int lastElapsed = 0;
-	        public void actionPerformed(ActionEvent evt) {
-	        	int before = (int)System.nanoTime();
-	        	EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.graphics));
-	        	//graphicsTimer.setInitialDelay(Math.abs(((int)lastElapsed>>1) / delay)>>48);
-	        	lastElapsed = (int)System.nanoTime() - before;
-	        	graphicsTimer.restart();
-	        }
-	    });
-		graphicsTimer.start();
+		graphicsThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				int lastElapsed = 0, before = 0;
+				while (true) {
+					before = (int)System.nanoTime();
+					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.graphics));
+					lastElapsed = (int)System.nanoTime() - before;
+					try {
+						Thread.sleep(1000/targetFPS);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		graphicsThread.start();
 	}
 	
 	void updateInput() {
-		inputTimer = new Timer(1000/inputUpdateRate, null);
-		inputTimer.addActionListener(new ActionListener() {
-			int lastElapsed = 0;
-	        public void actionPerformed(ActionEvent evt) {
-	        	int before = (int)System.nanoTime();
-	        	EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.input));
-	        	lastElapsed = (int)System.nanoTime() - before;
-	        	inputTimer.restart();
-	        }
-	    });
-		inputTimer.start();
+		inputThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				int lastElapsed = 0, before = 0;
+				while (true) {
+					before = (int)System.nanoTime();
+					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.input));
+					lastElapsed = (int)System.nanoTime() - before;
+					try {
+						Thread.sleep(1000/inputUpdateRate);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		inputThread.start();
 	}
 	
 	void updatePhysics() {
-		physicsTimer = new Timer(1000/physicsUpdateRate, null);
-		physicsTimer.addActionListener(new ActionListener() {
-			int lastElapsed = 0;
-	        public void actionPerformed(ActionEvent evt) {
-	        	int before = (int)System.nanoTime();
-	        	EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.physics));
-	        	lastElapsed = (int)System.nanoTime() - before;
-	        	physicsTimer.restart();
-	        }
-	    });
-		physicsTimer.start();
+		physicsThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				int lastElapsed = 0, before = 0;
+				while (true) {
+					before = (int)System.nanoTime();
+					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.physics));
+					lastElapsed = (int)System.nanoTime() - before;
+					try {
+						Thread.sleep(1000/physicsUpdateRate);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		physicsThread.start();
 	}
 }
