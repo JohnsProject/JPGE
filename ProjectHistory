@@ -143,7 +143,9 @@ v0.1 - 24/08/2018
 -Now the SceneRenderer does the transformations and the SceneRasterizer draws the Scene
 -Performance improved with this new graphics pipeline!!!
 -Updated SceneRenderer comments and added comments to the SceneRasterizer class
-
+05/09/2018
+-Added PixelShader class! (is called to shade when a pixel in the Camera is set)
+-Added Shader class! (is called to shade the vertexes and polygons by the SceneRenderer)
 
 
 

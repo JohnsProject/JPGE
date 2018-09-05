@@ -23,26 +23,27 @@ public class MathUtilsTest {
 //		}
 //	}
 //	
-//	@Test
-//	public void genLookupTableTest() throws Exception {
-//		int langle = 0;
-//		System.out.print("private static short[] valuesSin = {");
-//		for (int angle = 0; angle < 91; angle++) {
-//			System.out.print((int)(Math.sin(Math.toRadians(angle))*128) + ", ");
-//			if (angle >= langle + 15) {
-//				System.out.println("");
-//				langle = angle;
-//			}
-//		}
-//		System.out.println("};");
-//	}
+	@Test
+	public void genLookupTableTest() throws Exception {
+		int langle = 0;
+		System.out.print("private static short[] valuesSin = {");
+		for (int angle = 0; angle < 91; angle++) {
+			System.out.print((int)Math.round((Math.sin(Math.toRadians(angle)) * 256)) + ", ");
+			if (angle >= langle + 15) {
+				System.out.println("");
+				langle = angle;
+			}
+		}
+		System.out.println("};");
+	}
 	
 	@Test
 	public void sinTest() throws Exception {
-		int value = 200, precision = 2;
+		//System.out.println(1<< 20);
+		int value = 200, precision = 1;
 		for (int angle = 0; angle < 360; angle++) {
 			int mi = ((value * MathUtils.sin(angle)) >> MathUtils.SHIFT);
-			int mf = (int)((value * Math.sin(Math.toRadians(angle))));
+			int mf = (int)Math.round(((value * Math.sin(Math.toRadians(angle)))));
 			System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
 			assert(mi <= mf + precision);
 			assert(mi >= mf - precision);
@@ -51,10 +52,10 @@ public class MathUtilsTest {
 	
 	@Test
 	public void cosTest() throws Exception {
-		int value = 200, precision = 2;
+		int value = 200, precision = 1;
 		for (int angle = 0; angle < 360; angle++) {
 			int mi = (value * MathUtils.cos(angle)) >> MathUtils.SHIFT;
-			int mf = (int)((value * Math.cos(Math.toRadians(angle))));
+			int mf = (int)Math.round(((value * Math.cos(Math.toRadians(angle)))));
 			System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
 			assert(mi <= mf + precision);
 			assert(mi >= mf - precision);
@@ -67,7 +68,7 @@ public class MathUtilsTest {
 		// until 90 because 90 is infinity
 		for (int angle = 0; angle < 90; angle++) {
 			int mi = (value * MathUtils.tan(angle)) >> MathUtils.SHIFT;
-			int mf = (int)((value * Math.tan(Math.toRadians(angle))));
+			int mf = (int)Math.round(((value * Math.tan(Math.toRadians(angle)))));
 			System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
 			assert(mi <= mf + precision);
 			assert(mi >= mf - precision);

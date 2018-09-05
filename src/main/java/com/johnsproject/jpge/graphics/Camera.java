@@ -33,6 +33,7 @@ public class Camera extends Canvas{
 	private boolean changed = false;
 	private ProjectionType projectionType = ProjectionType.perspective;
 	private RenderingType renderingType = RenderingType.textured;
+	private PixelShader shader;
 	
 	/**
 	 * Creates a new instance of the Camera class filled with the given values.
@@ -48,16 +49,17 @@ public class Camera extends Canvas{
 		this.screenSize = screenSize;
 		int px = Vector2Utils.getX(screenPosition), py = Vector2Utils.getY(screenPosition);
 		int sx = Vector2Utils.getX(screenSize), sy = Vector2Utils.getY(screenSize);
-		halfscreenSize = Vector2Utils.setX(halfscreenSize, sx/2);
-		halfscreenSize = Vector2Utils.setY(halfscreenSize, sy/2);
+		this.halfscreenSize = Vector2Utils.setX(halfscreenSize, sx/2);
+		this.halfscreenSize = Vector2Utils.setY(halfscreenSize, sy/2);
 		this.scaleFactor = Math.abs((sx+sy)>>7)+1;
 		this.setSize(sx, sy);
 		this.screenPosition = screenPosition;
 		this.setLocation(px, py);
-		viewBuffer = new BufferedImage(sx, sy, BufferedImage.TYPE_INT_ARGB_PRE);
-		viewBuffer.setAccelerationPriority(1);
-		viewBufferData = ((DataBufferInt)viewBuffer.getRaster().getDataBuffer()).getData();
+		this.viewBuffer = new BufferedImage(sx, sy, BufferedImage.TYPE_INT_ARGB_PRE);
+		this.viewBuffer.setAccelerationPriority(1);
+		this.viewBufferData = ((DataBufferInt)viewBuffer.getRaster().getDataBuffer()).getData();
 		this.changed = true;
+		this.shader = new PixelShader();
 	}
 	
 	/**
@@ -82,7 +84,8 @@ public class Camera extends Canvas{
 	 */
 	public void setPixel(int x, int y, int color){
 		//if((x > 0 && y > 0) && (x < rect[0] && y < rect[1])) {
-			viewBufferData[x + (y * Vector2Utils.getX(screenSize))] = color;
+			//viewBufferData[x + (y * Vector2Utils.getX(screenSize))] = color;
+			shader.shadePixel(x, y, color, Vector2Utils.getX(screenSize), viewBufferData);
 		//}
 	}
 	
@@ -278,6 +281,24 @@ public class Camera extends Canvas{
 	 */
 	void changed(boolean changed) {
 		this.changed = changed;
+	}
+	
+	/**
+	 * Returns the {@link PixelShader} used by this camera.
+	 * 
+	 * @return {@link PixelShader} used by this camera.
+	 */
+	public PixelShader getShader() {
+		return shader;
+	}
+
+	/**
+	 * Sets the {@link PixelShader} of this camera.
+	 * 
+	 * @param shader {@link PixelShader} to set.
+	 */
+	public void setShader(PixelShader shader) {
+		this.shader = shader;
 	}
 
 	@Override

@@ -44,8 +44,10 @@ public class Transform {
 	 * @param z how much to move in the z axis.
 	 */
 	public void translateLocal(int x, int y, int z) {
-		//long dist = Vector3Utils.convert(x, y, z);
-		position = VectorMathUtils.add(position, Vector3Utils.convert(x, y, z));
+		long vector = Vector3Utils.convert(x, y, z);
+		long rot = Vector3Utils.convert(-Vector3Utils.getX(rotation), -Vector3Utils.getY(rotation), -Vector3Utils.getZ(rotation));
+		vector = VectorMathUtils.movePointByAnglesXYZ(vector, rot);
+		position = VectorMathUtils.add(position, vector);
 	}
 	
 	/**

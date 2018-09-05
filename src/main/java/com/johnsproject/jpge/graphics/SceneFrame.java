@@ -17,6 +17,8 @@ import com.johnsproject.jpge.io.FileIO;
  * its like a window or portal that shows another world.
  * It contains a {@link SceneRenderer} that is called to render the {@link Scene} when 
  * it receives an {@link UpdateEvent} from the {@link GameManager}.
+ * It contains a {@link SceneRasterizer} that is called to rasterize the {@link Scene} when 
+ * it receives an {@link UpdateEvent} from the {@link GameManager}.
  * It contains a {@link SceneAnimator} that is called to animate the {@link Scene} when 
  * it receives an {@link UpdateEvent} from the {@link GameManager}.
  * 

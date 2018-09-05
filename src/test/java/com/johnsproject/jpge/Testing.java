@@ -41,6 +41,7 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 		}
 		//sceneObject2 = new SceneObject("test2", new Vector3(0, 0, 150), new Vector3(0, 0, 0), new Vector3(1, 1, 1), mesh2);
 		camera = new Camera("testCam", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)), Vector2Utils.convert(0, 0), Vector2Utils.convert(w, h));
+		//camera.setShader(new TestPixelShader());
 		//camera2 = new Camera("testCam2", new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {700, 200}, new int[] {w/2, h/2});	
 		light = new Light("testLight", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)));
 		sceneFrame.getScene().addSceneObject(sceneObject);
@@ -51,7 +52,8 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 		sceneFrame.getScene().addLight(light);
 		//sceneObject.getMesh().playAnimation(1);
 		KeyInputManager.getInstance().addKeyListener(this);
-		MouseInputManager.getInstance().addMouseListener(this);
+		MouseInputManager mim = new MouseInputManager(sceneFrame);
+		mim.addMouseListener(this);
 	}
 
 	public void keyPressed(JPGEKeyEvent event) {
@@ -125,10 +127,11 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 	@Override
 	public void positionUpdate(JPGEMouseEvent event) {
 		if (dragged) {
-			int x = (w/2)-Vector2Utils.getX(event.getPosition());
-			int y = (h/2)-Vector2Utils.getY(event.getPosition());
+			int x = Vector2Utils.getX(event.getPosition()) - (w/2);
+			int y = Vector2Utils.getY(event.getPosition()) - (h/2);
 			int z = Vector3Utils.getZ(camera.getTransform().getRotation());
-			sceneObject.getTransform().rotate(x>>15, y>>15, z);
+			//System.out.println("x " + x + ", y " + y + ", z " + z);
+			camera.getTransform().rotate(y/(h/5), x/(w/5), z);
 		}
 	}
 }

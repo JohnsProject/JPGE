@@ -10,6 +10,7 @@ public class SceneObject {
 	private String name;
 	private Transform transform;
 	private Mesh mesh;
+	private Shader shader;
 	private boolean changed = false;
 
 	/**
@@ -23,7 +24,8 @@ public class SceneObject {
 		this.name = name;
 		this.transform = transform;
 		this.mesh = mesh;
-		changed = true;
+		this.changed = true;
+		this.shader = new Shader();
 	}
 
 	/**
@@ -84,6 +86,24 @@ public class SceneObject {
 		this.changed = changed;
 	}
 	
+	/**
+	 * Returns the {@link Shader} used by this scene object.
+	 * 
+	 * @return {@link Shader} used by this scene object.
+	 */
+	public Shader getShader() {
+		return shader;
+	}
+
+	/**
+	 * Sets the {@link Shader} used by this scene object equals to the given {@link Shader}.
+	 * 
+	 * @param shader {@link Shader} to set.
+	 */
+	public void setShader(Shader shader) {
+		this.shader = shader;
+	}
+
 	@Override	
 	public String toString() {
 		return "SceneObject [name=" + name + ", transform=" + transform.toString() + ", mesh=" + mesh.toString() + "]";
