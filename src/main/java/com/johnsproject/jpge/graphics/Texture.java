@@ -109,6 +109,15 @@ public class Texture {
 	}
 	
 	/**
+	 * Returns all pixels of this texture.
+	 * 
+	 * @return all pixels of this texture.
+	 */
+	public int[] getPixels() {
+		return image;
+	}
+	
+	/**
 	 * Returns the width of this texture.
 	 * 
 	 * @return width of this texture.

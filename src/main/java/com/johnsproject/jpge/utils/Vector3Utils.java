@@ -1,8 +1,8 @@
 package com.johnsproject.jpge.utils;
 
 /**
- * The Vector3Utils class provides methods for generating and reading 3d vectors.
- * This 3d vectors can be used as 3d position, rotation and scale.
+ * The Vector3Utils class provides methods for generating and reading 3D vectors.
+ * This 3D vectors can be used as 3D position, rotation and scale.
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */

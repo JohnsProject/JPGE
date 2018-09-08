@@ -19,11 +19,6 @@ public class Scene {
 	private final List<Light> lights = Collections.synchronizedList(new ArrayList<Light>());
 	
 	/**
-	 * Creates a new empty instance of the Scene class.
-	 */
-	public Scene() {}
-	
-	/**
 	 * Adds the given {@link SceneObject} to this scene.
 	 * 
 	 * @param sceneObject {@link SceneObject} to add.

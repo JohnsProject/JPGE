@@ -146,7 +146,9 @@ v0.1 - 24/08/2018
 05/09/2018
 -Added PixelShader class! (is called to shade when a pixel in the Camera is set)
 -Added Shader class! (is called to shade the vertexes and polygons by the SceneRenderer)
-
+08/09/2018
+-Updated some comments
+-Added RenderUtils class (provides methods needed at the rendering process)
 
 
 

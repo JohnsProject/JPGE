@@ -114,7 +114,7 @@ public class Camera extends Canvas{
 	 * 
 	 * @return half size of this camera at the {@link SceneFrame}.
 	 */
-	int getHalfScreenSize() {
+	public int getHalfScreenSize() {
 		return this.halfscreenSize;
 	}
 	
@@ -134,7 +134,7 @@ public class Camera extends Canvas{
 	 * 
 	 * @return scale factor of this camera.
 	 */
-	int getScaleFactor() {
+	public int getScaleFactor() {
 		return this.scaleFactor;
 	}
 	

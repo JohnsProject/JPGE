@@ -2,6 +2,7 @@ package com.johnsproject.jpge.graphics;
 
 import java.util.List;
 
+import com.johnsproject.jpge.utils.RenderUtils;
 import com.johnsproject.jpge.utils.VectorMathUtils;
 import com.johnsproject.jpge.utils.VertexUtils;
 
@@ -11,6 +12,29 @@ import com.johnsproject.jpge.utils.VertexUtils;
  * @author John´s Project - John Konrad Ferraz Salomon
  */
 public class Shader {
+	
+//	public void shade(int vertex, int polygon, Mesh mesh, Transform objectTransform, Camera camera, List<Light> lights) {
+//		Transform objt = objectTransform;
+//		Transform camt = camera.getTransform();
+//		long vector = VertexUtils.getVector(vertex);
+//		//transforming vertex in object space
+//		vector = VectorMathUtils.movePointByScale(vector, objt.getScale());
+//		vector = VectorMathUtils.movePointByAnglesXYZ(vector, objt.getRotation());
+//		vector = VectorMathUtils.add(vector, objt.getPosition());
+//		//transforming vertex in camera space
+//		vector = VectorMathUtils.subtract(vector, camt.getPosition());
+//		vector = VectorMathUtils.movePointByAnglesXYZ(vector, camt.getRotation());
+//		//projecting vector to screen coordinates
+//		vector = SceneRenderer.projectVertex(vector, objt.getPosition(), camera);
+//		vertex = VertexUtils.setVector(vertex, vector);
+//		//mesh
+//		polygon[Mesh.CULLED] = 1;
+//		if (!SceneRenderer.cullViewFrustum(polygon, mesh, camera)) {
+//			if (!SceneRenderer.cullBackface(polygon, mesh)) {
+//				polygon[Mesh.CULLED] = 0;
+//			}
+//		}
+//	}
 	
 	/**
 	 * This method by the {@link SceneRenderer} at the rendering process.
@@ -32,8 +56,8 @@ public class Shader {
 		//transforming vertex in camera space
 		vector = VectorMathUtils.subtract(vector, camt.getPosition());
 		vector = VectorMathUtils.movePointByAnglesXYZ(vector, camt.getRotation());
-		//projecting vector to screen coordinates
-		vector = SceneRenderer.projectVertex(vector, objt.getPosition(), camera);
+		//projecting vertex into screen coordinates
+		vector = RenderUtils.project(vector, objt.getPosition(), camera);
 		vertex = VertexUtils.setVector(vertex, vector);
 		return vertex;
 	}
@@ -48,8 +72,8 @@ public class Shader {
 	 */
 	public int[] shadePolygon(int[] polygon, Mesh mesh, Camera camera) {
 		polygon[Mesh.CULLED] = 1;
-		if (!SceneRenderer.cullViewFrustum(polygon, mesh, camera)) {
-			if (!SceneRenderer.cullBackface(polygon, mesh)) {
+		if (!RenderUtils.isInsideViewFrustum(polygon, mesh, camera)) {
+			if (!RenderUtils.isBackface(polygon, mesh)) {
 				polygon[Mesh.CULLED] = 0;
 			}
 		}

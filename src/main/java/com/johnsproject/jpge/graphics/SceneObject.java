@@ -12,6 +12,7 @@ public class SceneObject {
 	private Mesh mesh;
 	private Shader shader;
 	private boolean changed = false;
+	private boolean active = true;
 
 	/**
 	 * Creates a new instance of the SceneObject class filled with the given values.
@@ -102,6 +103,25 @@ public class SceneObject {
 	 */
 	public void setShader(Shader shader) {
 		this.shader = shader;
+	}
+
+	/**
+	 * Returns if this object is active or not.
+	 * 
+	 * @return if this object is active or not.
+	 */
+	public boolean isActive() {
+		return active;
+	}
+
+	/**
+	 * Sets this object active or not.
+	 * This object will only be rendered if its active.
+	 * 
+	 * @param active
+	 */
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	@Override	

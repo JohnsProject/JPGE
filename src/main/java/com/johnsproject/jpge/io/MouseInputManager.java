@@ -62,10 +62,14 @@ public class MouseInputManager implements UpdateListener {
 							if (key == RIGHT) mouseListener.rightClick(mouseEvent);
 						}
 						pressedKeys.clear();
-						if(frame != null && frame.getMousePosition() != null) {
-							x = (int)frame.getMousePosition().getX();
-							y = (int)frame.getMousePosition().getY();
-						}
+//						if (frame != null) {
+//							if (frame.getMousePosition() != null) {
+//								if (frame.getMousePosition().getLocation() != null) {
+//									x = (int)frame.getMousePosition().getX();
+//									y = (int)frame.getMousePosition().getY();
+//								}
+//							}
+//						}
 						mouseEvent.setPosition(Vector2Utils.convert(x, y));
 						mouseListener.positionUpdate(mouseEvent);
 					}

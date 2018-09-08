@@ -1,8 +1,8 @@
 package com.johnsproject.jpge.utils;
 
 /**
- * The Vector2Utils class provides methods for generating and reading 2d vectors.
- * This 2d vectors can be used as 2d position, rotation and scale.
+ * The Vector2Utils class provides methods for generating and reading 2D vectors.
+ * This 2D vectors can be used as 2D position, rotation and scale.
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */

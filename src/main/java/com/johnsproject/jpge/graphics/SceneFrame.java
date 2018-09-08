@@ -117,13 +117,15 @@ public class SceneFrame extends Frame implements CameraListener, UpdateListener{
 		return animator;
 	}
 	
+	private int renderTime = 0;
 	@Override
 	public void update(UpdateEvent event) {
 		if(event.getUpdateType() == UpdateType.render) {
 			renderer.render(getScene());
+			renderTime = event.getElapsedTime();
 		}
 		if(event.getUpdateType() == UpdateType.rasterize) {
-			rasterizer.draw(getScene(), event.getElapsedTime());
+			rasterizer.draw(getScene(), event.getElapsedTime(), renderTime);
 		}
 		if(event.getUpdateType() == animator.getUpdateType()) {
 			animator.animate(getScene());

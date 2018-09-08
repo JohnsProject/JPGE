@@ -11,7 +11,7 @@ package com.johnsproject.jpge.utils;
 public class MathUtils {
 
 	// sin table from 0-90 degrees
-	private static short[] valuesSin = {0, 4, 9, 13, 18, 22, 27, 31, 36, 40, 44, 49, 53, 58, 62, 66, 
+	private static final short[] valuesSin = {0, 4, 9, 13, 18, 22, 27, 31, 36, 40, 44, 49, 53, 58, 62, 66, 
 			71, 75, 79, 83, 88, 92, 96, 100, 104, 108, 112, 116, 120, 124, 128, 
 			132, 136, 139, 143, 147, 150, 154, 158, 161, 165, 168, 171, 175, 178, 181, 
 			184, 187, 190, 193, 196, 199, 202, 204, 207, 210, 212, 215, 217, 219, 222, 
@@ -19,7 +19,24 @@ public class MathUtils {
 			248, 249, 250, 251, 252, 253, 254, 254, 255, 255, 255, 256, 256, 256, 256, 
 			};
 
-
+	// used by the power method
+	static final short[] highest_bit_set = {
+	        0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+	        5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+	        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 255, // anything past 63 is a guaranteed overflow with base > 1
+	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
+	    };
 	
 	/**
 	 * This value is used to normalize the values that needs to be modified by sin, cos.
@@ -227,5 +244,64 @@ public class MathUtils {
 		int x = r + (int) System.nanoTime();
 		r *= x >> 1;
 		return (int) x;
+	}
+	
+	/**
+	 * Returns the square root of the given number.
+	 * If number < 0 the method returns 0.
+	 * 
+	 * @param number number.
+	 * @return square root of the given number.
+	 */
+	public static int sqrt(int number) {
+		if (number < 0) return 0;
+		if (number < 2) return number;
+		int sc = sqrt(number >> 2) << 1;
+		int lc = sc + 1;
+		if (lc * lc > number) return sc;
+		return lc;
+	}
+	
+	/**
+	 * Returns the power of the given number.
+	 * 
+	 * @param base base.
+	 * @param exp exp.
+	 * @return power of the given number.
+	 */
+	public static int pow(int base, int exp) {
+
+	    int result = 1;
+
+	    switch (highest_bit_set[exp]) {
+	    case 255: // we use 255 as an overflow marker and return 0 on overflow/underflow
+	        if (base == 1) return 1;
+	        if (base == -1) return 1 - 2 * (exp & 1);
+	        return 0;
+	    case 6:
+	        if ((exp & 1) != 0) result *= base;
+	        exp >>= 1;
+	        base *= base;
+	    case 5:
+	        if ((exp & 1) != 0) result *= base;
+	        exp >>= 1;
+	        base *= base;
+	    case 4:
+	        if ((exp & 1) != 0) result *= base;
+	        exp >>= 1;
+	        base *= base;
+	    case 3:
+	        if ((exp & 1) != 0) result *= base;
+	        exp >>= 1;
+	        base *= base;
+	    case 2:
+	        if ((exp & 1) != 0) result *= base;
+	        exp >>= 1;
+	        base *= base;
+	    case 1:
+	        if ((exp & 1) != 0) result *= base;
+	    default:
+	        return result;
+	    }
 	}
 }

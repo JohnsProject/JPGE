@@ -23,19 +23,19 @@ public class MathUtilsTest {
 //		}
 //	}
 //	
-	@Test
-	public void genLookupTableTest() throws Exception {
-		int langle = 0;
-		System.out.print("private static short[] valuesSin = {");
-		for (int angle = 0; angle < 91; angle++) {
-			System.out.print((int)Math.round((Math.sin(Math.toRadians(angle)) * 256)) + ", ");
-			if (angle >= langle + 15) {
-				System.out.println("");
-				langle = angle;
-			}
-		}
-		System.out.println("};");
-	}
+//	@Test
+//	public void genLookupTableTest() throws Exception {
+//		int langle = 0;
+//		System.out.print("private static short[] valuesSin = {");
+//		for (int angle = 0; angle < 91; angle++) {
+//			System.out.print((int)Math.round((Math.sin(Math.toRadians(angle)) * 256)) + ", ");
+//			if (angle >= langle + 15) {
+//				System.out.println("");
+//				langle = angle;
+//			}
+//		}
+//		System.out.println("};");
+//	}
 	
 	@Test
 	public void sinTest() throws Exception {
@@ -44,7 +44,7 @@ public class MathUtilsTest {
 		for (int angle = 0; angle < 360; angle++) {
 			int mi = ((value * MathUtils.sin(angle)) >> MathUtils.SHIFT);
 			int mf = (int)Math.round(((value * Math.sin(Math.toRadians(angle)))));
-			System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
+			//System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
 			assert(mi <= mf + precision);
 			assert(mi >= mf - precision);
 		}
@@ -56,7 +56,7 @@ public class MathUtilsTest {
 		for (int angle = 0; angle < 360; angle++) {
 			int mi = (value * MathUtils.cos(angle)) >> MathUtils.SHIFT;
 			int mf = (int)Math.round(((value * Math.cos(Math.toRadians(angle)))));
-			System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
+			//System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
 			assert(mi <= mf + precision);
 			assert(mi >= mf - precision);
 		}
@@ -69,7 +69,7 @@ public class MathUtilsTest {
 		for (int angle = 0; angle < 90; angle++) {
 			int mi = (value * MathUtils.tan(angle)) >> MathUtils.SHIFT;
 			int mf = (int)Math.round(((value * Math.tan(Math.toRadians(angle)))));
-			System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
+			//System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
 			assert(mi <= mf + precision);
 			assert(mi >= mf - precision);
 		}
@@ -124,5 +124,17 @@ public class MathUtilsTest {
 		for (int i = 0; i < values.length; i++) {
 			assert(random != values[i]);
 		}
+	}
+	
+	@Test
+	public void sqrtTest() throws Exception {
+		assert(MathUtils.sqrt(25) == 5);
+		assert(MathUtils.sqrt(100) == 10);
+	}
+	
+	@Test
+	public void pow2Test() throws Exception {
+		assert(MathUtils.sqrt(MathUtils.pow(5,2)) == 5);
+		assert(MathUtils.sqrt(MathUtils.pow(50,2)) == 50);
 	}
 }
