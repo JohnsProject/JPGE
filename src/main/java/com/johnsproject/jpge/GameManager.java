@@ -14,18 +14,15 @@ public class GameManager {
 		return instance;
 	}
 	
-	private int targetFPS = 50;
 	private int renderUpdateRate = 60;
 	private int inputUpdateRate = 30;
 	private int physicsUpdateRate = 30;
 	
-	private Thread rasterizeThread;
 	private Thread renderThread;
 	private Thread inputThread;
 	private Thread physicsThread;
 	
 	public GameManager() {
-		updateRaterizer();
 		updateRenderer();
 		updateInput();
 		updatePhysics();
@@ -42,26 +39,6 @@ public class GameManager {
 //		inputTimer.stop();
 //		physicsTimer.stop();
 //	}
-	
-	void updateRaterizer() {
-		rasterizeThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				int lastElapsed = 0, before = 0;
-				while (true) {
-					before = (int)System.nanoTime();
-					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.rasterize));
-					lastElapsed = (int)System.nanoTime() - before;
-					try {
-						Thread.sleep(1000/targetFPS);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		rasterizeThread.start();
-	}
 	
 	void updateRenderer() {
 		renderThread = new Thread(new Runnable() {

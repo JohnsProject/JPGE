@@ -29,7 +29,6 @@ public class SceneFrame extends Frame implements CameraListener, UpdateListener{
 	private static final long serialVersionUID = -841144266539311921L;
 	private Scene scene;
 	private SceneRenderer renderer;
-	private SceneRasterizer rasterizer;
 	private SceneAnimator animator;
 	
 	/**
@@ -57,11 +56,13 @@ public class SceneFrame extends Frame implements CameraListener, UpdateListener{
 		initializeFrame();
 	}
 	
+	/**
+	 * Initializes the components and values of this scene frame.
+	 */
 	void initializeFrame(){
 		this.setResizable(false);
 		this.setVisible(true);
-		renderer = new SceneRenderer();
-		rasterizer = new SceneRasterizer(getWidth(), getHeight());
+		renderer = new SceneRenderer(getWidth(), getHeight());
 		animator = new SceneAnimator();
 		try {
 			setIconImage(FileIO.loadImage(getClass().getResourceAsStream("/JohnsProjectLogo.png")));
@@ -117,15 +118,10 @@ public class SceneFrame extends Frame implements CameraListener, UpdateListener{
 		return animator;
 	}
 	
-	private int renderTime = 0;
 	@Override
 	public void update(UpdateEvent event) {
 		if(event.getUpdateType() == UpdateType.render) {
-			renderer.render(getScene());
-			renderTime = event.getElapsedTime();
-		}
-		if(event.getUpdateType() == UpdateType.rasterize) {
-			rasterizer.draw(getScene(), event.getElapsedTime(), renderTime);
+			renderer.render(getScene(), event.getElapsedTime());
 		}
 		if(event.getUpdateType() == animator.getUpdateType()) {
 			animator.animate(getScene());

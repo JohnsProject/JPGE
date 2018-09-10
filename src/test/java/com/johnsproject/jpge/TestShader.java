@@ -8,9 +8,7 @@ import com.johnsproject.jpge.graphics.Mesh;
 import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
 import com.johnsproject.jpge.graphics.Shader;
 import com.johnsproject.jpge.graphics.Transform;
-import com.johnsproject.jpge.utils.MathUtils;
 import com.johnsproject.jpge.utils.RenderUtils;
-import com.johnsproject.jpge.utils.Vector3Utils;
 import com.johnsproject.jpge.utils.VectorMathUtils;
 import com.johnsproject.jpge.utils.VertexUtils;
 
@@ -50,12 +48,10 @@ public class TestShader extends Shader{
 	}
 
 	@Override
-	public int[] shadePolygon(int[] polygon, Mesh mesh, Camera camera) {
-		//camera.setRenderingType(RenderingType.solid);
-		polygon[Mesh.CULLED] = 1;
+	public int[] shadePolygon(int[] polygon, Mesh mesh, int[] zBuffer, Camera camera) {
 		if (!RenderUtils.isInsideViewFrustum(polygon, mesh, camera)) {
 			if (!RenderUtils.isBackface(polygon, mesh)) {
-				polygon[Mesh.CULLED] = 0;
+				RenderUtils.drawPolygon(polygon, mesh, zBuffer, camera);
 			}
 		}
 		return polygon;

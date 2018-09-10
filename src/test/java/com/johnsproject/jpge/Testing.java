@@ -25,7 +25,6 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 	Mesh monkey;
 	int w = 1200, h = 920;
 	public Testing() {
-		sceneFrame = new SceneFrame(w, h);
 		try {
 			cube = SOMImporter.load("/home/john/Development/Cube.som");
 			monkey = SOMImporter.load("/home/john/Development/Monkey.som");
@@ -49,13 +48,14 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 		//sceneObject2 = new SceneObject("test2", new Vector3(0, 0, 150), new Vector3(0, 0, 0), new Vector3(1, 1, 1), mesh2);
 		camera = new Camera("testCam", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)), Vector2Utils.convert(0, 0), Vector2Utils.convert(w, h));
 		camera.setShader(new TestPixelShader());
-		//camera2 = new Camera("testCam2", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)), Vector2Utils.convert(500, 500), Vector2Utils.convert(w/4, h/4));	
+		camera2 = new Camera("testCam2", new Transform(Vector3Utils.convert(0, -2000, 1200), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(1, 1, 1)), Vector2Utils.convert(w-(w/3), 0), Vector2Utils.convert(w/3, h/3));	
 		light = new Light("testLight", new Transform(Vector3Utils.convert(800, 0, 1000), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)));
+		sceneFrame = new SceneFrame(w, h);
 		sceneFrame.getScene().addSceneObject(sceneObject);
 		sceneFrame.getScene().addSceneObject(sceneObject2);
-		sceneFrame.getScene().addCamera(camera);
+		sceneFrame.getScene().addCamera(camera2);
 		sceneFrame.setTitle("JPGE Test");
-		//sceneFrame.getScene().addCamera(camera2);
+		sceneFrame.getScene().addCamera(camera);
 		sceneFrame.getScene().addLight(light);
 		//sceneObject.getMesh().playAnimation(1);
 		KeyInputManager.getInstance().addKeyListener(this);

@@ -149,7 +149,10 @@ v0.1 - 24/08/2018
 08/09/2018
 -Updated some comments
 -Added RenderUtils class (provides methods needed at the rendering process)
-
+10/09/2018
+-Deleted SceneRasterizer class
+-Removed multithreaded rendering pipeline to fix multiple camera rendering bug
+-Fixed some bugs
 
 
 
