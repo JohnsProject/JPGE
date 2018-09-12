@@ -33,11 +33,11 @@ public class TestShader extends Shader{
 //		long lp = lt.getPosition();		
 //		long vd = VectorMathUtils.getDistance(VectorMathUtils.normalize(lp),
 //				VectorMathUtils.normalize(vector));
-//		long d = VectorMathUtils.magnitude(vd)/14;
+//		long d = VectorMathUtils.magnitude(vd)>>5;
 //		if (d > 15) d = 15;
 //		d = 15-d;
 //		vertex = VertexUtils.setShadeFactor(vertex, -d);
-		//System.out.println(d);
+//		System.out.println(d);
 		//transforming vertex in camera space
 		vector = VectorMathUtils.subtract(vector, camt.getPosition());
 		vector = VectorMathUtils.movePointByAnglesXYZ(vector, camt.getRotation());
@@ -49,6 +49,7 @@ public class TestShader extends Shader{
 
 	@Override
 	public int[] shadePolygon(int[] polygon, Mesh mesh, int[] zBuffer, Camera camera) {
+//		camera.setRenderingType(RenderingType.solid);
 		if (!RenderUtils.isInsideViewFrustum(polygon, mesh, camera)) {
 			if (!RenderUtils.isBackface(polygon, mesh)) {
 				RenderUtils.drawPolygon(polygon, mesh, zBuffer, camera);

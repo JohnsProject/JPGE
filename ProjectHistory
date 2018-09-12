@@ -153,6 +153,8 @@ v0.1 - 24/08/2018
 -Deleted SceneRasterizer class
 -Removed multithreaded rendering pipeline to fix multiple camera rendering bug
 -Fixed some bugs
+11/09/2018
+-Added Profiler class!! (shows informations about what the engine is currently doing)
 
 
 

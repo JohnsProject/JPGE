@@ -17,8 +17,6 @@ import com.johnsproject.jpge.io.FileIO;
  * its like a window or portal that shows another world.
  * It contains a {@link SceneRenderer} that is called to render the {@link Scene} when 
  * it receives an {@link UpdateEvent} from the {@link GameManager}.
- * It contains a {@link SceneRasterizer} that is called to rasterize the {@link Scene} when 
- * it receives an {@link UpdateEvent} from the {@link GameManager}.
  * It contains a {@link SceneAnimator} that is called to animate the {@link Scene} when 
  * it receives an {@link UpdateEvent} from the {@link GameManager}.
  * 
@@ -60,8 +58,6 @@ public class SceneFrame extends Frame implements CameraListener, UpdateListener{
 	 * Initializes the components and values of this scene frame.
 	 */
 	void initializeFrame(){
-		this.setResizable(false);
-		this.setVisible(true);
 		renderer = new SceneRenderer(getWidth(), getHeight());
 		animator = new SceneAnimator();
 		try {
@@ -69,17 +65,21 @@ public class SceneFrame extends Frame implements CameraListener, UpdateListener{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		this.setResizable(false);
+		this.setVisible(true);
+		this.setTitle("JPGE");
+		this.setLayout(null);
+		this.repaint();
 		//this.addKeyListener(KeyInputManager.getInstance());
 		GraphicsEventDispatcher.getInstance().addCameraListener(this);
 		com.johnsproject.jpge.event.EventDispatcher.getInstance().addUpdateListener(this);
 		GameManager.getInstance();
-		this.setLayout(null);
-		this.repaint();
 		this.addWindowListener(new WindowAdapter(){
 			  public void windowClosing(WindowEvent we){
 			    System.exit(0);
 			  }
 		});
+		this.createBufferStrategy(2);
 	}
 	
 	/**
@@ -121,7 +121,7 @@ public class SceneFrame extends Frame implements CameraListener, UpdateListener{
 	@Override
 	public void update(UpdateEvent event) {
 		if(event.getUpdateType() == UpdateType.render) {
-			renderer.render(getScene(), event.getElapsedTime());
+			renderer.render(getScene());
 		}
 		if(event.getUpdateType() == animator.getUpdateType()) {
 			animator.animate(getScene());

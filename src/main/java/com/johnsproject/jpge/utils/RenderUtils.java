@@ -60,12 +60,14 @@ public class RenderUtils {
 	 */
 	public static long animate(long vertex, Animation animation) {
 		long vector = VertexUtils.getVector(vertex);
-		for (int j = 0; j <= VertexUtils.getBoneIndex(vertex); j++) {
-			Transform bone = animation.getBone(j, animation.getCurrentFrame());
+		//for (int j = 0; j <= VertexUtils.getBoneIndex(vertex); j++) {
+			Transform bone = animation.getBone(VertexUtils.getBoneIndex(vertex), animation.getCurrentFrame());
+			//Transform bone = animation.getBone(i, animation.getCurrentFrame());
+			vector = VectorMathUtils.subtract(vector, bone.getPosition());
 			vector = VectorMathUtils.movePointByScale(vector, bone.getScale());
 			vector = VectorMathUtils.movePointByAnglesXYZ(vector, bone.getRotation());
 			vector = VectorMathUtils.add(vector, bone.getPosition());
-		}
+		//}
 		return VertexUtils.setVector(vertex, vector);
 	}
 	
@@ -78,13 +80,16 @@ public class RenderUtils {
 	 * @return if the given polygon is inside the view frustum of the given camera.
 	 */
 	public static boolean isInsideViewFrustum(int[] polygon, Mesh mesh, Camera camera) {
+		polygon[Mesh.CULLED] = 0;
 		long v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
 		int ncp = camera.getNearClippingPlane();
 		int fcp = camera.getFarClippingPlane();
 		int w = camera.getWidth(), h = camera.getHeight();
 		int x = (int)Vector3Utils.getX(v1), y = (int)Vector3Utils.getY(v1), z = (int)Vector3Utils.getZ(v1);
-		if (x > -400 && x < w+400 && y > -400 && y < h+400 && z > ncp && z < fcp)
+		if (x > -400 && x < w+400 && y > -400 && y < h+400 && z > ncp && z < fcp) {
 			return false;
+		}
+		polygon[Mesh.CULLED] = 1;
 		return true;
 	}
 
@@ -98,6 +103,7 @@ public class RenderUtils {
 	 * @return if the given polygon is a backface.
 	 */
 	public static boolean isBackface(int[] polygon, Mesh mesh) {
+		polygon[Mesh.CULLED] = 0;
 		long v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]),
 				v2 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_2]),
 				v3 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_3]);
@@ -106,6 +112,7 @@ public class RenderUtils {
 		int v3x = (int)Vector3Utils.getX(v3), v3y = (int)Vector3Utils.getY(v3);
 		int a = ((v2x - v1x) * (v3y - v1y) - (v3x - v1x) * (v2y - v1y)) >> 1;
 		if (a < 0) return false;
+		polygon[Mesh.CULLED] = 1;
 		return true;
 	}
 	
@@ -231,11 +238,11 @@ public class RenderUtils {
 	    } else dx1=0;
 	    if (y3y1 > 0) { 
 	    	dx2=(((x3-x1)<<SHIFT)/(y3y1)); 
-	    	df2=(((sf3-sf1)<<SHIFT)/(y2y1)); 
+	    	df2=(((sf3-sf1)<<SHIFT)/(y3y1)); 
 	    }else dx2=0;
 	    if (y3y2 > 0) { 
 	    	dx3=(((x3-x2)<<SHIFT)/(y3y2)); 
-	    	df3=(((sf3-sf2)<<SHIFT)/(y2y1)); 
+	    	df3=(((sf3-sf2)<<SHIFT)/(y3y2)); 
 	    } else dx3=0;
 	    int sx = x1 <<SHIFT, ex = x1 <<SHIFT;
 	    int sf = sf1 <<SHIFT, ef = sf1 <<SHIFT;

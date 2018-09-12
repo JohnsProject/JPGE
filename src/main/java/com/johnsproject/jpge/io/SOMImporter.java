@@ -240,16 +240,15 @@ public class SOMImporter {
 		int framesCount = rawBonesData.length/(step * bonesCount);
 		Transform[] bones = new Transform[bonesCount*framesCount];
 		for (int j = 0; j < rawBonesData.length; j+=step) {
-			// y and z axis are swapped in blender
 			int px = toInt(rawBonesData[j + Mesh.POSITION + vx]);
-			int py = toInt(rawBonesData[j + Mesh.POSITION + vz]);
-			int pz = toInt(rawBonesData[j + Mesh.POSITION + vy]);
+			int py = toInt(rawBonesData[j + Mesh.POSITION + vy]);
+			int pz = toInt(rawBonesData[j + Mesh.POSITION + vz]);
 			int rx = toInt(rawBonesData[j + Mesh.ROTATION + vx]);
-			int ry = toInt(rawBonesData[j + Mesh.ROTATION + vz]);
-			int rz = toInt(rawBonesData[j + Mesh.ROTATION + vy]);
+			int ry = toInt(rawBonesData[j + Mesh.ROTATION + vy]);
+			int rz = toInt(rawBonesData[j + Mesh.ROTATION + vz]);
 			int sx = toInt(rawBonesData[j + Mesh.SCALE + vx]);
-			int sy = toInt(rawBonesData[j + Mesh.SCALE + vz]);
-			int sz = toInt(rawBonesData[j + Mesh.SCALE + vy]);
+			int sy = toInt(rawBonesData[j + Mesh.SCALE + vy]);
+			int sz = toInt(rawBonesData[j + Mesh.SCALE + vz]);
 			long pos = Vector3Utils.convert(px, py, pz);
 			long rot = Vector3Utils.convert(rx, ry, rz);
 			long scale = Vector3Utils.convert(sx, sy, sz);

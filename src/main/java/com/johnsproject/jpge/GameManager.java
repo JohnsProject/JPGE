@@ -49,6 +49,7 @@ public class GameManager {
 					before = (int)System.nanoTime();
 					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.render));
 					lastElapsed = (int)System.nanoTime() - before;
+					Profiler.getInstance().getData().setRenderTime(lastElapsed);
 					try {
 						Thread.sleep(1000/renderUpdateRate);
 					} catch (InterruptedException e) {
@@ -69,6 +70,7 @@ public class GameManager {
 					before = (int)System.nanoTime();
 					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.input));
 					lastElapsed = (int)System.nanoTime() - before;
+					Profiler.getInstance().getData().setInputTime(lastElapsed);
 					try {
 						Thread.sleep(1000/inputUpdateRate);
 					} catch (InterruptedException e) {
@@ -89,6 +91,7 @@ public class GameManager {
 					before = (int)System.nanoTime();
 					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.physics));
 					lastElapsed = (int)System.nanoTime() - before;
+					Profiler.getInstance().getData().setPhysicsTime(lastElapsed);
 					try {
 						Thread.sleep(1000/physicsUpdateRate);
 					} catch (InterruptedException e) {

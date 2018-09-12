@@ -9,10 +9,10 @@ import com.johnsproject.jpge.io.*;
 import com.johnsproject.jpge.utils.Vector2Utils;
 import com.johnsproject.jpge.utils.Vector3Utils;
 
-public class Testing implements JPGEKeyListener, JPGEMouseListener {
+public class Test implements JPGEKeyListener, JPGEMouseListener {
 	
 	public static void main(String[] args){
-		new Testing();
+		new Test();
 	}
 	
 	SceneFrame sceneFrame;
@@ -24,7 +24,7 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 	Mesh cube;
 	Mesh monkey;
 	int w = 1200, h = 920;
-	public Testing() {
+	public Test() {
 		try {
 			cube = SOMImporter.load("/home/john/Development/Cube.som");
 			monkey = SOMImporter.load("/home/john/Development/Monkey.som");
@@ -35,10 +35,12 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(-100, 0, 1000), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(1, 1, 1)), cube);
 		sceneObject2 = new SceneObject("test2", new Transform(Vector3Utils.convert(100, 0, 1000), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(1, 1, 1)), monkey);
 		sceneObject.setShader(new TestShader());
+		sceneObject2.setShader(new TestShader());
 		try {
 			Texture t = new Texture(getClass().getResourceAsStream("/JohnsProject.png"));
 			//Texture t = new Texture("/home/john/Development/Brick.jpg");
 			//Texture t = new Texture("/home/john/Development/TestMonkey.png", 512, 512);
+			//t = new Texture(50, 50);
 			sceneObject.getMesh().getMaterial(0).setTexture(t);
 			sceneObject2.getMesh().getMaterial(0).setTexture(t);
 			//sceneObject.getMesh().getMaterial(0).setTexture(new Texture("/home/john/Development/Brick.jpg", 101, 101));
@@ -51,16 +53,16 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 		camera2 = new Camera("testCam2", new Transform(Vector3Utils.convert(0, -2000, 1200), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(1, 1, 1)), Vector2Utils.convert(w-(w/3), 0), Vector2Utils.convert(w/3, h/3));	
 		light = new Light("testLight", new Transform(Vector3Utils.convert(800, 0, 1000), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)));
 		sceneFrame = new SceneFrame(w, h);
+		sceneFrame.getScene().addLight(light);
 		sceneFrame.getScene().addSceneObject(sceneObject);
 		sceneFrame.getScene().addSceneObject(sceneObject2);
 		sceneFrame.getScene().addCamera(camera2);
-		sceneFrame.setTitle("JPGE Test");
+		//sceneFrame.setTitle("JPGE Test");
 		sceneFrame.getScene().addCamera(camera);
-		sceneFrame.getScene().addLight(light);
 		//sceneObject.getMesh().playAnimation(1);
 		KeyInputManager.getInstance().addKeyListener(this);
-		MouseInputManager mim = new MouseInputManager(sceneFrame);
-		mim.addMouseListener(this);
+		MouseInputManager.getInstance().addMouseListener(this);
+		//Profiler.getInstance().start();
 	}
 	
 	public void keyPressed(JPGEKeyEvent event) {
@@ -139,6 +141,12 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 			sceneObject2.setActive(true);
 			break;
 		}
+		if (event.getKeyCode() == 112) { 
+			Profiler.getInstance().start();
+		}
+		if (event.getKeyCode() == 113) { 
+			Profiler.getInstance().stop();
+		}
 		//System.out.println(event.getKeyCode());
 	}
 
@@ -166,11 +174,13 @@ public class Testing implements JPGEKeyListener, JPGEMouseListener {
 	@Override
 	public void positionUpdate(JPGEMouseEvent event) {
 		if (dragged) {
-			int x = Vector2Utils.getX(event.getPosition()) - (w/2);
-			int y = Vector2Utils.getY(event.getPosition()) - (h/2);
+			int fx = (int)sceneFrame.getLocationOnScreen().getX();
+			int fy = (int)sceneFrame.getLocationOnScreen().getY();
+			int x = (Vector2Utils.getX(event.getPosition())-fx) - (w/2);
+			int y = (Vector2Utils.getY(event.getPosition())-fy) - (h/2);
 			int z = Vector3Utils.getZ(camera.getTransform().getRotation());
 			//System.out.println("x " + x + ", y " + y + ", z " + z);
-			camera.getTransform().rotate(y/(h/5), x/(w/5), z);
+			camera.getTransform().rotate(y/(h>>3), x/(w>>3), z);
 		}
 	}
 }

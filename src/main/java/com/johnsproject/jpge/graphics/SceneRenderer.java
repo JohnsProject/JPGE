@@ -1,16 +1,15 @@
 package com.johnsproject.jpge.graphics;
 
-import java.awt.Color;
-import java.awt.Graphics;
 import java.util.List;
 
+import com.johnsproject.jpge.Profiler;
 import com.johnsproject.jpge.utils.RenderUtils;
 import com.johnsproject.jpge.utils.Vector2Utils;
 
 /**
  * The SceneRenderer class renders the {@link Scene} assigned to the {@link SceneFrame}.
  * It takes the {@link SceneObject SceneObjects} in the view of all {@link Camera Cameras} in the {@link Scene}, 
- * transforms and projects them. The objects are then drawn by the {@link SceneRasterizer}.
+ * transforms, projects and draws them.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
@@ -44,6 +43,8 @@ public class SceneRenderer {
 	 */
 	public void setZBufferSize(int width, int height) {
 		zBuffer = new int[width*height];
+		Profiler.getInstance().getData().setWidth(width);
+		Profiler.getInstance().getData().setHeight(height);
 	}
 	
 	/**
@@ -51,7 +52,7 @@ public class SceneRenderer {
 	 * 
 	 * @param scene {@link Scene} to render.
 	 */
-	public void render(Scene scene, int lastTime) {
+	public void render(Scene scene) {
 		resetZBuffer();
 		synchronized (scene.getCameras()) {
 			for (Camera camera : scene.getCameras()) {
@@ -62,7 +63,6 @@ public class SceneRenderer {
 					}
 				}
 				camera.changed(false);
-				logData(camera, lastTime);
 				camera.drawBuffer();
 			}
 		}
@@ -91,9 +91,14 @@ public class SceneRenderer {
 			vertex = shader.shadeVertex(vertex, sceneObject.getTransform(), camera, lights);
 			mesh.setBufferedVertex(i, vertex);
 		}
+		int maxPolys = 0, rendPolys = 0;
 		for (int[] polygon : mesh.getPolygons()) {
 			polygon = shader.shadePolygon(polygon, mesh, zBuffer, camera);
+			maxPolys++;
+			if (polygon[Mesh.CULLED] == 0) rendPolys++;
 		}
+		Profiler.getInstance().getData().setMaxPolys(maxPolys);
+		Profiler.getInstance().getData().setRenderedPolys(rendPolys);
 	}
 	
 	/**
@@ -102,44 +107,6 @@ public class SceneRenderer {
 	public void resetZBuffer() {
 		for (int i = 0; i < zBuffer.length; i++) {
 			zBuffer[i] = Integer.MIN_VALUE;
-		}
-	}
-
-	private final Color backColor = new Color(160, 160, 160, 160);
-	
-	private int afps = 1, cycles = 1, maxPolys = 0, renderedPolys = 0;
-	
-	void logData(Camera camera, int lastTime) {
-		Graphics buffer = camera.getViewGraphics();
-		 buffer.setColor(backColor);
-		 buffer.fillRect(5, 38, 230, 120);
-		 buffer.setColor(Color.WHITE);
-		 int maxMem = Math.round(Runtime.getRuntime().totalMemory() >> 20);
-		 int freeMem = Math.round(Runtime.getRuntime().freeMemory() >> 20);
-		 int fps  = 1000/(((lastTime) / 1000000)+1);
-		 int y = 50, step = 17;
-		 buffer.drawString("Average FPS : " + (afps/cycles) + " , FPS : " + fps, 10, y);
-		 updateAFPS(fps);
-		 y += step;
-		 buffer.drawString("Render Time : " + (lastTime / 1000000) + " ms", 10, y);
-		 y += step;
-		 buffer.drawString("Rendered Polygons : " + renderedPolys + " / " + maxPolys, 10, y);
-		 y += step;
-		 buffer.drawString("Rendering resolution : " + camera.getWidth() + "x" + camera.getHeight(), 10, y);
-		 y += step;
-		 buffer.drawString("Memory usage : " + (maxMem - freeMem) + " / " + maxMem + " MB", 10, y);
-		 y += step;
-		 buffer.drawString("Projection type : " + camera.getProjectionType().toString(), 10, y);
-		 y += step;
-		 buffer.drawString("Rendering type : " + camera.getRenderingType().toString(), 10, y);
-	}
-	
-	void updateAFPS(int fps) {
-		afps += fps;
-		cycles++;
-		if (cycles > 1000) {
-			afps = afps/cycles;
-			cycles = 1;
 		}
 	}
 }

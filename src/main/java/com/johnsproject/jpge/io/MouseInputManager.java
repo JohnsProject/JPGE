@@ -15,21 +15,27 @@ import com.johnsproject.jpge.GameManager;
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 import com.johnsproject.jpge.event.UpdateListener;
-import com.johnsproject.jpge.graphics.SceneFrame;
 import com.johnsproject.jpge.utils.Vector2Utils;
 import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
 
 public class MouseInputManager implements UpdateListener {
 	
+	private static MouseInputManager instance;
+
+	public static MouseInputManager getInstance() {
+		if (instance == null) {
+			instance = new MouseInputManager();
+		}
+		return instance;
+	}
+	
 	private JPGEMouseEvent mouseEvent = new JPGEMouseEvent(0);
-	private SceneFrame frame;
 	
 	private static final byte LEFT = 0, MIDDLE = 1, RIGHT = 2;
 	private List<JPGEMouseListener> mouseListeners = Collections.synchronizedList(new ArrayList<JPGEMouseListener>());
 	private Map<Integer, Integer> pressedKeys = Collections.synchronizedMap(new HashMap<Integer, Integer>());
 
-	public MouseInputManager(SceneFrame frame) {
-		this.frame = frame;
+	public MouseInputManager() {
 		EventDispatcher.getInstance().addUpdateListener(this);
 		GameManager.getInstance();
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
@@ -48,7 +54,6 @@ public class MouseInputManager implements UpdateListener {
         }, AWTEvent.MOUSE_EVENT_MASK);
 	}
 
-	int x = 0, y = 0;
 	@Override
 	public void update(UpdateEvent event) {
 		if (event.getUpdateType() == UpdateType.input) {
@@ -62,14 +67,8 @@ public class MouseInputManager implements UpdateListener {
 							if (key == RIGHT) mouseListener.rightClick(mouseEvent);
 						}
 						pressedKeys.clear();
-//						if (frame != null) {
-//							if (frame.getMousePosition() != null) {
-//								if (frame.getMousePosition().getLocation() != null) {
-//									x = (int)frame.getMousePosition().getX();
-//									y = (int)frame.getMousePosition().getY();
-//								}
-//							}
-//						}
+						int x = (int)MouseInfo.getPointerInfo().getLocation().getX();
+						int y = (int)MouseInfo.getPointerInfo().getLocation().getY();
 						mouseEvent.setPosition(Vector2Utils.convert(x, y));
 						mouseListener.positionUpdate(mouseEvent);
 					}
