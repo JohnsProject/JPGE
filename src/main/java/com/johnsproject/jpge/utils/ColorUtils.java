@@ -7,7 +7,7 @@ package com.johnsproject.jpge.utils;
  */
 public class ColorUtils {
 	
-	private static final byte MAXVALUE = 15, MAXFACTOR = 13;
+	private static final byte MAXVALUE = 6, MAXFACTOR = 5;
 	
 	/**
 	 * Converts the rgba values to the java awt int color value and returns it.
@@ -172,7 +172,7 @@ public class ColorUtils {
 	
 	/**
 	 * Returns a darker version of the color.
-	 * The factor should be in the range 0-13, if its > 13 this method will use 13.
+	 * The factor should be in the range 0-{@value #MAXFACTOR}, if its > {@value #MAXFACTOR} this method will use {@value #MAXFACTOR}.
 	 * 
 	 * @param color the color to darken.
 	 * @param factor the darken factor.
@@ -189,7 +189,7 @@ public class ColorUtils {
 	
 	/**
 	 * Returns a brighter version of the color.
-	 * The factor should be in the range 0-13, if its > 13 this method will use 13.
+	 * The factor should be in the range 0-{@value #MAXFACTOR}, if its > {@value #MAXFACTOR} this method will use {@value #MAXFACTOR}.
 	 * 
 	 * @param color the color to darken.
 	 * @param factor the brighten factor.

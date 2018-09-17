@@ -7,8 +7,10 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
 
 import com.johnsproject.jpge.io.FileIO;
+import com.sun.management.OperatingSystemMXBean;
 
 /**
  * The Profiler class profiles the engine it shows informations about what the engine is currently doing.
@@ -32,16 +34,18 @@ public class Profiler extends Frame{
 		return instance;
 	}
 	
-	private static final int WIDTH = 330, HEIGHT = 260;
+	private static final int WIDTH = 330, HEIGHT = 290;
 	private boolean profile = false;
 	private ProfilerData data;
 	private Thread profileThread;
+	private OperatingSystemMXBean osxb = null;
 	
 	/**
 	 * Creates a new instance of the profiler class.
 	 */
 	public Profiler () {
 		data = new ProfilerData();
+		osxb = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 	}
 	
 	
@@ -106,11 +110,18 @@ public class Profiler extends Frame{
 		g.drawImage(img, 0, 0, null);
 		g.setColor(Color.WHITE);
 		int x = 2, x2 = 120, y = 45, step = 17;
+		int cpuLoad = (int)Math.round((osxb.getProcessCpuLoad() * 100));
 		int maxMem = Math.round(Runtime.getRuntime().totalMemory() >> 20);
 		int freeMem = Math.round(Runtime.getRuntime().freeMemory() >> 20);
 		int usedMem = (maxMem - freeMem);
 		int fps  = 1000/(((getData().getRenderTime()) / 1000000)+1);
 		g.drawString("COMMOM DATA", x, y);
+		y += step;
+		g.drawString("- System arch : ", x, y);
+		g.drawString("" + osxb.getArch(), x2, y);
+		y += step;
+		g.drawString("- JVM CPU load : ", x, y);
+		g.drawString("" + getBar(cpuLoad, 100) + cpuLoad + " %", x2, y);
 		y += step;
 		g.drawString("- Memory usage : ", x, y);
 		g.drawString(getBar(usedMem, maxMem) + usedMem + " / " + maxMem + " MB", x2, y);
@@ -145,10 +156,9 @@ public class Profiler extends Frame{
 		String result = "", bar = "|";
 		int precision = 20, i = 0;
 		current = (current * precision)/max;
-		max = (max * precision)/ max;
 		result += bar;
 		for (; i < current; i++) result += bar;
-		for (; i < max; i++) result += " ";
+		for (; i < precision; i++) result += " ";
 		result += bar + " ";
 		return result;
 	}

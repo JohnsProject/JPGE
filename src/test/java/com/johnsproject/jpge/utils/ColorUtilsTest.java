@@ -124,7 +124,8 @@ public class ColorUtilsTest {
 	@Test
 	public void darkerTest() throws Exception {
 		int c = ColorUtils.convert(50, 50, 50, 50);
-		int cc = ColorUtils.darker(c, 2);
+		int cc = ColorUtils.darker(c, 5);
+		System.out.println(ColorUtils.getBlue(cc));
 		assert (ColorUtils.getBlue(cc) < ColorUtils.getBlue(c));
 		assert (ColorUtils.getGreen(cc) < ColorUtils.getGreen(c));
 		assert (ColorUtils.getRed(cc) < ColorUtils.getRed(c));

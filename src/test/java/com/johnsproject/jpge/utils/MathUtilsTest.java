@@ -39,7 +39,7 @@ public class MathUtilsTest {
 	
 	@Test
 	public void sinTest() throws Exception {
-		//System.out.println(1<< 20);
+		//System.out.println(1<< 15);
 		int value = 200, precision = 1;
 		for (int angle = 0; angle < 360; angle++) {
 			int mi = ((value * MathUtils.sin(angle)) >> MathUtils.SHIFT);
@@ -64,11 +64,47 @@ public class MathUtilsTest {
 	
 	@Test
 	public void tanTest() throws Exception {
-		int value = 200, precision = 2000;
+		int value = 200, precision = 700;
 		// until 90 because 90 is infinity
 		for (int angle = 0; angle < 90; angle++) {
 			int mi = (value * MathUtils.tan(angle)) >> MathUtils.SHIFT;
 			int mf = (int)Math.round(((value * Math.tan(Math.toRadians(angle)))));
+			//System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
+			assert(mi <= mf + precision);
+			assert(mi >= mf - precision);
+		}
+	}
+	
+	@Test
+	public void cotTest() throws Exception {
+		int value = 200, precision = 700;
+		for (int angle = 0; angle < 90; angle++) {
+			int mi = (value * MathUtils.cot(angle)) >> MathUtils.SHIFT;
+			int mf = (int)Math.round(((value * (1/Math.tan(Math.toRadians(angle))))));
+			//System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
+			assert(mi <= mf + precision);
+			assert(mi >= mf - precision);
+		}
+	}
+	
+	@Test
+	public void secTest() throws Exception {
+		int value = 200, precision = 2000;
+		for (int angle = 0; angle < 90; angle++) {
+			int mi = (value * MathUtils.sec(angle)) >> MathUtils.SHIFT;
+			int mf = (int)Math.round(((value * (1/Math.cos(Math.toRadians(angle))))));
+			//System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
+			assert(mi <= mf + precision);
+			assert(mi >= mf - precision);
+		}
+	}
+	
+	@Test
+	public void cosecTest() throws Exception {
+		int value = 200, precision = 700;
+		for (int angle = 0; angle < 90; angle++) {
+			int mi = (value * MathUtils.cosec(angle)) >> MathUtils.SHIFT;
+			int mf = (int)Math.round(((value * (1/Math.sin(Math.toRadians(angle))))));
 			//System.out.println("angle " + angle + ", mi " + mi + ", mf " + mf);
 			assert(mi <= mf + precision);
 			assert(mi >= mf - precision);

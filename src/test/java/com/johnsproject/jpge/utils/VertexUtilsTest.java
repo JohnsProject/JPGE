@@ -13,7 +13,7 @@ public class VertexUtilsTest {
 		int bone = 0b00000000000000000011; // 3
 		
 		long result = (0b00000000000000000001L << 59) | (0b00000000000000000011L << 48)
-				| (0b000000000000000000000001L << 32) | (0b00000000000000000011L << 16) | 0b00000000000000000111L;
+				| (0b000000000000000000000111L << 32) | (0b00000000000000000011L << 16) | 0b00000000000000000001L;
 		long vertex = VertexUtils.convert(Vector3Utils.convert(x, y, z), bone, shade);
 		assert(result == vertex);
 	}

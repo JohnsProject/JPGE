@@ -11,14 +11,13 @@ package com.johnsproject.jpge.utils;
 public class MathUtils {
 
 	// sin table from 0-90 degrees
-	private static final short[] valuesSin = {0, 4, 9, 13, 18, 22, 27, 31, 36, 40, 44, 49, 53, 58, 62, 66, 
+	private static short[] valuesSin = {0, 4, 9, 13, 18, 22, 27, 31, 36, 40, 44, 49, 53, 58, 62, 66, 
 			71, 75, 79, 83, 88, 92, 96, 100, 104, 108, 112, 116, 120, 124, 128, 
 			132, 136, 139, 143, 147, 150, 154, 158, 161, 165, 168, 171, 175, 178, 181, 
 			184, 187, 190, 193, 196, 199, 202, 204, 207, 210, 212, 215, 217, 219, 222, 
 			224, 226, 228, 230, 232, 234, 236, 237, 239, 241, 242, 243, 245, 246, 247, 
 			248, 249, 250, 251, 252, 253, 254, 254, 255, 255, 255, 256, 256, 256, 256, 
 			};
-
 	// used by the power method
 	static final short[] highest_bit_set = {
 	        0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -121,7 +120,58 @@ public class MathUtils {
 	 * @return tangent of angle.
 	 */
 	public static int tan(int angle) {
-		return (sin(angle)<<SHIFT)/ cos(angle);
+		return angle != 89 ? ((sin(angle)<<SHIFT)/ cos(angle)) : 15000;
+	}
+	
+	/**
+	 * Returns the cotangent value of the given angle.
+	 * To use it correctly do like this : <br>
+	 * 
+	 * <code> 
+	 * <br> int i = 1;
+	 * <br> int angle = 90;
+	 * <br> i = (i * MathUtils.cot(angle)) >> MathUtils.SHIFT;
+	 * </code>
+	 * 
+	 * @param angle angle to get tangent from.
+	 * @return tangent of angle.
+	 */
+	public static int cot(int angle) {
+		return angle != 0 ? tan(90-angle) : -1;
+	}
+	
+	/**
+	 * Returns the secant value of the given angle.
+	 * To use it correctly do like this : <br>
+	 * 
+	 * <code> 
+	 * <br> int i = 1;
+	 * <br> int angle = 90;
+	 * <br> i = (i * MathUtils.sec(angle)) >> MathUtils.SHIFT;
+	 * </code>
+	 * 
+	 * @param angle angle to get tangent from.
+	 * @return tangent of angle.
+	 */
+	public static int sec(int angle) {
+		return angle != 89 ? ((256<<SHIFT)/ cos(angle)) : 15000;
+	}
+	
+	/**
+	 * Returns the cosecant value of the given angle.
+	 * To use it correctly do like this : <br>
+	 * 
+	 * <code> 
+	 * <br> int i = 1;
+	 * <br> int angle = 90;
+	 * <br> i = (i * MathUtils.cosec(angle)) >> MathUtils.SHIFT;
+	 * </code>
+	 * 
+	 * @param angle angle to get tangent from.
+	 * @return tangent of angle.
+	 */
+	public static int cosec(int angle) {
+		return angle != 0 ? (angle != 1 ? ((256<<SHIFT)/ sin(angle)) : 15000) : -1;
 	}
 
 	/**
@@ -270,9 +320,7 @@ public class MathUtils {
 	 * @return power of the given number.
 	 */
 	public static int pow(int base, int exp) {
-
 	    int result = 1;
-
 	    switch (highest_bit_set[exp]) {
 	    case 255: // we use 255 as an overflow marker and return 0 on overflow/underflow
 	        if (base == 1) return 1;

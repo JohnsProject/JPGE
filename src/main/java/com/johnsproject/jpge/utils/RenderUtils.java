@@ -183,7 +183,7 @@ public class RenderUtils {
 		}
 		if(camera.getRenderingType() == RenderingType.textured) {
 			Texture img = mesh.getMaterial(0).getTexture();
-			drawPolygonAffine(x1, y1, x2, y2, x3, y3, z3, u1, v1, u2, v2, u3, v3, img, px, py, zBuffer, width, height, camera);
+			drawPolygonAffine(x1, y1, x2, y2, x3, y3, z3, u1, v1, u2, v2, u3, v3, sf1, img, px, py, zBuffer, width, height, camera);
 		}
 	}
 	
@@ -230,7 +230,7 @@ public class RenderUtils {
 			int cameraX, int cameraY, int[] zBuffer, int width, int height,int z, int c, Camera cam) {
 		int dx1 = 0, dx2 = 0, dx3 = 0; // x deltas
 		int df1 = 0, df2 = 0, df3 = 0; // shade factor deltas
-		//c = ColorUtils.darker(c, sf1);
+		c = ColorUtils.darker(c, sf1);
 		int y2y1 = y2-y1, y3y1 = y3-y1, y3y2 = y3-y2;
 	    if (y2y1 > 0) { 
 	    	dx1=(((x2-x1)<<SHIFT)/(y2y1));
@@ -273,7 +273,7 @@ public class RenderUtils {
 		}
 	}
 	
-	static void drawPolygonAffine(int x1, int y1, int x2, int y2, int x3, int y3, int z, int u1, int v1, int u2, int v2, int u3, int v3,
+	static void drawPolygonAffine(int x1, int y1, int x2, int y2, int x3, int y3, int z, int u1, int v1, int u2, int v2, int u3, int v3, int sf,
 							Texture img, int cameraX, int cameraY, int[] zBuffer, int width, int height, Camera cam) {
 		int w = img.getWidth()-1, h = img.getHeight()-1;
 		u1 = (u1*w)>>7; u2 = (u2*w)>>7; u3 = (u3*w)>>7;
@@ -302,32 +302,32 @@ public class RenderUtils {
 	    int sy = y1;
 	    if (dx1 > dx2) {
 		    for (; sy <= y2 - 1; sy++) {
-		    	drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, img, cameraX, cameraY, zBuffer, width, height, cam);
+		    	drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, cameraX, cameraY, zBuffer, width, height, cam);
 				sx += dx2; su += du2; sv += dv2;
 				ex += dx1; eu += du1; ev += dv1;
 			}
 			ex = x2<<SHIFT;
 			for (; sy <= y3; sy++) {
-				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, img, cameraX, cameraY, zBuffer, width, height, cam);
+				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, cameraX, cameraY, zBuffer, width, height, cam);
 				sx += dx2; su += du2; sv += dv2;
 				ex += dx3; eu += du3; ev += dv3;
 			}
 	    }else{
 			for (; sy <= y2 - 1; sy++) {
-				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, img, cameraX, cameraY, zBuffer, width, height, cam);
+				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, cameraX, cameraY, zBuffer, width, height, cam);
 				sx += dx1; su += du1; sv += dv1;
 				ex += dx2; eu += du2; ev += dv2;
 			}
 			sx = x2<<SHIFT;
 			for (; sy <= y3; sy++) {
-				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, img, cameraX, cameraY, zBuffer, width, height, cam);
+				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, cameraX, cameraY, zBuffer, width, height, cam);
 				sx += dx3; su += du3; sv += dv3;
 				ex += dx2; eu += du2; ev += dv2;
 			}
 	    }
 	}
 	
-	static void drawHLineAffine(int sx, int ex, int sy, int z, int su, int eu, int sv, int ev,
+	static void drawHLineAffine(int sx, int ex, int sy, int z, int su, int eu, int sv, int ev, int sf,
 			Texture img, int cameraX, int cameraY, int[] zBuffer, int width, int height, Camera camera) {
 		int du = 0, dv = 0;
 		su = Math.abs(su); sv = Math.abs(sv);

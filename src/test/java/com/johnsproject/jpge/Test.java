@@ -51,12 +51,12 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		camera = new Camera("testCam", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)), Vector2Utils.convert(0, 0), Vector2Utils.convert(w, h));
 		camera.setShader(new TestPixelShader());
 		camera2 = new Camera("testCam2", new Transform(Vector3Utils.convert(0, -2000, 1200), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(1, 1, 1)), Vector2Utils.convert(w-(w/3), 0), Vector2Utils.convert(w/3, h/3));	
-		light = new Light("testLight", new Transform(Vector3Utils.convert(800, 0, 1000), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)));
+		light = new Light("testLight", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)));
 		sceneFrame = new SceneFrame(w, h);
 		sceneFrame.getScene().addLight(light);
 		sceneFrame.getScene().addSceneObject(sceneObject);
 		sceneFrame.getScene().addSceneObject(sceneObject2);
-		sceneFrame.getScene().addCamera(camera2);
+		//sceneFrame.getScene().addCamera(camera2);
 		//sceneFrame.setTitle("JPGE Test");
 		sceneFrame.getScene().addCamera(camera);
 		//sceneObject.getMesh().playAnimation(1);
@@ -146,6 +146,18 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		}
 		if (event.getKeyCode() == 113) { 
 			Profiler.getInstance().stop();
+		}
+		if (event.getKeyCode() == 38) { 
+			light.getTransform().translateLocal(0, 0, 6);
+		}
+		if (event.getKeyCode() == 40) { 
+			light.getTransform().translateLocal(0, 0, -6);
+		}
+		if (event.getKeyCode() == 37) { 
+			light.getTransform().translateLocal(6, 0, 0);
+		}
+		if (event.getKeyCode() == 39) { 
+			light.getTransform().translateLocal(-6, 0, 0);
 		}
 		//System.out.println(event.getKeyCode());
 	}
