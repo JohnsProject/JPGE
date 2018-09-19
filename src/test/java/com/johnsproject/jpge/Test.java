@@ -6,8 +6,7 @@ import com.johnsproject.jpge.graphics.*;
 import com.johnsproject.jpge.graphics.SceneRenderer.ProjectionType;
 import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
 import com.johnsproject.jpge.io.*;
-import com.johnsproject.jpge.utils.Vector2Utils;
-import com.johnsproject.jpge.utils.Vector3Utils;
+import com.johnsproject.jpge.utils.VectorUtils;
 
 public class Test implements JPGEKeyListener, JPGEMouseListener {
 	
@@ -32,8 +31,8 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 			e.printStackTrace();
 		}
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
-		sceneObject = new SceneObject("test", new Transform(Vector3Utils.convert(-100, 0, 1000), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(1, 1, 1)), cube);
-		sceneObject2 = new SceneObject("test2", new Transform(Vector3Utils.convert(100, 0, 1000), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(1, 1, 1)), monkey);
+		sceneObject = new SceneObject("test", new Transform(new int[] {-100, 0, 1000}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), cube);
+		sceneObject2 = new SceneObject("test2", new Transform(new int[] {100, 0, 1000}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), monkey);
 		sceneObject.setShader(new TestShader());
 		sceneObject2.setShader(new TestShader());
 		try {
@@ -47,11 +46,11 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//sceneObject2 = new SceneObject("test2", new Vector3(0, 0, 150), new Vector3(0, 0, 0), new Vector3(1, 1, 1), mesh2);
-		camera = new Camera("testCam", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)), Vector2Utils.convert(0, 0), Vector2Utils.convert(w, h));
+		//sceneObject2 = new SceneObject("test2", new Vector3(0, 0, 150}, new Vector3(0, 0, 0}, new Vector3(1, 1, 1}, mesh2);
+		camera = new Camera("testCam", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), new int[] {0, 0}, new int[] {w, h});
 		camera.setShader(new TestPixelShader());
-		camera2 = new Camera("testCam2", new Transform(Vector3Utils.convert(0, -2000, 1200), Vector3Utils.convert(90, 0, 0), Vector3Utils.convert(1, 1, 1)), Vector2Utils.convert(w-(w/3), 0), Vector2Utils.convert(w/3, h/3));	
-		light = new Light("testLight", new Transform(Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(0, 0, 0), Vector3Utils.convert(1, 1, 1)));
+		camera2 = new Camera("testCam2", new Transform(new int[] {0, -2000, 1200}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), new int[] {w-(w/3), 0}, new int[] {w/3, h/3});	
+		light = new Light("testLight", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
 		sceneFrame = new SceneFrame(w, h);
 		sceneFrame.getScene().addLight(light);
 		sceneFrame.getScene().addSceneObject(sceneObject);
@@ -166,7 +165,7 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 	}
 
 	boolean dragged = false;
-	int postition = 0;
+	int[] postition = new int[2];
 	@Override
 	public void leftClick(JPGEMouseEvent event) {
 		dragged = !dragged;
@@ -188,9 +187,9 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		if (dragged) {
 			int fx = (int)sceneFrame.getLocationOnScreen().getX();
 			int fy = (int)sceneFrame.getLocationOnScreen().getY();
-			int x = (Vector2Utils.getX(event.getPosition())-fx) - (w/2);
-			int y = (Vector2Utils.getY(event.getPosition())-fy) - (h/2);
-			int z = Vector3Utils.getZ(camera.getTransform().getRotation());
+			int x = (event.getPosition()[VectorUtils.X]-fx) - (w/2);
+			int y = (event.getPosition()[VectorUtils.Y]-fy) - (h/2);
+			int z = camera.getTransform().getRotation()[VectorUtils.Z];
 			//System.out.println("x " + x + ", y " + y + ", z " + z);
 			camera.getTransform().rotate(y/(h>>3), x/(w>>3), z);
 		}

@@ -157,6 +157,16 @@ v0.1 - 24/08/2018
 -Added Profiler class!! (shows informations about what the engine is currently doing)
 17/09/2018
 -Added benchmarks and optimized some things
+19/09/2018
+-Changed vertexes from long to int[] (performance reasons)
+-Changed vectors from long to int[] (performance reasons)
+-Changed everything to work with int[] again
+-Renamed VectorMathUtils class to Vector3MathUtils because with int[] (to handle only 3D vectors/int arrays with length >= 3)
+-Added Vector2MathUtils class (to handle only 2D vectors/int arrays with length >= 2)
+-Added VectorUtils class (provides methods for swapping vectors and so on)
+-Removed Vector2Utils class
+-Removed Vector3Utils class
+
 
 
 

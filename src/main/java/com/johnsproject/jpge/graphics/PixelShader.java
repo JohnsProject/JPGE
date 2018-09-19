@@ -1,6 +1,6 @@
 package com.johnsproject.jpge.graphics;
 
-import com.johnsproject.jpge.utils.Vector2Utils;
+import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * The PixelShader class is used to used shade the pixels that are set to the {@link Camera}.
@@ -9,6 +9,8 @@ import com.johnsproject.jpge.utils.Vector2Utils;
  */
 public class PixelShader {
 
+	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
+	
 	/**
 	 * This method is called by the {@link Camera} when a pixel is set.
 	 * 
@@ -32,7 +34,7 @@ public class PixelShader {
 	 * @param viewBuffer buffer containing pixels of the {@link Camera}.
 	 */
 	public void setPixel(int x, int y, int color, int cameraWidth, int[] viewBuffer) {
-		int pos = x + (y * Vector2Utils.getX(cameraWidth));
+		int pos = x + (y * cameraWidth);
 		if (pos >= 0 && pos < viewBuffer.length) viewBuffer[pos] = color;
 	}
 	
@@ -46,7 +48,7 @@ public class PixelShader {
 	 * @return color of a pixel of the viewBuffer at the given position.
 	 */
 	public int getPixel(int x, int y, int cameraWidth, int[] viewBuffer) {
-		int pos = x + (y * Vector2Utils.getX(cameraWidth));
+		int pos = x + (y * cameraWidth);
 		if (pos >= 0 && pos < viewBuffer.length) return viewBuffer[pos];
 		return 0;
 	}

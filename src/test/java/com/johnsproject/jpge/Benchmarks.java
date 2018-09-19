@@ -6,7 +6,6 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Mode;
 
 import com.johnsproject.jpge.utils.MathUtils;
-import com.johnsproject.jpge.utils.Vector3Utils;
 
 public class Benchmarks {
 	
@@ -49,18 +48,18 @@ public class Benchmarks {
 	    vector[2] = z;
 	}
 	
-	@Benchmark
-	@Fork(value = 1)
-	@BenchmarkMode(Mode.Throughput)
-	public void vectorPackedBenchmark() {
-		 long vector = Vector3Utils.convert(50, 50, 50);
-		 int x = Vector3Utils.getX(vector);
-		 int y = Vector3Utils.getY(vector);
-		 int z = Vector3Utils.getZ(vector);
-		 Vector3Utils.setX(vector, x);
-		 Vector3Utils.setY(vector, y);
-		 Vector3Utils.setZ(vector, z);
-	}	
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void vectorPackedBenchmark() {
+//		 long vector = Vector3Utils.convert(50, 50, 50);
+//		 int x = Vector3Utils.getX(vector);
+//		 int y = Vector3Utils.getY(vector);
+//		 int z = Vector3Utils.getZ(vector);
+//		 Vector3Utils.setX(vector, x);
+//		 Vector3Utils.setY(vector, y);
+//		 Vector3Utils.setZ(vector, z);
+//	}	
 	
 	@Benchmark
 	@Fork(value = 1)

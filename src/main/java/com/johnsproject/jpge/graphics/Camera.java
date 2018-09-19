@@ -9,7 +9,9 @@ import java.util.Arrays;
 
 import com.johnsproject.jpge.graphics.SceneRenderer.ProjectionType;
 import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
-import com.johnsproject.jpge.utils.Vector2Utils;
+import com.johnsproject.jpge.utils.Vector2MathUtils;
+import com.johnsproject.jpge.utils.Vector3MathUtils;
+import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * The Camera class is used to view a {@link Scene}.
@@ -19,10 +21,13 @@ import com.johnsproject.jpge.utils.Vector2Utils;
  * @author John´s Project - John Konrad Ferraz Salomon
  */
 public class Camera extends Canvas{
+	
+	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
+	
 	private static final long serialVersionUID = -6288232882538805324L;
 	private String name;
-	private int screenPosition;
-	private int screenSize, halfscreenSize;
+	private int[] screenPosition;
+	private int[] screenSize, halfscreenSize;
 	private int FieldOfView = 90;
 	private int nearClippingPlane = 50;
 	private int farClippingPlane = 90000;
@@ -43,14 +48,13 @@ public class Camera extends Canvas{
 	 * @param screenPosition the position of this camera at the {@link SceneFrame}.
 	 * @param screenSize the size of this camera at the {@link SceneFrame}.
 	 */
-	public Camera(String name, Transform transform, int screenPosition, int screenSize) {
+	public Camera(String name, Transform transform, int[] screenPosition, int[] screenSize) {
+		int px = screenPosition[vx], py = screenPosition[vy];
+		int sx = screenSize[vx], sy = screenSize[vy];
 		this.name = name;
 		this.transform = transform;
 		this.screenSize = screenSize;
-		int px = Vector2Utils.getX(screenPosition), py = Vector2Utils.getY(screenPosition);
-		int sx = Vector2Utils.getX(screenSize), sy = Vector2Utils.getY(screenSize);
-		this.halfscreenSize = Vector2Utils.setX(halfscreenSize, sx/2);
-		this.halfscreenSize = Vector2Utils.setY(halfscreenSize, sy/2);
+		this.halfscreenSize = Vector2MathUtils.divide(screenSize.clone(), 2);
 		this.scaleFactor = Math.abs((sx+sy)>>7)+1;
 		this.setSize(sx, sy);
 		this.screenPosition = screenPosition;
@@ -85,7 +89,7 @@ public class Camera extends Canvas{
 	public void setPixel(int x, int y, int color){
 		//if((x > 0 && y > 0) && (x < rect[0] && y < rect[1])) {
 			//viewBufferData[x + (y * Vector2Utils.getX(screenSize))] = color;
-			shader.shadePixel(x, y, color, Vector2Utils.getX(screenSize), viewBufferData);
+			shader.shadePixel(x, y, color, screenSize[vx], viewBufferData);
 		//}
 	}
 	
@@ -103,7 +107,7 @@ public class Camera extends Canvas{
 	 * 
 	 * @return size of this camera at the {@link SceneFrame}.
 	 */
-	public int getScreenSize() {
+	public int[] getScreenSize() {
 		return this.screenSize;
 	}
 	
@@ -114,7 +118,7 @@ public class Camera extends Canvas{
 	 * 
 	 * @return half size of this camera at the {@link SceneFrame}.
 	 */
-	public int getHalfScreenSize() {
+	public int[] getHalfScreenSize() {
 		return this.halfscreenSize;
 	}
 	
@@ -123,7 +127,7 @@ public class Camera extends Canvas{
 	 * 
 	 * @return position of this camera at the {@link SceneFrame}.
 	 */
-	public int getScreenPosition() {
+	public int[] getScreenPosition() {
 		return this.screenPosition;
 	}
 	
@@ -179,13 +183,10 @@ public class Camera extends Canvas{
 	 * 
 	 * @param size screen size to set.
 	 */
-	public void setScreenSize(int size) {
+	public void setScreenSize(int[] size) {
 		this.screenSize = size;
-		int x = Vector2Utils.getX(size);
-		int y = Vector2Utils.getY(size);
-		setSize(x, y);
-		halfscreenSize = Vector2Utils.setX(halfscreenSize, x/2);
-		halfscreenSize = Vector2Utils.setX(halfscreenSize, y/2);
+		setSize(size[vx], size[vy]);
+		halfscreenSize = Vector2MathUtils.divide(size.clone(), 2);
 		changed = true;
 	}
 

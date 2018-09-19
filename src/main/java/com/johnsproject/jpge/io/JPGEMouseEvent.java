@@ -2,17 +2,17 @@ package com.johnsproject.jpge.io;
 
 public class JPGEMouseEvent {
 
-	private int position;
+	private int[] position;
 	
-	public JPGEMouseEvent(int position) {
+	public JPGEMouseEvent(int[] position) {
 		this.position = position;
 	}
 
-	public int getPosition() {
+	public int[] getPosition() {
 		return position;
 	}
 
-	void setPosition(int position) {
+	void setPosition(int[] position) {
 		this.position = position;
 	}
 

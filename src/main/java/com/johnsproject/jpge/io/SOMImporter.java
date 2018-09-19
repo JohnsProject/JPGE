@@ -1,6 +1,3 @@
-/**
- * 
- */
 package com.johnsproject.jpge.io;
 
 import java.io.IOException;
@@ -11,9 +8,7 @@ import com.johnsproject.jpge.graphics.Transform;
 import com.johnsproject.jpge.graphics.Animation;
 import com.johnsproject.jpge.graphics.Texture;
 import com.johnsproject.jpge.utils.ColorUtils;
-import com.johnsproject.jpge.utils.Vector2Utils;
-import com.johnsproject.jpge.utils.Vector3Utils;
-import com.johnsproject.jpge.utils.VertexUtils;
+import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * The SOMImporter class provides import methods for the som (Scene Object Mesh) file format
@@ -24,7 +19,7 @@ import com.johnsproject.jpge.utils.VertexUtils;
  *
  */
 public class SOMImporter {
-	private static final int vx = Vector3Utils.X, vy = Vector3Utils.Y, vz = Vector3Utils.Z;
+	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
 	
 	/**
@@ -39,7 +34,6 @@ public class SOMImporter {
 		try {
 			content = FileIO.readFile(path);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			throw new ImportExeption(e);
 		}
 		return loadFromRaw(content);
@@ -58,7 +52,6 @@ public class SOMImporter {
 		try {
 			content = FileIO.readStream(content.getClass().getResourceAsStream(path));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			throw new ImportExeption(e);
 		}
 		return loadFromRaw(content);
@@ -97,17 +90,16 @@ public class SOMImporter {
 	 * @return an vertex array.
 	 * @throws ImportExeption
 	 */
-	static long[] parseVertexes(String[] rawVertexesData) throws ImportExeption {
+	static int[][] parseVertexes(String[] rawVertexesData) throws ImportExeption {
 		int step = Mesh.VERTEX_LENGTH-1;
-		long[] vertexes = new long[rawVertexesData.length/step];
+		int[][] vertexes = new int[rawVertexesData.length/step][Mesh.VERTEX_LENGTH];
 		if(rawVertexesData.length > 2){
 			for (int i = 0; i < rawVertexesData.length; i+= step) {
 				int x = toInt(rawVertexesData[i + vx]);
 				int y = toInt(rawVertexesData[i + vy]);
 				int z = toInt(rawVertexesData[i + vz]);
 				int boneIndex = toInt(rawVertexesData[i + Mesh.BONE_INDEX]);
-				long vector = Vector3Utils.convert(x, y, z);
-				vertexes[i/step] = VertexUtils.convert(vector, boneIndex, 0);
+				vertexes[i/step] = new int[] {x, y, z, boneIndex, 0};
 			}
 		}
 		return vertexes;
@@ -152,18 +144,18 @@ public class SOMImporter {
 	 * @return an uv array.
 	 * @throws ImportExeption
 	 */
-	static int[] parseUVs(String[] rawUVsData) throws ImportExeption {
+	static int[][] parseUVs(String[] rawUVsData) throws ImportExeption {
 		int step = Mesh.UV_LENGTH;
-		int[] uvs = null;
+		int[][] uvs = null;
 		if(rawUVsData.length > 2){
-			uvs = new int[rawUVsData.length/step];
+			uvs = new int[rawUVsData.length/step][Mesh.UV_LENGTH];
 			for (int i = 0; i < rawUVsData.length; i+= step) {
 				int u = toInt(rawUVsData[i + vx]);
 				int v = toInt(rawUVsData[i + vy]);
-				uvs[i/step] = Vector2Utils.convert(u, v);
+				uvs[i/step] = new int[] {u, v};
 			}
 		}else {
-			uvs = new int[1];
+			uvs = new int[1][Mesh.UV_LENGTH];
 		}
 		return uvs;
 	}
@@ -210,8 +202,8 @@ public class SOMImporter {
 		Animation[] animations = null;
 		if(rawAnimationsData.length > 1){
 			animations = new Animation[rawAnimationsData.length-1];
-			System.out.println(rawAnimationsData.length);
-			System.out.println(animations.length);
+//			System.out.println(rawAnimationsData.length);
+//			System.out.println(animations.length);
 			for (int i = 1; i < rawAnimationsData.length; i++) {
 				animations[i-1] = parseAnimation(rawAnimationsData[i].split(">Animation", 2)[0], step, bonesCount);
 			}
@@ -221,12 +213,12 @@ public class SOMImporter {
 			if(bonesCount > 0) {
 				bones = new Transform[bonesCount];
 				for (int i = 0; i < bones.length; i++) {
-					long vector = Vector3Utils.convert(1, 1, 1);
+					int[] vector = new int[] {1, 1, 1};
 					bones[i] = new Transform(vector, vector, vector);
 				}
 			}else {
 				bones = new Transform[1];
-				long vector = Vector3Utils.convert(1, 1, 1);
+				int[] vector = new int[] {1, 1, 1};
 				bones[0] = new Transform(vector, vector, vector);
 			}
 			animations[0] = new Animation("Animation", 1, bonesCount, bones);
@@ -249,9 +241,9 @@ public class SOMImporter {
 			int sx = toInt(rawBonesData[j + Mesh.SCALE + vx]);
 			int sy = toInt(rawBonesData[j + Mesh.SCALE + vy]);
 			int sz = toInt(rawBonesData[j + Mesh.SCALE + vz]);
-			long pos = Vector3Utils.convert(px, py, pz);
-			long rot = Vector3Utils.convert(rx, ry, rz);
-			long scale = Vector3Utils.convert(sx, sy, sz);
+			int[] pos = new int[] {px, py, pz};
+			int[] rot = new int[] {rx, ry, rz};
+			int[] scale = new int[] {sx, sy, sz};
 			bones[j/step] =  new Transform(pos, rot, scale);
 		}
 		return new Animation(animName, framesCount, bonesCount, bones);

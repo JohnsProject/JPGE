@@ -7,9 +7,7 @@ import com.johnsproject.jpge.graphics.Material;
 import com.johnsproject.jpge.graphics.Mesh;
 import com.johnsproject.jpge.graphics.Transform;
 import com.johnsproject.jpge.utils.ColorUtils;
-import com.johnsproject.jpge.utils.Vector2Utils;
-import com.johnsproject.jpge.utils.Vector3Utils;
-import com.johnsproject.jpge.utils.VertexUtils;
+import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * Test class for {@link SOMImporter}.
@@ -18,6 +16,8 @@ import com.johnsproject.jpge.utils.VertexUtils;
  *
  */
 public class SOMImporterTest {
+	
+	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
 	//triangulated default cube
 	String template = 
@@ -52,12 +52,11 @@ public class SOMImporterTest {
 	public void parseVertexesTest() throws Exception {
 		String rawData = template.replace(" ", "").replace("\n", "");
 		String[] rawVertexesData = rawData.split("Vertexes<")[1].split(">Vertexes", 2)[0].split(",");
-		long[] vertexes = SOMImporter.parseVertexes(rawVertexesData);
-		long vector = VertexUtils.getVector(vertexes[1]);
-		assert(Vector3Utils.getX(vector) == -100);
-		assert(Vector3Utils.getY(vector) == -100);
-		assert(Vector3Utils.getZ(vector) == 100);
-		assert(VertexUtils.getBoneIndex(vertexes[1]) == 1);
+		int[][] vertexes = SOMImporter.parseVertexes(rawVertexesData);
+		assert(vertexes[1][vx] == -100);
+		assert(vertexes[1][vy] == -100);
+		assert(vertexes[1][vz] == 100);
+		assert(vertexes[1][Mesh.BONE_INDEX] == 1);
 	}
 	
 	@Test
@@ -79,9 +78,9 @@ public class SOMImporterTest {
 	public void parseUVsTest() throws Exception {
 		String rawData = template.replace(" ", "").replace("\n", "");
 		String[] rawUVsData = rawData.split("UVs<")[1].split(">UVs", 2)[0].split(",");
-		int[] uvs = SOMImporter.parseUVs(rawUVsData);
-		assert(Vector2Utils.getX(uvs[1]) == 0);
-		assert(Vector2Utils.getY(uvs[1]) == 100);
+		int[][] uvs = SOMImporter.parseUVs(rawUVsData);
+		assert(uvs[1][vx] == 0);
+		assert(uvs[1][vy] == 100);
 	}
 	
 	@Test
@@ -105,12 +104,12 @@ public class SOMImporterTest {
 		assert (animations[0].getBonesCount() == 2);
 		Transform bone1 = animations[0].getBone(0, 0);
 		Transform bone2 = animations[0].getBone(1, 0);
-		assert (bone1.getPosition() == Vector3Utils.convert(0, 0, 0));
-		assert (bone1.getRotation() == Vector3Utils.convert(0, 0, 0));
-		assert (bone1.getScale() == Vector3Utils.convert(1, 1, 1));
-		assert (bone2.getPosition() == Vector3Utils.convert(0, 0, 25));
-		assert (bone2.getRotation() == Vector3Utils.convert(75, 0, 0));
-		assert (bone2.getScale() == Vector3Utils.convert(1, 1, 1));
+		assert (VectorUtils.equals3(bone1.getPosition(), new int[] {0, 0, 0}));
+		assert (VectorUtils.equals3(bone1.getRotation(), new int[] {0, 0, 0}));
+		assert (VectorUtils.equals3(bone1.getScale(), new int[] {1, 1, 1}));
+		assert (VectorUtils.equals3(bone2.getPosition(), new int[] {0, 0, 25}));
+		assert (VectorUtils.equals3(bone2.getRotation(), new int[] {75, 0, 0}));
+		assert (VectorUtils.equals3(bone2.getScale(), new int[] {1, 1, 1}));
 	}
 	
 }

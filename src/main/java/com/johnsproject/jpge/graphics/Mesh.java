@@ -3,8 +3,7 @@ package com.johnsproject.jpge.graphics;
 import java.util.Arrays;
 
 import com.johnsproject.jpge.io.SOMImporter;
-import com.johnsproject.jpge.utils.Vector2Utils;
-import com.johnsproject.jpge.utils.VertexUtils;
+import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * The Mesh class contains the data of {@link SceneObject} meshes imported by {@link SOMImporter}. 
@@ -13,18 +12,18 @@ import com.johnsproject.jpge.utils.VertexUtils;
  * @author John´s Project - John Konrad Ferraz Salomon
  */
 public class Mesh {
-	
+	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	public static final byte BONE_INDEX = 3, SHADE_FACTOR = 4;
 	public static final byte VERTEX_LENGTH = 5;
-	private long[] vertexes;
-	private long[] vertexesBuffer;
+	private int[][] vertexes;
+	private int[][] vertexesBuffer;
 	public static final byte VERTEX_1 = 0, VERTEX_2 = 1, VERTEX_3 = 2;
 	public static final byte UV_1 = 4, UV_2 = 5, UV_3 = 6;
 	public static final byte MATERIAL_INDEX = 3, CULLED = 7;
 	public static final byte POLYGON_LENGTH = 8;
 	private int[][] polygons;
 	public static final byte UV_LENGTH = 2;
-	private int[] uvs;
+	private int[][] uvs;
 	public static final byte MATERIAL_LENGTH = 4;
 	private Material[] materials;
 	public static final byte POSITION = 0, ROTATION = 3, SCALE = 6;
@@ -41,9 +40,9 @@ public class Mesh {
 	 * @param materials an array of {@link Material Materials}.
 	 * @param animations an array of {@link Animation Animations}.
 	 */
-	public Mesh (long[] vertexes, int[][] polygons, int[] uvs, Material[] materials, Animation[] animations) {
+	public Mesh (int[][] vertexes, int[][] polygons, int[][] uvs, Material[] materials, Animation[] animations) {
 		this.vertexes = vertexes;
-		this.vertexesBuffer = vertexes.clone();
+		this.vertexesBuffer = new int[vertexes.length][VERTEX_LENGTH];
 		this.polygons = polygons;
 		this.uvs = uvs;
 		this.materials = materials;
@@ -56,7 +55,7 @@ public class Mesh {
 	 * 
 	 * @return all vertexes of this mesh.
 	 */
-	public long [] getVertexes(){
+	public int[][] getVertexes(){
 		return vertexes;
 	}
 	
@@ -66,7 +65,7 @@ public class Mesh {
 	 * @param index index of vertex.
 	 * @return vertex at the given index.
 	 */
-	public long getVertex(int index){
+	public int[] getVertex(int index){
 		return vertexes[index];
 	}
 	
@@ -80,21 +79,8 @@ public class Mesh {
 	 * @param index index of buffered vertex.
 	 * @return buffered vertex at the given index.
 	 */
-	public long getBufferedVertex(int index){
+	public int[] getBufferedVertex(int index){
 		return vertexesBuffer[index];
-	}
-	
-	/**
-	 * Sets the buffered vertex at the given index.
-	 * The buffered vertexes are used by the {@link SceneRenderer} at the rendering process.
-	 * This vertexes are transformed, rotated and projected. 
-	 * the vertex buffer is a buffer used to prevent loosing original position of vertexes.
-	 * 
-	 * @param index index of buffered vertex.
-	 * @param vertex vertex to set.
-	 */
-	public void setBufferedVertex(int index, long vertex){
-		vertexesBuffer[index] = vertex;
 	}
 	
 	/**
@@ -103,7 +89,11 @@ public class Mesh {
 	 */
 	public void resetBuffer() {
 		for (int i = 0; i < vertexes.length; i++) {
-			vertexesBuffer[i] = vertexes[i];
+			vertexesBuffer[i][vx] = vertexes[i][vx];
+			vertexesBuffer[i][vy] = vertexes[i][vy];
+			vertexesBuffer[i][vz] = vertexes[i][vz];
+			vertexesBuffer[i][BONE_INDEX] = vertexes[i][BONE_INDEX];
+			vertexesBuffer[i][SHADE_FACTOR] = vertexes[i][SHADE_FACTOR];
 		}
 	}
 	
@@ -112,7 +102,7 @@ public class Mesh {
 	 * 
 	 * @return all uvs of this mesh.
 	 */
-	public int [] getUVs(){
+	public int [][] getUVs(){
 		return uvs;
 	}
 	
@@ -122,7 +112,7 @@ public class Mesh {
 	 * @param index index of uv.
 	 * @return the uv at the given index.
 	 */
-	public int getUV(int index){
+	public int[] getUV(int index){
 		if (uvs.length < 2) return uvs[0];
 		return uvs[index];
 	}

@@ -1,6 +1,6 @@
 package com.johnsproject.jpge.graphics;
-import com.johnsproject.jpge.utils.VectorMathUtils;
-import com.johnsproject.jpge.utils.Vector3Utils;
+import com.johnsproject.jpge.utils.Vector3MathUtils;
+import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * The Transform class contains position, rotation and scale data of a object like {@link SceneObject} or {@link Camera}.
@@ -8,9 +8,12 @@ import com.johnsproject.jpge.utils.Vector3Utils;
  * @author John´s Project - John Konrad Ferraz Salomon
  */
 public class Transform {
-	private long position;
-	private long rotation;
-	private long scale;
+	
+	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
+	
+	private int[] position;
+	private int[] rotation;
+	private int[] scale;
 	
 	/**
 	 * Creates a new instance of the Transform class filled with the given values.
@@ -19,7 +22,7 @@ public class Transform {
 	 * @param rotation rotation of this transform.
 	 * @param scale scale of this transform.
 	 */
-	public Transform(long position, long rotation, long scale) {
+	public Transform(int[] position, int[] rotation, int[] scale) {
 		this.position = position;
 		this.rotation = rotation;
 		this.scale = scale;
@@ -33,7 +36,9 @@ public class Transform {
 	 * @param z how much to move in the z axis.
 	 */
 	public void translate(int x, int y, int z) {
-		position = VectorMathUtils.add(position, Vector3Utils.convert(x, y, z));
+		position[vx] += x;
+		position[vy] += y;
+		position[vz] += z;
 	}
 	
 	/**
@@ -43,11 +48,14 @@ public class Transform {
 	 * @param y how much to move in the y axis.
 	 * @param z how much to move in the z axis.
 	 */
+	private int[] cache = new int[3];
 	public void translateLocal(int x, int y, int z) {
-		long vector = Vector3Utils.convert(x, y, z);
-		long rot = Vector3Utils.convert(-Vector3Utils.getX(rotation), -Vector3Utils.getY(rotation), -Vector3Utils.getZ(rotation));
-		vector = VectorMathUtils.movePointByAnglesXYZ(vector, rot);
-		position = VectorMathUtils.add(position, vector);
+		cache[vx] = x;
+		cache[vy] = y;
+		cache[vz] = z;
+		cache = Vector3MathUtils.movePointByAnglesXYZ(cache, VectorUtils.invert3(rotation));
+		position = Vector3MathUtils.add(position, cache);
+		VectorUtils.invert3(rotation);
 	}
 	
 	/**
@@ -58,7 +66,9 @@ public class Transform {
 	 * @param z how much to rotate in the z axis.
 	 */
 	public void rotate(int x, int y, int z) {
-		rotation = VectorMathUtils.add(rotation, Vector3Utils.convert(x, y, z));
+		rotation[vx] += x;
+		rotation[vy] += y;
+		rotation[vz] += z;
 	}
 	
 	
@@ -67,8 +77,8 @@ public class Transform {
 	 * 
 	 * @param vector vector containing translate values.
 	 */
-	public void translate(long vector) {
-		position = VectorMathUtils.add(position, vector);
+	public void translate(int[] vector) {
+		position = Vector3MathUtils.add(position, vector);
 	}
 	
 	/**
@@ -76,8 +86,8 @@ public class Transform {
 	 * 
 	 * @param vector vector containing rotate values.
 	 */
-	public void rotate(long vector) {
-		rotation = VectorMathUtils.add(rotation, vector);
+	public void rotate(int[] vector) {
+		rotation = Vector3MathUtils.add(rotation, vector);
 	}
 
 	/**
@@ -85,7 +95,7 @@ public class Transform {
 	 * 
 	 * @return position of this transform.
 	 */
-	public long getPosition() {
+	public int[] getPosition() {
 		return position;
 	}
 
@@ -97,7 +107,9 @@ public class Transform {
 	 * @param z position at the z axis.
 	 */
 	public void setPosition(int x, int y, int z) {
-		this.position = Vector3Utils.convert(x, y, z);
+		position[vx] = x;
+		position[vy] = y;
+		position[vz] = z;
 	}
 
 	/**
@@ -105,7 +117,7 @@ public class Transform {
 	 * 
 	 * @return rotation of this transform.
 	 */
-	public long getRotation() {
+	public int[] getRotation() {
 		return rotation;
 	}
 
@@ -117,7 +129,9 @@ public class Transform {
 	 * @param z rotation at the z axis.
 	 */
 	public void setRotation(int x, int y, int z) {
-		this.rotation = Vector3Utils.convert(x, y, z);
+		rotation[vx] = x;
+		rotation[vy] = y;
+		rotation[vz] = z;
 	}
 
 	/**
@@ -125,7 +139,7 @@ public class Transform {
 	 * 
 	 * @return scale of this transform.
 	 */
-	public long getScale() {
+	public int[] getScale() {
 		return scale;
 	}
 
@@ -137,14 +151,16 @@ public class Transform {
 	 * @param z scale at the z axis.
 	 */
 	public void setScale(int x, int y, int z) {
-		this.scale = Vector3Utils.convert(x, y, z);
+		scale[vx] = x;
+		scale[vy] = y;
+		scale[vz] = z;
 	}
 
 	@Override
 	public String toString() {
-		return "Transform [position=" + Vector3Utils.toString(position)
-		+ ", rotation=" + Vector3Utils.toString(rotation)
-		+ ", scale=" + Vector3Utils.toString(scale) + "]";
+		return "Transform [position=" + VectorUtils.toString(position)
+		+ ", rotation=" + VectorUtils.toString(rotation)
+		+ ", scale=" + VectorUtils.toString(scale) + "]";
 	}
 	
 }

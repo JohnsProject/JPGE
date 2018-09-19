@@ -5,13 +5,10 @@ import java.util.List;
 import com.johnsproject.jpge.graphics.Camera;
 import com.johnsproject.jpge.graphics.Light;
 import com.johnsproject.jpge.graphics.Mesh;
-import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
 import com.johnsproject.jpge.graphics.Shader;
 import com.johnsproject.jpge.graphics.Transform;
 import com.johnsproject.jpge.utils.RenderUtils;
-import com.johnsproject.jpge.utils.Vector3Utils;
-import com.johnsproject.jpge.utils.VectorMathUtils;
-import com.johnsproject.jpge.utils.VertexUtils;
+import com.johnsproject.jpge.utils.Vector3MathUtils;
 
 public class TestShader extends Shader{
 
@@ -20,15 +17,14 @@ public class TestShader extends Shader{
 	
 
 	@Override
-	public long shadeVertex(long vertex, Transform sceneObjectTransform, Camera camera, List<Light> lights) {
+	public int[] shadeVertex(int[] vertex, Transform sceneObjectTransform, Camera camera, List<Light> lights) {
 		Transform objt = sceneObjectTransform;
 		Transform camt = camera.getTransform();
-		long vector = VertexUtils.getVector(vertex);
 		//transforming vertex in object space
-		vector = VectorMathUtils.movePointByScale(vector, objt.getScale());
-		vector = VectorMathUtils.movePointByAnglesXYZ(vector, objt.getRotation());
+		vertex = Vector3MathUtils.movePointByScale(vertex, objt.getScale());
+		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, objt.getRotation());
 		//transforming vertex to world space
-		vector = VectorMathUtils.add(vector, objt.getPosition());
+		vertex = Vector3MathUtils.add(vertex, objt.getPosition());
 		//test lighting
 //		Light light = lights.get(0);
 //		Transform lt = light.getTransform();
@@ -45,11 +41,10 @@ public class TestShader extends Shader{
 //		vertex = VertexUtils.setShadeFactor(vertex, d);
 //		System.out.println(d);
 		//transforming vertex in camera space
-		vector = VectorMathUtils.subtract(vector, camt.getPosition());
-		vector = VectorMathUtils.movePointByAnglesXYZ(vector, camt.getRotation());
+		vertex = Vector3MathUtils.subtract(vertex, camt.getPosition());
+		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, camt.getRotation());
 		//projecting vertex into screen coordinates
-		vector = RenderUtils.project(vector, objt.getPosition(), camera);
-		vertex = VertexUtils.setVector(vertex, vector);
+		vertex = RenderUtils.project(vertex, objt.getPosition(), camera);
 		return vertex;
 	}
 

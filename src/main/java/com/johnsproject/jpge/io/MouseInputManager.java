@@ -15,8 +15,8 @@ import com.johnsproject.jpge.GameManager;
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 import com.johnsproject.jpge.event.UpdateListener;
-import com.johnsproject.jpge.utils.Vector2Utils;
 import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
+import com.johnsproject.jpge.utils.VectorUtils;
 
 public class MouseInputManager implements UpdateListener {
 	
@@ -29,12 +29,13 @@ public class MouseInputManager implements UpdateListener {
 		return instance;
 	}
 	
-	private JPGEMouseEvent mouseEvent = new JPGEMouseEvent(0);
-	
+	private JPGEMouseEvent mouseEvent = new JPGEMouseEvent(null);
+	private static final int vx = VectorUtils.X, vy = VectorUtils.Y;
 	private static final byte LEFT = 0, MIDDLE = 1, RIGHT = 2;
 	private List<JPGEMouseListener> mouseListeners = Collections.synchronizedList(new ArrayList<JPGEMouseListener>());
-	private Map<Integer, Integer> pressedKeys = Collections.synchronizedMap(new HashMap<Integer, Integer>());
+	private Map<Integer, int[]> pressedKeys = Collections.synchronizedMap(new HashMap<Integer, int[]>());
 
+	private int[] cache = new int[2];
 	public MouseInputManager() {
 		EventDispatcher.getInstance().addUpdateListener(this);
 		GameManager.getInstance();
@@ -44,9 +45,9 @@ public class MouseInputManager implements UpdateListener {
                 	synchronized (pressedKeys) {
 	                    MouseEvent evt = (MouseEvent)event;
 	                    if(evt.getID() == MouseEvent.MOUSE_CLICKED){
-	                    	int x = (int)evt.getX();
-	        				int y = (int)evt.getY();
-	        				pressedKeys.put(evt.getButton()-1, Vector2Utils.convert(x, y));
+	                    	cache[vx] = (int)evt.getX();
+	                    	cache[vy] = (int)evt.getY();
+	        				pressedKeys.put(evt.getButton()-1, cache);
 	                    }
                 	}
                 }
@@ -67,9 +68,9 @@ public class MouseInputManager implements UpdateListener {
 							if (key == RIGHT) mouseListener.rightClick(mouseEvent);
 						}
 						pressedKeys.clear();
-						int x = (int)MouseInfo.getPointerInfo().getLocation().getX();
-						int y = (int)MouseInfo.getPointerInfo().getLocation().getY();
-						mouseEvent.setPosition(Vector2Utils.convert(x, y));
+						cache[vx] = (int)MouseInfo.getPointerInfo().getLocation().getX();
+						cache[vy] = (int)MouseInfo.getPointerInfo().getLocation().getY();
+						mouseEvent.setPosition(cache);
 						mouseListener.positionUpdate(mouseEvent);
 					}
 				}
