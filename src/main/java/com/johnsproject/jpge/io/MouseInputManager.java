@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.johnsproject.jpge.GameManager;
+import com.johnsproject.jpge.Profiler;
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 import com.johnsproject.jpge.event.UpdateListener;
@@ -60,19 +61,28 @@ public class MouseInputManager implements UpdateListener {
 		if (event.getUpdateType() == UpdateType.input) {
 			synchronized (mouseListeners) {
 				synchronized (pressedKeys) {
-					for (JPGEMouseListener mouseListener : mouseListeners) {
-						for (int key : pressedKeys.keySet()) {
-							mouseEvent.setPosition(pressedKeys.get(key));
-							if (key == LEFT) mouseListener.leftClick(mouseEvent);
-							if (key == MIDDLE) mouseListener.middleClick(mouseEvent);
-							if (key == RIGHT) mouseListener.rightClick(mouseEvent);
+					String data = "";
+					for (int key : pressedKeys.keySet()) {
+						mouseEvent.setPosition(pressedKeys.get(key));
+						data += key + ", ";
+						for (JPGEMouseListener mouseListener : mouseListeners) {
+							if (key == LEFT)
+								mouseListener.leftClick(mouseEvent);
+							if (key == MIDDLE)
+								mouseListener.middleClick(mouseEvent);
+							if (key == RIGHT)
+								mouseListener.rightClick(mouseEvent);
 						}
-						pressedKeys.clear();
-						cache[vx] = (int)MouseInfo.getPointerInfo().getLocation().getX();
-						cache[vy] = (int)MouseInfo.getPointerInfo().getLocation().getY();
+					}
+					for (JPGEMouseListener mouseListener : mouseListeners) {
+						cache[vx] = (int) MouseInfo.getPointerInfo().getLocation().getX();
+						cache[vy] = (int) MouseInfo.getPointerInfo().getLocation().getY();
 						mouseEvent.setPosition(cache);
 						mouseListener.positionUpdate(mouseEvent);
 					}
+					pressedKeys.clear();
+					if (data.equals("")) data = "no mouse clicks";
+					Profiler.getInstance().getData().setMouseData(data);
 				}
 			}
 		}

@@ -146,6 +146,18 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		if (event.getKeyCode() == 113) { 
 			Profiler.getInstance().stop();
 		}
+		if (event.getKeyCode() == 114) { 
+			Profiler.getInstance().startLogging();
+		}
+		if (event.getKeyCode() == 115) { 
+			Profiler.getInstance().stopLogging();
+		}
+		if (event.getKeyCode() == 116) { 
+			GameManager.getInstance().play();
+		}
+		if (event.getKeyCode() == 117) { 
+			GameManager.getInstance().pause();
+		}
 		if (event.getKeyCode() == 38) { 
 			light.getTransform().translateLocal(0, 0, 6);
 		}

@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.johnsproject.jpge.GameManager;
+import com.johnsproject.jpge.Profiler;
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 import com.johnsproject.jpge.event.UpdateListener;
@@ -70,13 +71,18 @@ public class KeyInputManager implements UpdateListener {
 		if (event.getUpdateType() == UpdateType.input) {
 			synchronized (keyListeners) {
 				synchronized (pressedKeys) {
+					String data = "";
 					for (int key : pressedKeys.keySet()) {
+						char keyChar = pressedKeys.get(key).charValue();
+						keyEvent.setKey(keyChar);
+						keyEvent.setKeyCode(key);
+						data += "(" + keyChar + ", " + key + "), ";
 						for (JPGEKeyListener keyListener : keyListeners) {
-							keyEvent.setKey(pressedKeys.get(key).charValue());
-							keyEvent.setKeyCode(key);
 							keyListener.keyPressed(keyEvent);
 						}
 					}
+					if (data.equals("")) data = "no keys pressed";
+					Profiler.getInstance().getData().setKeyData(data);
 				}
 			}
 		}

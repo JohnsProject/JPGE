@@ -1,16 +1,17 @@
 package com.johnsproject.jpge.graphics;
 
 import java.awt.Graphics;
-import java.awt.image.BufferStrategy;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-import java.awt.Canvas;
 import java.awt.image.DataBufferInt;
 import java.util.Arrays;
 
+import javax.swing.JPanel;
+
 import com.johnsproject.jpge.graphics.SceneRenderer.ProjectionType;
 import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
+import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.Vector2MathUtils;
-import com.johnsproject.jpge.utils.Vector3MathUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
@@ -20,9 +21,9 @@ import com.johnsproject.jpge.utils.VectorUtils;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Camera extends Canvas{
+public class Camera extends JPanel{
 	
-	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
+	private static final int vx = VectorUtils.X, vy = VectorUtils.Y;
 	
 	private static final long serialVersionUID = -6288232882538805324L;
 	private String name;
@@ -60,25 +61,30 @@ public class Camera extends Canvas{
 		this.screenPosition = screenPosition;
 		this.setLocation(px, py);
 		this.viewBuffer = new BufferedImage(sx, sy, BufferedImage.TYPE_INT_ARGB_PRE);
-		this.viewBuffer.setAccelerationPriority(1);
 		this.viewBufferData = ((DataBufferInt)viewBuffer.getRaster().getDataBuffer()).getData();
 		this.changed = true;
 		this.shader = new PixelShader();
+	}	
+	
+	public void drawBuffer() {
+		repaint();
+		//viewBuffer.getGraphics().clearRect(0, 0, screenSize[vx], screenSize[vy]);
 	}
 	
-	/**
-	 * Tells this camera to draw its view buffer on its {@link Graphics}.
-	 */
-	public void drawBuffer() {
-		if(this.getBufferStrategy() == null) {
-			this.createBufferStrategy(2);
-		}
-		BufferStrategy s = this.getBufferStrategy();
-		Graphics g = s.getDrawGraphics();
-		g.drawImage(viewBuffer, 0, 0, null);
-		s.show();
-	} 
+	public void clearBuffer() {
+		//for (int i = 0; i < viewBufferData.length; i++) viewBufferData[i] = testC;
+		viewBuffer.getGraphics().clearRect(0, 0, screenSize[vx], screenSize[vy]);
+	}
 	
+	int testC = ColorUtils.convert(255, 255, 255, 255);
+	@Override
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		Graphics2D g2 = (Graphics2D) g;
+		g2.drawImage(viewBuffer, null, null);
+		clearBuffer();
+	}
+
 	/**
 	 * Sets the pixel of the view buffer of this camera at the given position with given colors.
 	 * 

@@ -1,11 +1,9 @@
 package com.johnsproject.jpge.graphics;
 
-import java.util.Arrays;
 import java.util.List;
 
 import com.johnsproject.jpge.Profiler;
 import com.johnsproject.jpge.utils.RenderUtils;
-import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * The SceneRenderer class renders the {@link Scene} assigned to the {@link SceneFrame}.
@@ -24,7 +22,6 @@ public class SceneRenderer {
 		vertex, wireframe, solid, textured
 	}
 	
-	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	private int[] zBuffer = null;
 	
 	/**
@@ -56,13 +53,14 @@ public class SceneRenderer {
 	 */
 	public void render(Scene scene) {
 		resetZBuffer();
+		Profiler.getInstance().getData().setMaxPolys(0);
+		Profiler.getInstance().getData().setRenderedPolys(0);
 		synchronized (scene.getCameras()) {
 			for (Camera camera : scene.getCameras()) {
-				camera.getViewGraphics().clearRect(0, 0, camera.getScreenSize()[vx],  camera.getScreenSize()[vy]);
 				for (SceneObject sceneObject : scene.getSceneObjects()) {
-					if (sceneObject.isActive() && (sceneObject.changed() || camera.changed())) {
+					//if (sceneObject.isActive() && (sceneObject.changed() || camera.changed())) {
 						render(sceneObject, camera, scene.getLights());
-					}
+					//}
 				}
 				camera.changed(false);
 				camera.drawBuffer();
@@ -92,7 +90,8 @@ public class SceneRenderer {
 			vertex = RenderUtils.animate(vertex, animation);
 			vertex = shader.shadeVertex(vertex, sceneObject.getTransform(), camera, lights);
 		}
-		int maxPolys = 0, rendPolys = 0;
+		int maxPolys = Profiler.getInstance().getData().getMaxPolys();
+		int rendPolys = Profiler.getInstance().getData().getRenderedPolys();
 		for (int[] polygon : mesh.getPolygons()) {
 			polygon = shader.shadePolygon(polygon, mesh, zBuffer, camera);
 			maxPolys++;

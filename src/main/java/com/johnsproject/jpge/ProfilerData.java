@@ -3,23 +3,25 @@ package com.johnsproject.jpge;
 public class ProfilerData {
 	
 	// Graphics data
-	private int renderTime = 1;
+	private int graphicsTime = 1;
 	private int renderedPolys = 1, maxPolys = 1;
 	private int cameras = 1;
 	private int width = 1, height = 1;
 
 	// Input data
 	private int inputTime = 1;
-
+	private String keyData = "";
+	private String mouseData = "";
+	
 	// Physics data
 	private int physicsTime = 1;
 
-	public int getRenderTime() {
-		return renderTime;
+	public int getGraphicsTime() {
+		return graphicsTime;
 	}
 
-	public void setRenderTime(int renderTime) {
-		this.renderTime = renderTime;
+	public void setGraphicsTime(int graphicsTime) {
+		this.graphicsTime = graphicsTime;
 	}
 
 	public int getRenderedPolys() {
@@ -76,5 +78,22 @@ public class ProfilerData {
 
 	public void setPhysicsTime(int physicsTime) {
 		this.physicsTime = physicsTime;
-	}	
+	}
+
+	public String getKeyData() {
+		return keyData;
+	}
+
+	public void setKeyData(String keyData) {
+		this.keyData = keyData;
+	}
+
+	public String getMouseData() {
+		return mouseData;
+	}
+
+	public void setMouseData(String mouseData) {
+		this.mouseData = mouseData;
+	}
+
 }

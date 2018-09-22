@@ -17,7 +17,7 @@ import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
 public class RenderUtils {
 
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
-	private static final int SHIFT = 20;
+	private static final int SHIFT = 10;
 	
 	/**
 	 * Projects a vector to from world (3D) to screen (2D) coordinates based on the {@link ProjectionType}
@@ -30,20 +30,23 @@ public class RenderUtils {
 	 * @return projected vector.
 	 */
 	public static int[] project(int[] vector, int[] objectPosition, Camera camera) {
-		int px = 0, py = 0, pz = 0;
-		int fov = camera.getFieldOfView(), rescalef = camera.getScaleFactor();
+		int px = vector[vx];
+		int py = vector[vy];
+		int pz = vector[vz];
+		int fov = camera.getFieldOfView();
+		int rescalef = camera.getScaleFactor();
 		switch (camera.getProjectionType()) {
 		case perspective: // this projectionType uses depth
-			int z = (vector[vz] + fov);
+			int z = (pz + fov);
 			if (z <= 0) z = 1;
-			px = ((vector[vx] * rescalef * fov)) / z;
-			py = ((vector[vy] * rescalef * fov)) / z;
-			pz = z + (vector[vz]<<1);
+			px = ((px * rescalef * fov)) / z;
+			py = ((py * rescalef * fov)) / z;
+			pz = z + (pz << 1);
 			break;
 		case orthographic: // this projectionType ignores depth
-			px = (vector[vx] * rescalef)>>5;
-			py = (vector[vy] * rescalef)>>5;
-			pz = vector[vz] + objectPosition[vz];
+			px = (px * rescalef)>>5;
+			py = (py * rescalef)>>5;
+			pz = pz + objectPosition[vz];
 			break;
 		}
 		vector[vx] = (px) + camera.getHalfScreenSize()[vx] + objectPosition[vx];
@@ -84,8 +87,11 @@ public class RenderUtils {
 		int[] v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
 		int ncp = camera.getNearClippingPlane();
 		int fcp = camera.getFarClippingPlane();
-		int w = camera.getWidth(), h = camera.getHeight();
-		int x = v1[vx], y = v1[vy], z = v1[vz];
+		int w = camera.getWidth();
+		int h = camera.getHeight();
+		int x = v1[vx];
+		int y = v1[vy];
+		int z = v1[vz];
 		if (x > -400 && x < w+400 && y > -400 && y < h+400 && z > ncp && z < fcp) {
 			return false;
 		}
@@ -139,12 +145,14 @@ public class RenderUtils {
 		int sf2 = vt2[Mesh.SHADE_FACTOR];
 		int sf3 = vt3[Mesh.SHADE_FACTOR];
 		int color = mesh.getMaterial(polygon[Mesh.MATERIAL_INDEX]).getColor();
-		int tmp, x1 = vt1[vx], y1 = vt1[vy], z1 = vt1[vz],
-				x2 = vt2[vx], y2 = vt2[vy], z2 = vt2[vz],
-				x3 = vt3[vx], y3 = vt3[vy], z3 = vt3[vz],
-				u1 = uv1[vx], v1 = uv1[vy],
-				u2 = uv2[vx], v2 = uv2[vy],
-				u3 = uv3[vx], v3 = uv3[vy];
+		int tmp = 0;
+		int x1 = vt1[vx], y1 = vt1[vy], z1 = vt1[vz],
+			x2 = vt2[vx], y2 = vt2[vy], z2 = vt2[vz],
+			x3 = vt3[vx], y3 = vt3[vy], z3 = vt3[vz];
+		int u1 = uv1[vx], v1 = uv1[vy],
+			u2 = uv2[vx], v2 = uv2[vy],
+			u3 = uv3[vx], v3 = uv3[vy];
+		// y sorting
 		if (y1 > y2) { tmp = y2; y2 = y1; y1 = tmp; 
 		   				tmp = x2; x2 = x1; x1 = tmp;
 		   				tmp = v2; v2 = v1; v1 = tmp; 
@@ -160,38 +168,46 @@ public class RenderUtils {
 		   				tmp = v2; v2 = v1; v1 = tmp; 
 		   				tmp = u2; u2 = u1; u1 = tmp;
 		   				tmp = sf2; sf2 = sf1; sf1 = tmp;}
+		// hack to fix fill bug
 		if (y2 == y1) y2++;
 		if (y3 == y1) y3++;
+		// get smallest z value for z buffering
 		int z = z1;
 		if (z1 > z2) z = z2;
 	    if (z2 > z3) z = z3;
-	    if(camera.getRenderingType() == RenderingType.vertex) {
-	    	if(y1 > 0 && y1 < height && x1 > 0 && x1 < width)
+	    z = camera.getNearClippingPlane() - z;
+	    // draw
+	    switch (camera.getRenderingType()) {
+		case vertex:
+			if(y1 > 0 && y1 < height && x1 > 0 && x1 < width)
 	    		setPixel(x1, y1, z1, color, px, py, zBuffer, width, camera);
 	    	if(y2 > 0 && y2 < height && x2 > 0 && x2 < width)
 	    		setPixel(x2, y2, z2, color, px, py, zBuffer, width, camera);
 	    	if(y3 > 0 && y3 < height && x3 > 0 && x3 < width)
 	    		setPixel(x3, y3, z3, color, px, py, zBuffer, width, camera);
-		}
-		if(camera.getRenderingType() == RenderingType.wireframe) {
+			break;
+			
+		case wireframe:
 			drawLine(x1, y1, x2, y2, z, color, px, py, zBuffer, width, height, camera);
 			drawLine(x2, y2, x3, y3, z, color, px, py, zBuffer, width, height, camera);
 			drawLine(x3, y3, x1, y1, z, color, px, py, zBuffer, width, height, camera);
-		}
-		if(camera.getRenderingType() == RenderingType.solid) {
-			drawPolygon(x1, y1, sf1, x2, y2, sf2, x3, y3, sf3, px, py, zBuffer, width, height, z, color, camera);
-		}
-		if(camera.getRenderingType() == RenderingType.textured) {
+			break;
+			
+		case solid:
+			drawPolygon(x1, y1, sf1, x2, y2, sf2, x3, y3, sf3, z, px, py, zBuffer, width, height, color, camera);
+			break;
+			
+		case textured:
 			Texture img = mesh.getMaterial(0).getTexture();
-			drawPolygonAffine(x1, y1, x2, y2, x3, y3, z3, u1, v1, u2, v2, u3, v3, sf1, img, px, py, zBuffer, width, height, camera);
+			drawPolygonAffine(x1, y1, x2, y2, x3, y3, z, u1, v1, u2, v2, u3, v3, sf1, img, px, py, zBuffer, width, height, camera);
+			break;
 		}
 	}
 	
 	static void setPixel(int x, int y, int z, int color, int cameraX, int cameraY, int[] zBuffer, int width, Camera camera) {
 		int pos = (x + cameraX) + ((y + cameraY)*width);
-		int pz = camera.getNearClippingPlane()-z;
-		if(zBuffer[pos] < pz) {
-			zBuffer[pos] = pz;
+		if(zBuffer[pos] < z) {
+			zBuffer[pos] = z;
 			camera.setPixel(x, y, color);
 		}
 	}
@@ -226,8 +242,8 @@ public class RenderUtils {
 		}
 	}
 	
-	static void drawPolygon(int x1, int y1, int sf1, int x2, int y2, int sf2, int x3, int y3, int sf3,
-			int cameraX, int cameraY, int[] zBuffer, int width, int height,int z, int c, Camera cam) {
+	static void drawPolygon(int x1, int y1, int sf1, int x2, int y2, int sf2, int x3, int y3, int sf3, int z,
+			int cameraX, int cameraY, int[] zBuffer, int width, int height, int c, Camera cam) {
 		int dx1 = 0, dx2 = 0, dx3 = 0; // x deltas
 		int df1 = 0, df2 = 0, df3 = 0; // shade factor deltas
 		c = ColorUtils.darker(c, sf1);

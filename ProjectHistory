@@ -166,6 +166,11 @@ v0.1 - 24/08/2018
 -Added VectorUtils class (provides methods for swapping vectors and so on)
 -Removed Vector2Utils class
 -Removed Vector3Utils class
+22/09/2018
+-Fixed flickering bug (changed from Canvas to JPanel)
+-Performance improvement
+-Improved Profiler (showing pressed key and mouse clicks now)
+-Fixed some bugs
 
 
 

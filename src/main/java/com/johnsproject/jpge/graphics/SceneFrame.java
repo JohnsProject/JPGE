@@ -1,9 +1,10 @@
 package com.johnsproject.jpge.graphics;
 
-import java.awt.Frame;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
+
+import javax.swing.JFrame;
 
 import com.johnsproject.jpge.GameManager;
 import com.johnsproject.jpge.event.UpdateEvent;
@@ -22,7 +23,7 @@ import com.johnsproject.jpge.io.FileIO;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class SceneFrame extends Frame implements CameraListener, UpdateListener{
+public class SceneFrame extends JFrame implements CameraListener, UpdateListener{
 
 	private static final long serialVersionUID = -841144266539311921L;
 	private Scene scene;
@@ -69,17 +70,11 @@ public class SceneFrame extends Frame implements CameraListener, UpdateListener{
 		this.setVisible(true);
 		this.setTitle("JPGE");
 		this.setLayout(null);
-		this.repaint();
+		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		//this.addKeyListener(KeyInputManager.getInstance());
 		GraphicsEventDispatcher.getInstance().addCameraListener(this);
 		com.johnsproject.jpge.event.EventDispatcher.getInstance().addUpdateListener(this);
 		GameManager.getInstance();
-		this.addWindowListener(new WindowAdapter(){
-			  public void windowClosing(WindowEvent we){
-			    System.exit(0);
-			  }
-		});
-		this.createBufferStrategy(2);
 	}
 	
 	/**
@@ -120,7 +115,7 @@ public class SceneFrame extends Frame implements CameraListener, UpdateListener{
 	
 	@Override
 	public void update(UpdateEvent event) {
-		if(event.getUpdateType() == UpdateType.render) {
+		if(event.getUpdateType() == UpdateType.graphics) {
 			renderer.render(getScene());
 		}
 		if(event.getUpdateType() == animator.getUpdateType()) {
@@ -131,13 +126,11 @@ public class SceneFrame extends Frame implements CameraListener, UpdateListener{
 	@Override
 	public void add(CameraEvent event) {
 		this.add(event.getCamera());
-		this.repaint();
 	}
 
 	@Override
 	public void remove(CameraEvent event) {
 		this.remove(event.getCamera());
-		this.repaint();
 	}
 
 	@Override

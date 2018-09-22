@@ -14,51 +14,59 @@ public class GameManager {
 		return instance;
 	}
 	
-	private int renderUpdateRate = 60;
+	private int graphicsUpdateRate = 30;
 	private int inputUpdateRate = 30;
 	private int physicsUpdateRate = 30;
 	
-	private Thread renderThread;
+	private Thread graphicsThread;
 	private Thread inputThread;
 	private Thread physicsThread;
 	
+	private boolean playing = true;
+	
 	public GameManager() {
-		updateRenderer();
-		updateInput();
+		updateGraphics();
 		updatePhysics();
+		updateInput();
 	}
 	
-//	public void play() {
-//		graphicsThread.start();
-//		inputTimer.start();
-//		physicsTimer.start();
-//	}
+	public void play() {
+		if (!isPlaying()) {
+			playing = true;
+			updateGraphics();
+			updatePhysics();
+		}
+	}
 	
-//	public void pause() {
-//		graphicsTimer.();
-//		inputTimer.stop();
-//		physicsTimer.stop();
-//	}
+	public void pause() {
+		if (isPlaying()) {
+			playing = false;
+		}
+	}
 	
-	void updateRenderer() {
-		renderThread = new Thread(new Runnable() {
+	public boolean isPlaying() {
+		return playing;
+	}
+	
+	void updateGraphics() {
+		graphicsThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				int lastElapsed = 0, before = 0;
-				while (true) {
+				while (isPlaying()) {
 					before = (int)System.nanoTime();
-					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.render));
+					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.graphics));
 					lastElapsed = (int)System.nanoTime() - before;
-					Profiler.getInstance().getData().setRenderTime(lastElapsed);
+					Profiler.getInstance().getData().setGraphicsTime(lastElapsed);
 					try {
-						Thread.sleep(1000/renderUpdateRate);
+						Thread.sleep(1000/graphicsUpdateRate);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
 				}
 			}
 		});
-		renderThread.start();
+		graphicsThread.start();
 	}
 	
 	void updateInput() {
@@ -87,7 +95,7 @@ public class GameManager {
 			@Override
 			public void run() {
 				int lastElapsed = 0, before = 0;
-				while (true) {
+				while (isPlaying()) {
 					before = (int)System.nanoTime();
 					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.physics));
 					lastElapsed = (int)System.nanoTime() - before;
