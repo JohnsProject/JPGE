@@ -16,12 +16,13 @@ public class Vector2MathUtils extends MathUtils {
 	 * 
 	 * @param a summand vector.
 	 * @param b summand vector.
+	 * @param out vector used to store result.
 	 * @return a.
 	 */
-	public static int[] add(int[] a, int[] b) {
-		a[vx] = a[vx] + b[vx];
-		a[vy] = a[vy] + b[vy];
-		return a;
+	public static int[] add(int[] a, int[] b,  int[] out) {
+		out[vx] = a[vx] + b[vx];
+		out[vy] = a[vy] + b[vy];
+		return out;
 	}
 
 	/**
@@ -29,12 +30,13 @@ public class Vector2MathUtils extends MathUtils {
 	 * 
 	 * @param a minuend vector.
 	 * @param b subtrahend vector.
+	 * @param out vector used to store result.
 	 * @return a.
 	 */
-	public static int[] subtract(int[] a, int[] b) {
-		a[vx] = a[vx] - b[vx];
-		a[vy] = a[vy] - b[vy];
-		return a;
+	public static int[] subtract(int[] a, int[] b,  int[] out) {
+		out[vx] = a[vx] - b[vx];
+		out[vy] = a[vy] - b[vy];
+		return out;
 	}
 
 	/**
@@ -42,12 +44,13 @@ public class Vector2MathUtils extends MathUtils {
 	 * 
 	 * @param a multiplier vector.
 	 * @param b multiplicand vector.
+	 * @param out vector used to store result.
 	 * @return a.
 	 */
-	public static int[] multiply(int[] a, int[] b) {
-		a[vx] = a[vx] * b[vx];
-		a[vy] = a[vy] * b[vy];
-		return a;
+	public static int[] multiply(int[] a, int[] b,  int[] out) {
+		out[vx] = a[vx] * b[vx];
+		out[vy] = a[vy] * b[vy];
+		return out;
 	}
 
 	/**
@@ -55,14 +58,15 @@ public class Vector2MathUtils extends MathUtils {
 	 * 
 	 * @param a dividend vector.
 	 * @param b divisor vector.
+	 * @param out vector used to store result.
 	 * @return a.
 	 */
-	public static int[] divide(int[] a, int[] b) {
+	public static int[] divide(int[] a, int[] b,  int[] out) {
 		if (b[vx] == 0) b[vx] = 1;
 		if (b[vy] == 0) b[vy] = 1;
-		a[vx] = a[vx] / b[vx];
-		a[vy] = a[vy] / b[vy];
-		return a;
+		out[vx] = a[vx] / b[vx];
+		out[vy] = a[vy] / b[vy];
+		return out;
 	}
 
 	/**
@@ -70,12 +74,13 @@ public class Vector2MathUtils extends MathUtils {
 	 * 
 	 * @param a summand vector.
 	 * @param b summand value.
+	 * @param out vector used to store result.
 	 * @return a.
 	 */
-	public static int[] add(int[] a, int b) {
-		a[vx] = a[vx] + b;
-		a[vy] = a[vy] + b;
-		return a;
+	public static int[] add(int[] a, int b, int[] out) {
+		out[vx] = a[vx] + b;
+		out[vy] = a[vy] + b;
+		return out;
 	}
 
 	/**
@@ -83,12 +88,13 @@ public class Vector2MathUtils extends MathUtils {
 	 * 
 	 * @param a minuend vector.
 	 * @param b subtrahend value.
+	 * @param out vector used to store result.
 	 * @return a.
 	 */
-	public static int[] subtract(int[] a, int b) {
-		a[vx] = a[vx] - b;
-		a[vy] = a[vy] - b;
-		return a;
+	public static int[] subtract(int[] a, int b, int[] out) {
+		out[vx] = a[vx] - b;
+		out[vy] = a[vy] - b;
+		return out;
 	}
 
 	/**
@@ -96,12 +102,13 @@ public class Vector2MathUtils extends MathUtils {
 	 * 
 	 * @param a multiplier vector.
 	 * @param b multiplicand value.
+	 * @param out vector used to store result.
 	 * @return a.
 	 */
-	public static int[] multiply(int[] a, int b) {
-		a[vx] = a[vx] * b;
-		a[vy] = a[vy] * b;
-		return a;
+	public static int[] multiply(int[] a, int b, int[] out) {
+		out[vx] = a[vx] * b;
+		out[vy] = a[vy] * b;
+		return out;
 	}
 
 	/**
@@ -109,14 +116,15 @@ public class Vector2MathUtils extends MathUtils {
 	 * 
 	 * @param a dividend vector.
 	 * @param b divisor value.
+	 * @param out vector used to store result.
 	 * @return a.
 	 */
-	public static int[] divide(int[] a, int b) {
+	public static int[] divide(int[] a, int b, int[] out) {
 		if (b == 0)
 			b = 1;
-		a[vx] = a[vx] / b;
-		a[vy] = a[vy] / b;
-		return a;
+		out[vx] = a[vx] / b;
+		out[vy] = a[vy] / b;
+		return out;
 	}
 
 	/**
@@ -156,15 +164,16 @@ public class Vector2MathUtils extends MathUtils {
 	 * 
 	 * @param vector vector that contains position to move.
 	 * @param angle  angle used to move position.
+	 * @param out vector used to store result.
 	 * @return moved position.
 	 */
-	public static int[] movePointByAngleZ(int[] vector, int angle) {
+	public static int[] movePointByAngleZ(int[] vector, int angle, int[] out) {
 		int sin = sin(angle), cos = cos(angle);
 		int x = ((vector[vx] * cos - vector[vy] * sin) >> SHIFT);
 		int y = ((vector[vy] * cos + vector[vx] * sin) >> SHIFT);
-		vector[vx] = x;
-		vector[vy] = y;
-		return vector;
+		out[vx] = x;
+		out[vy] = y;
+		return out;
 	}
 
 	/**
@@ -172,10 +181,11 @@ public class Vector2MathUtils extends MathUtils {
 	 * 
 	 * @param vector vector that contains position to move.
 	 * @param scale  vector that contains scale.
+	 * @param out vector used to store result.
 	 * @return moved position.
 	 */
-	public static int[] movePointByScale(int[] vector, int[] scale) {
-		return multiply(vector, scale);
+	public static int[] movePointByScale(int[] vector, int[] scale, int[] out) {
+		return multiply(vector, scale, out);
 	}
 
 	/**
@@ -183,10 +193,11 @@ public class Vector2MathUtils extends MathUtils {
 	 * 
 	 * @param vector1 fist vector.
 	 * @param vector2 second vector.
+	 * @param out vector used to store result.
 	 * @return vector containing the distance between vector1 and vector2.
 	 */
-	public static int[] getDistance(int[] vector1, int[] vector2) {
-		return subtract(vector1, vector2);
+	public static int[] distance(int[] vector1, int[] vector2, int[] out) {
+		return subtract(vector1, vector2, out);
 	}
 
 	/**
@@ -229,38 +240,41 @@ public class Vector2MathUtils extends MathUtils {
 	 * </code>
 	 * 
 	 * @param a vector.
+	 * @param out vector used to store result.
 	 * @return normalized vector.
 	 */
-	public static int[] normalize(int[] a) {
+	public static int[] normalize(int[] a, int[] out) {
 		int m = magnitude(a);
 		if (m == 0)
 			m = 1;
-		a[vx] = (a[vx] << SHIFT) / m;
-		a[vy] = (a[vy] << SHIFT) / m;
-		return a;
+		out[vx] = (a[vx] << SHIFT) / m;
+		out[vy] = (a[vy] << SHIFT) / m;
+		return out;
 	}
 
 	/**
 	 * Returns a vector containing only positive values.
 	 * 
 	 * @param a vector.
+	 * @param out vector used to store result.
 	 * @return vector containing only positive values.
 	 */
-	public static int[] abs(int[] a) {
-		a[vx] = Math.abs(a[vx]);
-		a[vy] = Math.abs(a[vy]);
-		return a;
+	public static int[] abs(int[] a, int[] out) {
+		out[vx] = Math.abs(a[vx]);
+		out[vy] = Math.abs(a[vy]);
+		return out;
 	}
 
 	/**
 	 * Returns a vector containing only negative values.
 	 * 
 	 * @param a vector.
+	 * @param out vector used to store result.
 	 * @return vector containing only negative values.
 	 */
-	public static int[] iabs(int[] a) {
-		a[vx] = -Math.abs(a[vx]);
-		a[vy] = -Math.abs(a[vy]);
-		return a;
+	public static int[] iabs(int[] a, int[] out) {
+		out[vx] = -Math.abs(a[vx]);
+		out[vy] = -Math.abs(a[vy]);
+		return out;
 	}
 }

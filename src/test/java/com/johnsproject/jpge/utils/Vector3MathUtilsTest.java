@@ -18,7 +18,8 @@ public class Vector3MathUtilsTest {
 		int x2 = 3, y2 = 3, z2 = 3;
 		int[] vector1 = new int[] {x1, y1, z1};
 		int[] vector2 = new int[] {x2, y2, z2};
-		int[] result = Vector3MathUtils.add(vector1, vector2);
+		int[] result = new int[3];
+		result = Vector3MathUtils.add(vector1, vector2, result);
 		assert(result[vx] == x1 + x2);
 		assert(result[vy] == y1 + y2);
 		assert(result[vz] == z1 + z2);
@@ -30,7 +31,8 @@ public class Vector3MathUtilsTest {
 		int x2 = 3, y2 = 3, z2 = 3;
 		int[] vector1 = new int[] {x1, y1, z1};
 		int[] vector2 = new int[] {x2, y2, z2};
-		int[] result = Vector3MathUtils.subtract(vector1, vector2);
+		int[] result = new int[3];
+		result = Vector3MathUtils.subtract(vector1, vector2, result);
 		assert(result[vx] == x1 - x2);
 		assert(result[vy] == y1 - y2);
 		assert(result[vz] == z1 - z2);
@@ -42,7 +44,8 @@ public class Vector3MathUtilsTest {
 		int x2 = 3, y2 = 3, z2 = 3;
 		int[] vector1 = new int[] {x1, y1, z1};
 		int[] vector2 = new int[] {x2, y2, z2};
-		int[] result = Vector3MathUtils.multiply(vector1, vector2);
+		int[] result = new int[3];
+		result = Vector3MathUtils.multiply(vector1, vector2, result);
 		assert(result[vx] == x1 * x2);
 		assert(result[vy] == y1 * y2);
 		assert(result[vz] == z1 * z2);
@@ -54,7 +57,8 @@ public class Vector3MathUtilsTest {
 		int x2 = 3, y2 = 3, z2 = 3;
 		int[] vector1 = new int[] {x1, y1, z1};
 		int[] vector2 = new int[] {x2, y2, z2};
-		int[] result = Vector3MathUtils.divide(vector1, vector2);
+		int[] result = new int[3];
+		result = Vector3MathUtils.divide(vector1, vector2, result);
 		assert(result[vx] == x1 / x2);
 		assert(result[vy] == y1 / y2);
 		assert(result[vz] == z1 / z2);
@@ -65,7 +69,8 @@ public class Vector3MathUtilsTest {
 		int x1 = 2, y1 = 2, z1 = 2;
 		int value = 5;
 		int[] vector1 = new int[] {x1, y1, z1};
-		int[] result = Vector3MathUtils.add(vector1, value);
+		int[] result = new int[3];
+		result = Vector3MathUtils.add(vector1, value, result);
 		assert(result[vx] == x1 + value);
 		assert(result[vy] == y1 + value);
 		assert(result[vz] == z1 + value);
@@ -76,7 +81,8 @@ public class Vector3MathUtilsTest {
 		int x1 = 2, y1 = 2, z1 = 2;
 		int value = 5;
 		int[] vector1 = new int[] {x1, y1, z1};
-		int[] result = Vector3MathUtils.subtract(vector1, value);
+		int[] result = new int[3];
+		result = Vector3MathUtils.subtract(vector1, value, result);
 		assert(result[vx] == x1 - value);
 		assert(result[vy] == y1 - value);
 		assert(result[vz] == z1 - value);
@@ -87,7 +93,8 @@ public class Vector3MathUtilsTest {
 		int x1 = 2, y1 = 2, z1 = 2;
 		int value = 5;
 		int[] vector1 = new int[] {x1, y1, z1};
-		int[] result = Vector3MathUtils.multiply(vector1, value);
+		int[] result = new int[3];
+		result = Vector3MathUtils.multiply(vector1, value, result);
 		assert(result[vx] == x1 * value);
 		assert(result[vy] == y1 * value);
 		assert(result[vz] == z1 * value);
@@ -98,7 +105,8 @@ public class Vector3MathUtilsTest {
 		int x1 = 2, y1 = 2, z1 = 2;
 		int value = 5;
 		int[] vector1 = new int[] {x1, y1, z1};
-		int[] result = Vector3MathUtils.divide(vector1, value);
+		int[] result = new int[3];
+		result = Vector3MathUtils.divide(vector1, value, result);
 		assert(result[vx] == x1 / value);
 		assert(result[vy] == y1 / value);
 		assert(result[vz] == z1 / value);
@@ -123,7 +131,8 @@ public class Vector3MathUtilsTest {
 		int x1 = 100, y1 = 0, z1 = 0;
 		int precision = 5;
 		int[] vector = new int[] {x1, y1, z1};
-		vector = Vector3MathUtils.movePointByAngleZ(vector, 90);
+		int[] result = new int[3];
+		vector = Vector3MathUtils.movePointByAngleZ(vector, 90, result);
 		assert (vector[vx] == 0);
 		assert (vector[vy] <= 100 + precision);
 		assert (vector[vy] >= 100 - precision);
@@ -134,7 +143,8 @@ public class Vector3MathUtilsTest {
 		int x1 = 100, y1 = 0, z1 = 0;
 		int precision = 5;
 		int[] vector = new int[] {x1, y1, z1};
-		vector = Vector3MathUtils.movePointByAngleY(vector, 90);
+		int[] result = new int[3];
+		vector = Vector3MathUtils.movePointByAngleY(vector, 90, result);
 		assert (vector[vx] == 0);
 		assert (vector[vz] <= 100 + precision);
 		assert (vector[vz] >= 100 - precision);
@@ -145,7 +155,8 @@ public class Vector3MathUtilsTest {
 		int x1 = 0, y1 = 100, z1 = 0;
 		int precision = 5;
 		int[] vector = new int[] {x1, y1, z1};
-		vector = Vector3MathUtils.movePointByAngleX(vector, 90);
+		int[] result = new int[3];
+		vector = Vector3MathUtils.movePointByAngleX(vector, 90, result);
 		assert (vector[vy] == 0);
 		assert (vector[vz] <= 100 + precision);
 		assert (vector[vz] >= 100 - precision);
@@ -157,7 +168,8 @@ public class Vector3MathUtilsTest {
 		int x2 = 10, y2 = 10, z2 = 10;
 		int[] vector = new int[] {x1, y1, z1};
 		int[] scale = new int[] {x2, y2, z2};
-		vector = Vector3MathUtils.movePointByScale(vector, scale);
+		int[] result = new int[3];
+		vector = Vector3MathUtils.movePointByScale(vector, scale, result);
 		assert (vector[vx] == x1 * x2);
 		assert (vector[vy] == y1 * y2);
 		assert (vector[vz] == z1 * z2);
@@ -169,7 +181,8 @@ public class Vector3MathUtilsTest {
 		int x2 = 10, y2 = 10, z2 = 10;
 		int[] vector1 = new int[] {x1, y1, z1};
 		int[] vector2 = new int[] {x2, y2, z2};
-		int[] result = Vector3MathUtils.getDistance(vector1, vector2);
+		int[] result = new int[3];
+		result = Vector3MathUtils.distance(vector1, vector2, result);
 		assert (result[vx] == x1 - x2);
 		assert (result[vy] == y1 - y2);
 		assert (result[vz] == z1 - z2);
@@ -181,7 +194,8 @@ public class Vector3MathUtilsTest {
 		int x2 = 5, y2 = 6, z2 = 7;
 		int[] vector1 = new int[] {x1, y1, z1};
 		int[] vector2 = new int[] {x2, y2, z2};
-		int[] result = Vector3MathUtils.crossProduct(vector1, vector2);
+		int[] result = new int[3];
+		result = Vector3MathUtils.crossProduct(vector1, vector2, result);
 		// results from google
 		assert (result[vx] == -3);
 		assert (result[vy] == 6);
@@ -210,7 +224,8 @@ public class Vector3MathUtilsTest {
 	public void normalizeTest() throws Exception {
 		int x1 = 2, y1 = 2, z1 = 2;
 		int[] vector1 = new int[] {x1, y1, z1};
-		int[] result = Vector3MathUtils.normalize(vector1);
+		int[] result = new int[3];
+		result = Vector3MathUtils.normalize(vector1, result);
 		assert (result[vx] == 170);
 		assert (result[vy] == 170);
 		assert (result[vz] == 170);
@@ -220,7 +235,8 @@ public class Vector3MathUtilsTest {
 	public void absTest() throws Exception {
 		int x1 = 2, y1 = -2, z1 = 2;
 		int[] vector1 = new int[] {x1, y1, z1};
-		int[] result = Vector3MathUtils.abs(vector1);
+		int[] result = new int[3];
+		result = Vector3MathUtils.abs(vector1, result);
 		assert (result[vx] == 2);
 		assert (result[vy] == 2);
 		assert (result[vz] == 2);
@@ -230,7 +246,8 @@ public class Vector3MathUtilsTest {
 	public void iabsTest() throws Exception {
 		int x1 = 2, y1 = -2, z1 = 2;
 		int[] vector1 = new int[] {x1, y1, z1};
-		int[] result = Vector3MathUtils.iabs(vector1);
+		int[] result = new int[3];
+		result = Vector3MathUtils.iabs(vector1, result);
 		assert (result[vx] == -2);
 		assert (result[vy] == -2);
 		assert (result[vz] == -2);

@@ -52,17 +52,21 @@ public class SceneRenderer {
 	 * @param scene {@link Scene} to render.
 	 */
 	public void render(Scene scene) {
+		// reset z buffer
 		resetZBuffer();
+		// reseting profiler data
 		Profiler.getInstance().getData().setMaxPolys(0);
 		Profiler.getInstance().getData().setRenderedPolys(0);
 		synchronized (scene.getCameras()) {
 			for (Camera camera : scene.getCameras()) {
 				for (SceneObject sceneObject : scene.getSceneObjects()) {
-					//if (sceneObject.isActive() && (sceneObject.changed() || camera.changed())) {
+					// check if object is active or has changed (no need to render if its the same)
+					if (sceneObject.isActive() && (sceneObject.changed() || camera.changed())) {
 						render(sceneObject, camera, scene.getLights());
-					//}
+					}
 				}
 				camera.changed(false);
+				// tell camera to draw the buffer that has been used
 				camera.drawBuffer();
 			}
 		}
@@ -84,19 +88,24 @@ public class SceneRenderer {
 		Mesh mesh = sceneObject.getMesh();
 		Animation animation = mesh.getCurrentAnimation();
 		Shader shader = sceneObject.getShader();
+		// reset mesh buffer
 		mesh.resetBuffer();
+		// animate and shade vertexes
 		for (int i = 0; i < mesh.getVertexes().length; i++) {
 			int[] vertex = mesh.getBufferedVertex(i);
 			vertex = RenderUtils.animate(vertex, animation);
-			vertex = shader.shadeVertex(vertex, sceneObject.getTransform(), camera, lights);
+			vertex = shader.shadeVertex(vertex, sceneObject.getTransform(), camera);
 		}
+		// get profiler values to update
 		int maxPolys = Profiler.getInstance().getData().getMaxPolys();
 		int rendPolys = Profiler.getInstance().getData().getRenderedPolys();
+		// shade polygons
 		for (int[] polygon : mesh.getPolygons()) {
-			polygon = shader.shadePolygon(polygon, mesh, zBuffer, camera);
+			polygon = shader.shadePolygon(polygon, mesh, zBuffer, camera, lights);
 			maxPolys++;
 			if (polygon[Mesh.CULLED] == 0) rendPolys++;
 		}
+		// update profiler values
 		Profiler.getInstance().getData().setMaxPolys(maxPolys);
 		Profiler.getInstance().getData().setRenderedPolys(rendPolys);
 	}

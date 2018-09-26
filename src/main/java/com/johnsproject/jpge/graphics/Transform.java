@@ -53,8 +53,8 @@ public class Transform {
 		cache[vx] = x;
 		cache[vy] = y;
 		cache[vz] = z;
-		cache = Vector3MathUtils.movePointByAnglesXYZ(cache, VectorUtils.invert3(rotation));
-		position = Vector3MathUtils.add(position, cache);
+		cache = Vector3MathUtils.movePointByAnglesXYZ(cache, VectorUtils.invert3(rotation), cache);
+		position = Vector3MathUtils.add(position, cache, position);
 		VectorUtils.invert3(rotation);
 	}
 	
@@ -78,7 +78,7 @@ public class Transform {
 	 * @param vector vector containing translate values.
 	 */
 	public void translate(int[] vector) {
-		position = Vector3MathUtils.add(position, vector);
+		position = Vector3MathUtils.add(position, vector, position);
 	}
 	
 	/**
@@ -87,7 +87,7 @@ public class Transform {
 	 * @param vector vector containing rotate values.
 	 */
 	public void rotate(int[] vector) {
-		rotation = Vector3MathUtils.add(rotation, vector);
+		rotation = Vector3MathUtils.add(rotation, vector, rotation);
 	}
 
 	/**

@@ -39,8 +39,8 @@ public class RenderUtils {
 		case perspective: // this projectionType uses depth
 			int z = (pz + fov);
 			if (z <= 0) z = 1;
-			px = ((px * rescalef * fov)) / z;
-			py = ((py * rescalef * fov)) / z;
+			px = (px * rescalef * fov) / z;
+			py = (py * rescalef * fov) / z;
 			pz = z + (pz << 1);
 			break;
 		case orthographic: // this projectionType ignores depth
@@ -49,8 +49,8 @@ public class RenderUtils {
 			pz = pz + objectPosition[vz];
 			break;
 		}
-		vector[vx] = (px) + camera.getHalfScreenSize()[vx] + objectPosition[vx];
-		vector[vy] = (py) + camera.getHalfScreenSize()[vy] + objectPosition[vy];
+		vector[vx] = px + camera.getHalfScreenSize()[vx] + objectPosition[vx];
+		vector[vy] = py + camera.getHalfScreenSize()[vy] + objectPosition[vy];
 		vector[vz] = pz;
 		return vector;
 	}
@@ -66,10 +66,10 @@ public class RenderUtils {
 		//for (int j = 0; j <= VertexUtils.getBoneIndex(vertex); j++) {
 			Transform bone = animation.getBone(vertex[Mesh.BONE_INDEX], animation.getCurrentFrame());
 			//Transform bone = animation.getBone(i, animation.getCurrentFrame());
-			vertex = Vector3MathUtils.subtract(vertex, bone.getPosition());
-			vertex = Vector3MathUtils.movePointByScale(vertex, bone.getScale());
-			vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, bone.getRotation());
-			vertex = Vector3MathUtils.add(vertex, bone.getPosition());
+			vertex = Vector3MathUtils.subtract(vertex, bone.getPosition(), vertex);
+			vertex = Vector3MathUtils.movePointByScale(vertex, bone.getScale(), vertex);
+			vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, bone.getRotation(), vertex);
+			vertex = Vector3MathUtils.add(vertex, bone.getPosition(), vertex);
 		//}
 		return vertex;
 	}
@@ -353,8 +353,10 @@ public class RenderUtils {
 		}
 		if(sy > 0 && sy < height) {
 			for (int i = sx; i < ex; i++, su += du, sv += dv) {
-				if(i > 0 && i < width)
-					setPixel(i, sy, z, img.getPixel(su>>SHIFT, sv>>SHIFT), cameraX, cameraY, zBuffer, width, camera);
+				if(i > 0 && i < width) {
+					int c = img.getPixel(su>>SHIFT, sv>>SHIFT);
+					setPixel(i, sy, z, ColorUtils.darker(c, sf), cameraX, cameraY, zBuffer, width, camera);
+				}
 			}
 		}
 	}

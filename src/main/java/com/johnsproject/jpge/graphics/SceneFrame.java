@@ -1,7 +1,5 @@
 package com.johnsproject.jpge.graphics;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -71,7 +69,6 @@ public class SceneFrame extends JFrame implements CameraListener, UpdateListener
 		this.setTitle("JPGE");
 		this.setLayout(null);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		//this.addKeyListener(KeyInputManager.getInstance());
 		GraphicsEventDispatcher.getInstance().addCameraListener(this);
 		com.johnsproject.jpge.event.EventDispatcher.getInstance().addUpdateListener(this);
 		GameManager.getInstance();

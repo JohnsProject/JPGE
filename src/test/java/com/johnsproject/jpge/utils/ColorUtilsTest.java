@@ -125,7 +125,7 @@ public class ColorUtilsTest {
 	public void darkerTest() throws Exception {
 		int c = ColorUtils.convert(50, 50, 50, 50);
 		int cc = ColorUtils.darker(c, 5);
-		System.out.println(ColorUtils.getBlue(cc));
+		//System.out.println(ColorUtils.getBlue(cc));
 		assert (ColorUtils.getBlue(cc) < ColorUtils.getBlue(c));
 		assert (ColorUtils.getGreen(cc) < ColorUtils.getGreen(c));
 		assert (ColorUtils.getRed(cc) < ColorUtils.getRed(c));
@@ -139,4 +139,14 @@ public class ColorUtilsTest {
 		assert (ColorUtils.getGreen(cc) > ColorUtils.getGreen(c));
 		assert (ColorUtils.getRed(cc) > ColorUtils.getRed(c));
 	}
+	
+//	@Test
+//	public void blendAlphaTest() throws Exception {
+//		int c1 = ColorUtils.convert(50, 50, 50, 100);
+//		int c2 = ColorUtils.convert(255, 255, 255, 255);
+//		int cc = ColorUtils.blendAlpha(c1, c2);
+//		assert (ColorUtils.getBlue(cc) == 205);
+//		assert (ColorUtils.getGreen(cc) == 205);
+//		assert (ColorUtils.getRed(cc) == 205);
+//	}
 }

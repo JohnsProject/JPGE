@@ -7,6 +7,7 @@ import com.johnsproject.jpge.graphics.Light;
 import com.johnsproject.jpge.graphics.Mesh;
 import com.johnsproject.jpge.graphics.Shader;
 import com.johnsproject.jpge.graphics.Transform;
+import com.johnsproject.jpge.utils.MathUtils;
 import com.johnsproject.jpge.utils.RenderUtils;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
 
@@ -17,56 +18,47 @@ public class TestShader extends Shader{
 	
 
 	@Override
-	public int[] shadeVertex(int[] vertex, Transform sceneObjectTransform, Camera camera, List<Light> lights) {
+	public int[] shadeVertex(int[] vertex, Transform sceneObjectTransform, Camera camera) {
 		Transform objt = sceneObjectTransform;
 		Transform camt = camera.getTransform();
 		//transforming vertex in object space
-		vertex = Vector3MathUtils.movePointByScale(vertex, objt.getScale());
-		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, objt.getRotation());
+		vertex = Vector3MathUtils.movePointByScale(vertex, objt.getScale(), vertex);
+		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, objt.getRotation(), vertex);
 		//transforming vertex to world space
-		vertex = Vector3MathUtils.add(vertex, objt.getPosition());
-		//test lighting
-//		Light light = lights.get(0);
-//		Transform lt = light.getTransform();
-//		long lp = lt.getPosition();
-//		lp = VectorMathUtils.getDistance(lp,objt.getPosition());
-//		long vd = VectorMathUtils.getDistance(VectorMathUtils.normalize(lp),
-//				VectorMathUtils.normalize(vector));
-//		//System.out.println(Vector3Utils.toString(vd));
-//		long d = VectorMathUtils.magnitude(vd)>>5;
-//		if (d > 15) d = 15;
-//		d = 15-d;
-		//vertex = VertexUtils.setShadeFactor(vertex, -d);
-//		int d = -Vector3Utils.getZ(vector)>>6;
-//		vertex = VertexUtils.setShadeFactor(vertex, d);
-//		System.out.println(d);
+		vertex = Vector3MathUtils.add(vertex, objt.getPosition(), vertex);
 		//transforming vertex in camera space
-		vertex = Vector3MathUtils.subtract(vertex, camt.getPosition());
-		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, camt.getRotation());
+		vertex = Vector3MathUtils.subtract(vertex, camt.getPosition(), vertex);
+		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, camt.getRotation(), vertex);
 		//projecting vertex into screen coordinates
 		vertex = RenderUtils.project(vertex, objt.getPosition(), camera);
 		return vertex;
 	}
 
-	@Override
-	public int[] shadePolygon(int[] polygon, Mesh mesh, int[] zBuffer, Camera camera) {
-//		camera.setRenderingType(RenderingType.solid);
+	int[] cache1 = new int[3];
+	int[] cache2 = new int[3];
+	int[] cache3 = new int[3];
+	public int[] shadePolygon(int[] polygon, Mesh mesh, int[] zBuffer, Camera camera, List<Light> lights) {
 		if (!RenderUtils.isInsideViewFrustum(polygon, mesh, camera)) {
 			if (!RenderUtils.isBackface(polygon, mesh)) {
-//				long v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
-//				long v2 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_2]);
-//				long v3 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_3]);
-//				int v1x = (int)Vector3Utils.getX(v1), v1y = (int)Vector3Utils.getY(v1);
-//				int v2x = (int)Vector3Utils.getX(v2), v2y = (int)Vector3Utils.getY(v2);
-//				int v3x = (int)Vector3Utils.getX(v3), v3y = (int)Vector3Utils.getY(v3);
-//				int a = ((v2x - v1x) * (v3y - v1y) - (v3x - v1x) * (v2y - v1y)) / 2;
-//				if (a > -1) v1 = VertexUtils.setShadeFactor(v1, 15);
-//				mesh.setBufferedVertex(polygon[Mesh.VERTEX_1], v1);
+				int[] v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
+				int[] v2 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_2]);
+				int[] v3 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_3]);
+				int l = 0;
+				for (Light light : lights) {
+					int[] lightPosition = light.getTransform().getPosition();
+					cache1 = Vector3MathUtils.subtract(v1, v2, cache1);
+					cache2 = Vector3MathUtils.subtract(v1, v3, cache2);
+					cache3 = Vector3MathUtils.crossProduct(cache1, cache2, cache3);
+					l += Vector3MathUtils.dotProduct(lightPosition, cache3);
+					l -= light.getLightStrength() << 3;
+				}
+				v1[Mesh.SHADE_FACTOR] = l;
+				v2[Mesh.SHADE_FACTOR] = l;
+				v3[Mesh.SHADE_FACTOR] = l;
 				RenderUtils.drawPolygon(polygon, mesh, zBuffer, camera);
 			}
 		}
 		return polygon;
-		//return super.shadePolygon(polygon, mesh, camera);
 	}
 
 }

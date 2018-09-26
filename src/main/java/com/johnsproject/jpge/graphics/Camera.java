@@ -1,5 +1,6 @@
 package com.johnsproject.jpge.graphics;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -55,7 +56,8 @@ public class Camera extends JPanel{
 		this.name = name;
 		this.transform = transform;
 		this.screenSize = screenSize;
-		this.halfscreenSize = Vector2MathUtils.divide(screenSize.clone(), 2);
+		int[] halfSize = screenSize.clone();
+		this.halfscreenSize = Vector2MathUtils.divide(halfSize, 2, halfSize);
 		this.scaleFactor = Math.abs((sx+sy)>>7)+1;
 		this.setSize(sx, sy);
 		this.screenPosition = screenPosition;
@@ -73,15 +75,14 @@ public class Camera extends JPanel{
 	
 	public void clearBuffer() {
 		//for (int i = 0; i < viewBufferData.length; i++) viewBufferData[i] = testC;
-		viewBuffer.getGraphics().clearRect(0, 0, screenSize[vx], screenSize[vy]);
+		//viewBuffer.getGraphics().clearRect(0, 0, screenSize[vx], screenSize[vy]);
+		viewBuffer.getGraphics().fillRect(0, 0, screenSize[vx], screenSize[vy]);
 	}
 	
-	int testC = ColorUtils.convert(255, 255, 255, 255);
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		Graphics2D g2 = (Graphics2D) g;
-		g2.drawImage(viewBuffer, null, null);
+		g.drawImage(viewBuffer, 0, 0, null);
 		clearBuffer();
 	}
 
@@ -192,7 +193,8 @@ public class Camera extends JPanel{
 	public void setScreenSize(int[] size) {
 		this.screenSize = size;
 		setSize(size[vx], size[vy]);
-		halfscreenSize = Vector2MathUtils.divide(size.clone(), 2);
+		int[] halfSize = screenSize.clone();
+		halfscreenSize = Vector2MathUtils.divide(halfSize, 2, halfSize);
 		changed = true;
 	}
 

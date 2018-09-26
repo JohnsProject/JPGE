@@ -15,13 +15,10 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 	}
 	
 	SceneFrame sceneFrame;
-	SceneObject sceneObject;
-	SceneObject sceneObject2;
-	Camera camera;
-	Camera camera2;
-	Light light;
-	Mesh cube;
-	Mesh monkey;
+	SceneObject sceneObject, sceneObject2;
+	Camera camera, camera2;
+	Light light, light2;
+	Mesh cube, monkey;
 	int w = 1200, h = 920;
 	public Test() {
 		try {
@@ -50,9 +47,11 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		camera = new Camera("testCam", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), new int[] {0, 0}, new int[] {w, h});
 		camera.setShader(new TestPixelShader());
 		camera2 = new Camera("testCam2", new Transform(new int[] {0, -2000, 1200}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), new int[] {w-(w/3), 0}, new int[] {w/3, h/3});	
-		light = new Light("testLight", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
+		light = new Light("testLight", new Transform(new int[] {1, 1, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
+		light2 = new Light("testLight2", new Transform(new int[] {-50, 50, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
 		sceneFrame = new SceneFrame(w, h);
 		sceneFrame.getScene().addLight(light);
+		//sceneFrame.getScene().addLight(light2);
 		sceneFrame.getScene().addSceneObject(sceneObject);
 		sceneFrame.getScene().addSceneObject(sceneObject2);
 		//sceneFrame.getScene().addCamera(camera2);
@@ -138,6 +137,12 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		case '0':
 			sceneObject.setActive(false);
 			sceneObject2.setActive(true);
+			break;
+		case '+':
+			light.setLightStrength(light.getLightStrength()+1);
+			break;
+		case '-':
+			light.setLightStrength(light.getLightStrength()-1);
 			break;
 		}
 		if (event.getKeyCode() == 112) { 
