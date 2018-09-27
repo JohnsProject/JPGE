@@ -122,31 +122,28 @@ public class MathUtilsTest {
 	}
 	
 	@Test
-	public void clamp0to360Test() throws Exception {
-		int angle = 560;
-		assert(MathUtils.clamp0to360(angle) >= 0);
-		assert(MathUtils.clamp0to360(angle) <= 360);
+	public void wrap0toTest() throws Exception {
+		int value = -123;
+		int lvalue = MathUtils.wrap0to(value, 360);
+		System.out.println(lvalue);
+		assert(lvalue >= 0);
+		assert(lvalue <= 360);
 	}
 	
 	@Test
-	public void clamp0to270Test() throws Exception {
-		int angle = 560;
-		assert(MathUtils.clamp0to270(angle) >= 0);
-		assert(MathUtils.clamp0to270(angle) <= 270);
+	public void wrapTest() throws Exception {
+		int value = -123;
+		int lvalue = MathUtils.wrap(value, -5, 5);
+		//System.out.println(lvalue);
+		assert(lvalue >= -5);
+		assert(lvalue <= 5);
 	}
 	
 	@Test
-	public void clamp0to180Test() throws Exception {
-		int angle = 560;
-		assert(MathUtils.clamp0to180(angle) >= 0);
-		assert(MathUtils.clamp0to180(angle) <= 180);
-	}
-	
-	@Test
-	public void clamp0to90Test() throws Exception {
-		int angle = 560;
-		assert(MathUtils.clamp0to90(angle) >= 0);
-		assert(MathUtils.clamp0to90(angle) <= 90);
+	public void clampTest() throws Exception {
+		int min = 0, max = 50;
+		assert(MathUtils.clamp(60, min, max) == max);
+		assert(MathUtils.clamp(-5, min, max) == min);
 	}
 	
 	@Test

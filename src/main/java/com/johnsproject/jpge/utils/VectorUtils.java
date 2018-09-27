@@ -137,6 +137,33 @@ public class VectorUtils {
     	vector[Y] = -vector[Y];
     	return vector;
     }
+    
+    /**
+     * Copies the value of vector to the target. This method only works with 3D vectors.
+     * 
+     * @param vector vector with values.
+     * @param target target vector.
+     * @return target containing values of vector.
+     */
+    public static int[] copy3(int[] vector, int[] target) {
+    	target[X] = vector[X];
+    	target[Y] = vector[Y];
+    	target[Z] = vector[Z];
+    	return target;
+    }
+    
+    /**
+     * Copies the value of vector to the target. This method only works with 2D vectors.
+     * 
+     * @param vector vector with values.
+     * @param target target vector.
+     * @return target containing values of vector.
+     */
+    public static int[] copy2(int[] vector, int[] target) {
+    	target[X] = vector[X];
+    	target[Y] = vector[Y];
+    	return target;
+    }
 	
 	/**
 	 * Returns a string containing the data of the given vector.

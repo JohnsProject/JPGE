@@ -176,6 +176,9 @@ v0.1 - 24/08/2018
 -Fixed some bugs
 27/09/2018
 -Fixed projection bug
+27/09/2018
+-Fixed some bugs
+-Added new methods to VectorUtils and MathUtils
 
 
 

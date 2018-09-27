@@ -64,7 +64,7 @@ public class MathUtils {
 	 * @return sine of angle.
 	 */
 	public static int sin(int angle) {
-		int a = clamp0to360(angle);
+		int a = wrap0to(angle, 360);
 		int result = 0;
 		if (a <= 90)
 			result = valuesSin[a];
@@ -93,7 +93,7 @@ public class MathUtils {
 	 * @return cosine of angle.
 	 */
 	public static int cos(int angle) {
-		int a = clamp0to360(angle);
+		int a = wrap0to(angle, 360);
 		int result = 0;
 		if (a <= 90)
 			result = valuesSin[90 - a];
@@ -195,93 +195,48 @@ public class MathUtils {
 		return quadrant;
 	}
 
+	/**
+	 * Returns the given value in the range min-max.
+	 * 
+	 * @param value value to wrap.
+	 * @param min min value.
+	 * @param max max value.
+	 * @return value in the range min-max.
+	 */
+	public static int wrap(int value, int min, int max) {
+		int range = max - min;
+		return (min + ((((value - min) % range) + range) % range));
+	}
 	
 	/**
-	 * Returns the given angle in a range from 0-360.
-	 * The method does this:
+	 * Returns the given value in the range 0-max.
 	 * 
-	 * <br> <code> 
-	 * <br> for (i = 0; i < Math.abs(angle); i += 360);
-	 * <br> </code> <br>
-	 * 
-	 * And then subtracts i from the angle and returns it.
-	 * 
-	 * @param angle angle to clamp.
-	 * @return angle in a range from 0-360.
+	 * @param value angle to wrap.
+	 * @param max max value.
+	 * @return value in a range from 0-max.
 	 */
-	public static int clamp0to360(int angle) {
-		int a = Math.abs(angle);
+	public static int wrap0to(int value, int max) {
+		int a = Math.abs(value);
 		int i = 0;
-		for (i = 0; i < a; i += 360);
+		for (i = 0; i < a; i += max);
 		if (a == 0)
 			return 0;
-		return Math.abs(a - i + 360);
+		return Math.abs(a - i + max);
 	}
-
+	
 	/**
-	 * Returns the given angle in a range from 0-270.
-	 * The method does this:
+	 * Returns the given value as min or max.
+	 * if value < (min + max) / 2 return min else max. 
 	 * 
-	 * <br> <code> 
-	 * <br> for (i = 0; i < Math.abs(angle); i += 270);
-	 * <br> </code> <br>
-	 * 
-	 * And then subtracts i from the angle and returns it.
-	 * 
-	 * @param angle angle to clamp.
-	 * @return angle in a range from 0-270.
+	 * @param value value to clamp.
+	 * @param min min value.
+	 * @param max max value.
+	 * @return clamped value.
 	 */
-	public static int clamp0to270(int angle) {
-		int a = Math.abs(angle);
-		int i = 0;
-		for (i = 0; i < a; i += 270);
-		if (a == 0)
-			return 0;
-		return Math.abs(a - i + 270);
-	}
-
-	/**
-	 * Returns the given angle in a range from 0-180.
-	 * The method does this:
-	 * 
-	 * <br> <code> 
-	 * <br> for (i = 0; i < Math.abs(angle); i += 180);
-	 * <br> </code> <br>
-	 * 
-	 * And then subtracts i from the angle and returns it.
-	 * 
-	 * @param angle angle to clamp.
-	 * @return angle in a range from 0-180.
-	 */
-	public static int clamp0to180(int angle) {
-		int a = Math.abs(angle);
-		int i = 0;
-		for (i = 0; i < a; i += 180);
-		if (a == 0)
-			return 0;
-		return Math.abs(a - i + 180);
-	}
-
-	/**
-	 * Returns the given angle in a range from 0-90.
-	 * The method does this:
-	 * 
-	 * <br> <code> 
-	 * <br> for (i = 0; i < Math.abs(angle); i += 90);
-	 * <br> </code> <br>
-	 * 
-	 * And then subtracts i from the angle and returns it.
-	 * 
-	 * @param angle angle to clamp.
-	 * @return angle in a range from 0-90.
-	 */
-	public static int clamp0to90(int angle) {
-		int a = Math.abs(angle);
-		int i = 0;
-		for (i = 0; i < a; i += 90);
-		if (a == 0)
-			return 0;
-		return Math.abs(a - i + 90);
+	public static int clamp(int value, int min, int max) {
+		if (value < min) return min;
+		if (value > max) return max;
+		return value;
 	}
 
 	private static int r = 541648465;

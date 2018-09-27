@@ -111,6 +111,28 @@ public class VectorUtilsTest {
 	}
 	
 	@Test
+	public void copy3Test() throws Exception {
+		int x1 = 2, y1 = 2, z1 = 2;
+		int x2 = 3, y2 = 3, z2 = 3;
+		int[] vector1 = new int[] {x1, y1, z1};
+		int[] vector2 = new int[] {x2, y2, z2};
+		assert(!VectorUtils.equals3(vector1, vector2));
+		vector2 = VectorUtils.copy3(vector1, vector2);
+		assert(VectorUtils.equals3(vector1, vector2));
+	}
+	
+	@Test
+	public void copy2Test() throws Exception {
+		int x1 = 2, y1 = 2, z1 = 2;
+		int x2 = 3, y2 = 3, z2 = 3;
+		int[] vector1 = new int[] {x1, y1, z1};
+		int[] vector2 = new int[] {x2, y2, z2};
+		assert(!VectorUtils.equals2(vector1, vector2));
+		vector2 = VectorUtils.copy2(vector1, vector2);
+		assert(VectorUtils.equals2(vector1, vector2));
+	}
+	
+	@Test
 	public void toString2Test() throws Exception {
 		int x1 = 2, y1 = 2, z1 = 2;
 		int[] vector1 = new int[] {x1, y1, z1};

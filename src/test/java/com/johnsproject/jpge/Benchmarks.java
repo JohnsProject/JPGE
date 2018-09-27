@@ -13,27 +13,27 @@ public class Benchmarks {
         org.openjdk.jmh.Main.main(args);
     }
 	
-	@Benchmark
-	@Fork(value = 1)
-	@BenchmarkMode(Mode.Throughput)
-	public void integerBenchmark() {
-	    int value = 1;
-	    value += 100;
-	    value -= 100;
-	    value *= 100;
-	    value /= 100;
-	}
-	
-	@Benchmark
-	@Fork(value = 1)
-	@BenchmarkMode(Mode.Throughput)
-	public void floatBenchmark() {
-		 float value = 1;
-		 value += 100;
-		 value -= 100;
-		 value *= 100;
-		 value /= 100;
-	}
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void integerBenchmark() {
+//	    int value = 1;
+//	    value += 100;
+//	    value -= 100;
+//	    value *= 100;
+//	    value /= 100;
+//	}
+//	
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void floatBenchmark() {
+//		 float value = 1;
+//		 value += 100;
+//		 value -= 100;
+//		 value *= 100;
+//		 value /= 100;
+//	}
 	
 	@Benchmark
 	@Fork(value = 1)
