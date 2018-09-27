@@ -55,8 +55,8 @@ public class SceneRenderer {
 		// reset z buffer
 		resetZBuffer();
 		// reseting profiler data
-		Profiler.getInstance().getData().setMaxPolys(0);
-		Profiler.getInstance().getData().setRenderedPolys(0);
+		Profiler.getInstance().getData().setMaxFaces(0);
+		Profiler.getInstance().getData().setRenderedFaces(0);
 		synchronized (scene.getCameras()) {
 			for (Camera camera : scene.getCameras()) {
 				for (SceneObject sceneObject : scene.getSceneObjects()) {
@@ -97,17 +97,17 @@ public class SceneRenderer {
 			vertex = shader.shadeVertex(vertex, sceneObject.getTransform(), camera);
 		}
 		// get profiler values to update
-		int maxPolys = Profiler.getInstance().getData().getMaxPolys();
-		int rendPolys = Profiler.getInstance().getData().getRenderedPolys();
-		// shade polygons
-		for (int[] polygon : mesh.getPolygons()) {
-			polygon = shader.shadePolygon(polygon, mesh, zBuffer, camera, lights);
-			maxPolys++;
-			if (polygon[Mesh.CULLED] == 0) rendPolys++;
+		int maxFaces = Profiler.getInstance().getData().getMaxFaces();
+		int rendFaces = Profiler.getInstance().getData().getRenderedFaces();
+		// shade faces
+		for (int[] face : mesh.getFaces()) {
+			face = shader.shadePolygon(face, mesh, zBuffer, camera, lights);
+			maxFaces++;
+			if (face[Mesh.CULLED] == 0) rendFaces++;
 		}
 		// update profiler values
-		Profiler.getInstance().getData().setMaxPolys(maxPolys);
-		Profiler.getInstance().getData().setRenderedPolys(rendPolys);
+		Profiler.getInstance().getData().setMaxFaces(maxFaces);
+		Profiler.getInstance().getData().setRenderedFaces(rendFaces);
 	}
 	
 	/**

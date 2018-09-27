@@ -23,13 +23,11 @@ public class RenderUtils {
 	 * Projects a vector to from world (3D) to screen (2D) coordinates based on the {@link ProjectionType}
 	 * of the given {@link Camera}.
 	 * 
-	 * @param vector vector to be projected.
-	 * @param objectPosition position of the {@link SceneObject} containing this vector.
-	 *  If no there is no {@link SceneObject} set as 0.
+	 * @param vector vector to be projected. This vector should be in camera space.
 	 * @param camera {@link Camera} this vector will be projected to.
 	 * @return projected vector.
 	 */
-	public static int[] project(int[] vector, int[] objectPosition, Camera camera) {
+	public static int[] project(int[] vector, Camera camera) {
 		int px = vector[vx];
 		int py = vector[vy];
 		int pz = vector[vz];
@@ -37,20 +35,18 @@ public class RenderUtils {
 		int rescalef = camera.getScaleFactor();
 		switch (camera.getProjectionType()) {
 		case perspective: // this projectionType uses depth
-			int z = (pz + fov);
-			if (z <= 0) z = 1;
-			px = (px * rescalef * fov) / z;
-			py = (py * rescalef * fov) / z;
-			pz = z + (pz << 1);
+			pz = pz + fov;
+			if (pz <= 0) pz = 1;
+			px = (px * rescalef * fov) / pz;
+			py = (py * rescalef * fov) / pz;
 			break;
 		case orthographic: // this projectionType ignores depth
 			px = (px * rescalef)>>5;
 			py = (py * rescalef)>>5;
-			pz = pz + objectPosition[vz];
 			break;
 		}
-		vector[vx] = px + camera.getHalfScreenSize()[vx] + objectPosition[vx];
-		vector[vy] = py + camera.getHalfScreenSize()[vy] + objectPosition[vy];
+		vector[vx] = px + camera.getHalfScreenSize()[vx];
+		vector[vy] = py + camera.getHalfScreenSize()[vy];
 		vector[vz] = pz;
 		return vector;
 	}
@@ -63,28 +59,29 @@ public class RenderUtils {
 	 * @return animated vertex.
 	 */
 	public static int[] animate(int[] vertex, Animation animation) {
-		//for (int j = 0; j <= VertexUtils.getBoneIndex(vertex); j++) {
-			Transform bone = animation.getBone(vertex[Mesh.BONE_INDEX], animation.getCurrentFrame());
+		int boneIndex = vertex[Mesh.BONE_INDEX];
+		for (int i = 0; i <= boneIndex; i++) {
+			Transform bone = animation.getBone(i, animation.getCurrentFrame());
 			//Transform bone = animation.getBone(i, animation.getCurrentFrame());
 			vertex = Vector3MathUtils.subtract(vertex, bone.getPosition(), vertex);
 			vertex = Vector3MathUtils.movePointByScale(vertex, bone.getScale(), vertex);
 			vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, bone.getRotation(), vertex);
 			vertex = Vector3MathUtils.add(vertex, bone.getPosition(), vertex);
-		//}
+		}
 		return vertex;
 	}
 	
 	/**
-	 * This method checks if the given polygon is inside the view frustum of the given camera.
+	 * This method checks if the given face is inside the view frustum of the given camera.
 	 * 
-	 * @param polygon a projected polygon.
-	 * @param mesh {@link Mesh} that contains this polygon.
+	 * @param face a projected face.
+	 * @param mesh {@link Mesh} that contains this face.
 	 * @param camera {@link Camera}.
-	 * @return if the given polygon is inside the view frustum of the given camera.
+	 * @return if the given face is inside the view frustum of the given camera.
 	 */
-	public static boolean isInsideViewFrustum(int[] polygon, Mesh mesh, Camera camera) {
-		polygon[Mesh.CULLED] = 0;
-		int[] v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
+	public static boolean isInsideViewFrustum(int[] face, Mesh mesh, Camera camera) {
+		face[Mesh.CULLED] = 0;
+		int[] v1 = mesh.getBufferedVertex(face[Mesh.VERTEX_1]);
 		int ncp = camera.getNearClippingPlane();
 		int fcp = camera.getFarClippingPlane();
 		int w = camera.getWidth();
@@ -95,56 +92,55 @@ public class RenderUtils {
 		if (x > -400 && x < w+400 && y > -400 && y < h+400 && z > ncp && z < fcp) {
 			return false;
 		}
-		polygon[Mesh.CULLED] = 1;
+		face[Mesh.CULLED] = 1;
 		return true;
 	}
 
 	/**
-	 * This method checks if the given polygon is a backface.
-	 * If this polygon is a backface then this method returns true else it returns false.
+	 * This method checks if the given face is a backface.
+	 * If this face is a backface then this method returns true else it returns false.
 	 * 
-	 * @param polygon a projected polygon.
-	 * @param mesh {@link Mesh} that contains this polygon.
-	 * @return if the given polygon is a backface.
+	 * @param face a projected face.
+	 * @param mesh {@link Mesh} that contains this face.
+	 * @return if the given face is a backface.
 	 */
-	//backface culling with sholeance algorithm
-	public static boolean isBackface(int[] polygon, Mesh mesh) {
-		polygon[Mesh.CULLED] = 0;
-		int[] v1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
-		int[] v2 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_2]);
-		int[] v3 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_3]);
+	public static boolean isBackface(int[] face, Mesh mesh) {
+		face[Mesh.CULLED] = 0;
+		int[] v1 = mesh.getBufferedVertex(face[Mesh.VERTEX_1]);
+		int[] v2 = mesh.getBufferedVertex(face[Mesh.VERTEX_2]);
+		int[] v3 = mesh.getBufferedVertex(face[Mesh.VERTEX_3]);
 		int v1x = v1[vx], v1y = v1[vy];
 		int v2x = v2[vx], v2y = v2[vy];
 		int v3x = v3[vx], v3y = v3[vy];
 		int a = ((v2x - v1x) * (v3y - v1y) - (v3x - v1x) * (v2y - v1y)) >> 1;
 		if (a < 0) return false;
-		polygon[Mesh.CULLED] = 1;
+		face[Mesh.CULLED] = 1;
 		return true;
 	}
 	
 	/**
-	 * Draws the given polygon to the given {@link Camera} based on the {@link RenderingType} of the {@link Camera}.
+	 * Draws the given face to the given {@link Camera} based on the {@link RenderingType} of the given {@link Camera}.
 	 * 
-	 * @param polygon polygon to draw.
-	 * @param mesh {@link Mesh} that contains the polygon.
+	 * @param face face to draw.
+	 * @param mesh {@link Mesh} that contains the face.
 	 * @param zBuffer depth buffer.
 	 * @param camera {@link Camera} to draw.
 	 */
-	public static void drawPolygon(int[] polygon, Mesh mesh, int[] zBuffer, Camera camera) {
+	public static void drawFace(int[] face, Mesh mesh, int[] zBuffer, Camera camera) {
 		int px = camera.getScreenPosition()[vx];
 		int py = camera.getScreenPosition()[vy];
 		int width = camera.getScreenSize()[vx];
 		int height = camera.getScreenSize()[vy];
-		int[] vt1 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_1]);
-		int[] vt2 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_2]);
-		int[] vt3 = mesh.getBufferedVertex(polygon[Mesh.VERTEX_3]);
-		int[] uv1 = mesh.getUV(polygon[Mesh.UV_1]);
-		int[] uv2 = mesh.getUV(polygon[Mesh.UV_2]);
-		int[] uv3 = mesh.getUV(polygon[Mesh.UV_3]);
+		int[] vt1 = mesh.getBufferedVertex(face[Mesh.VERTEX_1]);
+		int[] vt2 = mesh.getBufferedVertex(face[Mesh.VERTEX_2]);
+		int[] vt3 = mesh.getBufferedVertex(face[Mesh.VERTEX_3]);
+		int[] uv1 = mesh.getUV(face[Mesh.UV_1]);
+		int[] uv2 = mesh.getUV(face[Mesh.UV_2]);
+		int[] uv3 = mesh.getUV(face[Mesh.UV_3]);
 		int sf1 = vt1[Mesh.SHADE_FACTOR];
 		int sf2 = vt2[Mesh.SHADE_FACTOR];
 		int sf3 = vt3[Mesh.SHADE_FACTOR];
-		int color = mesh.getMaterial(polygon[Mesh.MATERIAL_INDEX]).getColor();
+		int color = mesh.getMaterial(face[Mesh.MATERIAL_INDEX]).getColor();
 		int tmp = 0;
 		int x1 = vt1[vx], y1 = vt1[vy], z1 = vt1[vz],
 			x2 = vt2[vx], y2 = vt2[vy], z2 = vt2[vz],
@@ -194,12 +190,12 @@ public class RenderUtils {
 			break;
 			
 		case solid:
-			drawPolygon(x1, y1, sf1, x2, y2, sf2, x3, y3, sf3, z, px, py, zBuffer, width, height, color, camera);
+			drawFace(x1, y1, sf1, x2, y2, sf2, x3, y3, sf3, z, px, py, zBuffer, width, height, color, camera);
 			break;
 			
 		case textured:
 			Texture img = mesh.getMaterial(0).getTexture();
-			drawPolygonAffine(x1, y1, x2, y2, x3, y3, z, u1, v1, u2, v2, u3, v3, sf1, img, px, py, zBuffer, width, height, camera);
+			drawFaceAffine(x1, y1, x2, y2, x3, y3, z, u1, v1, u2, v2, u3, v3, sf1, img, px, py, zBuffer, width, height, camera);
 			break;
 		}
 	}
@@ -242,7 +238,7 @@ public class RenderUtils {
 		}
 	}
 	
-	static void drawPolygon(int x1, int y1, int sf1, int x2, int y2, int sf2, int x3, int y3, int sf3, int z,
+	static void drawFace(int x1, int y1, int sf1, int x2, int y2, int sf2, int x3, int y3, int sf3, int z,
 			int cameraX, int cameraY, int[] zBuffer, int width, int height, int c, Camera cam) {
 		int dx1 = 0, dx2 = 0, dx3 = 0; // x deltas
 		int df1 = 0, df2 = 0, df3 = 0; // shade factor deltas
@@ -289,7 +285,7 @@ public class RenderUtils {
 		}
 	}
 	
-	static void drawPolygonAffine(int x1, int y1, int x2, int y2, int x3, int y3, int z, int u1, int v1, int u2, int v2, int u3, int v3, int sf,
+	static void drawFaceAffine(int x1, int y1, int x2, int y2, int x3, int y3, int z, int u1, int v1, int u2, int v2, int u3, int v3, int sf,
 							Texture img, int cameraX, int cameraY, int[] zBuffer, int width, int height, Camera cam) {
 		int w = img.getWidth()-1, h = img.getHeight()-1;
 		u1 = (u1*w)>>7; u2 = (u2*w)>>7; u3 = (u3*w)>>7;
@@ -351,9 +347,9 @@ public class RenderUtils {
 			du = (eu-su)/(ex-sx);
 			dv = (ev-sv)/(ex-sx);
 		}
-		if(sy > 0 && sy < height) {
+		if(sy > 1 && sy < height-1) {
 			for (int i = sx; i < ex; i++, su += du, sv += dv) {
-				if(i > 0 && i < width) {
+				if(i > 1 && i < width-1) {
 					int c = img.getPixel(su>>SHIFT, sv>>SHIFT);
 					setPixel(i, sy, z, ColorUtils.darker(c, sf), cameraX, cameraY, zBuffer, width, camera);
 				}

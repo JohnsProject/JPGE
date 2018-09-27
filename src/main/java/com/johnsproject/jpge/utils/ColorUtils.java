@@ -9,8 +9,8 @@ package com.johnsproject.jpge.utils;
  */
 public class ColorUtils {
 
-	private static final byte MAXFACTOR = 5;
-	private static final byte MAXVALUE = MAXFACTOR + 2;
+	private static final int MAXFACTOR = 5;
+	private static final int MAXVALUE = MAXFACTOR + 1;
 	private static final byte GREENSHIFT = 8;
 	private static final byte REDSHIFT = 16;
 	private static final byte ALPHASHIFT = 24;

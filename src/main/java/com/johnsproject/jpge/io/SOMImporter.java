@@ -67,12 +67,12 @@ public class SOMImporter {
 	public static Mesh loadFromRaw(String data) throws ImportExeption {
 		String rawData = data.replace(" ", "").replace("\n", "");
 		String[] rawVertexesData = rawData.split("Vertexes<")[1].split(">Vertexes", 2)[0].split(",");
-		String[] rawPolygonsData = rawData.split("Polygons<")[1].split(">Polygons", 2)[0].split(",");
+		String[] rawFacesData = rawData.split("Faces<")[1].split(">Faces", 2)[0].split(",");
 		String[] rawUVsData = rawData.split("UVs<")[1].split(">UVs", 2)[0].split(",");
 		String[] rawMaterialsData = rawData.split("Materials<")[1].split(">Materials", 2)[0].split(",");
 		String[] rawAnimationsData = rawData.split("Animations<")[1].split(">Animations", 2)[0].split("Animation<");
 		Mesh result = new Mesh(parseVertexes(rawVertexesData),
-								parsePolygons(rawPolygonsData),
+								parseFaces(rawFacesData),
 								parseUVs(rawUVsData),
 								parseMaterials(rawMaterialsData),
 								parseAnimations(rawAnimationsData));
@@ -106,28 +106,28 @@ public class SOMImporter {
 	}
 	
 	/**
-	 * Parses the polygons of a {@link Mesh} from the given string and returns it.
-	 * The parameter should contain the content inside the "Polygons<" and ">Polygons" 
+	 * Parses the faces of a {@link Mesh} from the given string and returns it.
+	 * The parameter should contain the content inside the "Faces<" and ">Faces" 
 	 * pieces of the som file and should be by ',' splited because the method only sorts 
-	 * and parses the sorted integer values to the right place in the polygon.
+	 * and parses the sorted integer values to the right place in the Faces.
 	 * 
-	 * @param rawPolygonsData the string array containing the splited data.
-	 * @return an polygon array.
+	 * @param rawFacesData the string array containing the splited data.
+	 * @return an face array.
 	 * @throws ImportExeption
 	 */
-	static int[][] parsePolygons(String[] rawPolygonsData) throws ImportExeption {
-		int step = Mesh.POLYGON_LENGTH-1;
-		int[][] polygons = new int[rawPolygonsData.length/step][Mesh.POLYGON_LENGTH];
-		if(rawPolygonsData.length > 2){
-			for (int i = 0; i < rawPolygonsData.length; i+=step) {
-				int[] polygon = new int[Mesh.POLYGON_LENGTH];
-				polygon[Mesh.VERTEX_1] = toInt(rawPolygonsData[i + Mesh.VERTEX_1]);
-				polygon[Mesh.VERTEX_2] = toInt(rawPolygonsData[i + Mesh.VERTEX_2]);
-				polygon[Mesh.VERTEX_3] = toInt(rawPolygonsData[i + Mesh.VERTEX_3]);
-				polygon[Mesh.MATERIAL_INDEX] = toInt(rawPolygonsData[i + Mesh.MATERIAL_INDEX]);
-				polygon[Mesh.UV_1] = toInt(rawPolygonsData[i + Mesh.UV_1]);
-				polygon[Mesh.UV_2] = toInt(rawPolygonsData[i + Mesh.UV_2]);
-				polygon[Mesh.UV_3] = toInt(rawPolygonsData[i + Mesh.UV_3]);
+	static int[][] parseFaces(String[] rawFacesData) throws ImportExeption {
+		int step = Mesh.FACE_LENGTH-1;
+		int[][] polygons = new int[rawFacesData.length/step][Mesh.FACE_LENGTH];
+		if(rawFacesData.length > 2){
+			for (int i = 0; i < rawFacesData.length; i+=step) {
+				int[] polygon = new int[Mesh.FACE_LENGTH];
+				polygon[Mesh.VERTEX_1] = toInt(rawFacesData[i + Mesh.VERTEX_1]);
+				polygon[Mesh.VERTEX_2] = toInt(rawFacesData[i + Mesh.VERTEX_2]);
+				polygon[Mesh.VERTEX_3] = toInt(rawFacesData[i + Mesh.VERTEX_3]);
+				polygon[Mesh.MATERIAL_INDEX] = toInt(rawFacesData[i + Mesh.MATERIAL_INDEX]);
+				polygon[Mesh.UV_1] = toInt(rawFacesData[i + Mesh.UV_1]);
+				polygon[Mesh.UV_2] = toInt(rawFacesData[i + Mesh.UV_2]);
+				polygon[Mesh.UV_3] = toInt(rawFacesData[i + Mesh.UV_3]);
 				polygons[i/step] = polygon;
 			}
 		}

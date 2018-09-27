@@ -7,7 +7,8 @@ package com.johnsproject.jpge.utils;
  * 
  */
 public class VectorUtils {
-	public static final int X = 0, Y = 1, Z = 2;
+	/** Values containing location of axis in a vector. */
+	public static final byte X = 0, Y = 1, Z = 2;
 	
 	/**
 	 * Generates a 3D vector using the given values and returns it.

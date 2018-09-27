@@ -4,7 +4,7 @@ public class ProfilerData {
 	
 	// Graphics data
 	private int graphicsTime = 1;
-	private int renderedPolys = 1, maxPolys = 1;
+	private int renderedFaces = 1, maxFaces = 1;
 	private int cameras = 1;
 	private int width = 1, height = 1;
 
@@ -24,20 +24,20 @@ public class ProfilerData {
 		this.graphicsTime = graphicsTime;
 	}
 
-	public int getRenderedPolys() {
-		return renderedPolys;
+	public int getRenderedFaces() {
+		return renderedFaces;
 	}
 
-	public void setRenderedPolys(int renderedPolys) {
-		this.renderedPolys = renderedPolys;
+	public void setRenderedFaces(int renderedPolys) {
+		this.renderedFaces = renderedPolys;
 	}
 
-	public int getMaxPolys() {
-		return maxPolys;
+	public int getMaxFaces() {
+		return maxFaces;
 	}
 
-	public void setMaxPolys(int maxPolys) {
-		this.maxPolys = maxPolys;
+	public void setMaxFaces(int maxPolys) {
+		this.maxFaces = maxPolys;
 	}
 
 	public int getCameras() {

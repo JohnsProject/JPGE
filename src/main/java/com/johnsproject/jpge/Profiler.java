@@ -153,8 +153,8 @@ public class Profiler extends JPanel{
 	}
 	
 	private int logGraphics(Graphics g, int y) {
-		int renderedPolys = getData().getRenderedPolys();
-		int maxPolys = getData().getMaxPolys();
+		int renderedPolys = getData().getRenderedFaces();
+		int maxPolys = getData().getMaxFaces();
 		String fps =	"" + 1000/(((getData().getGraphicsTime()) / 1000000)+1);
 		String rTime = 	"" + (getData().getGraphicsTime() / 1000000) + " ms";
 		String rRes =	"" + getData().getWidth() + " x " + getData().getHeight();
@@ -170,14 +170,14 @@ public class Profiler extends JPanel{
 		g.drawString("- Rendering res. : ", POS_X, y);
 		g.drawString(rRes, POS_X2, y);
 		y += STEP;
-		g.drawString("- Rendered Tris : ", POS_X, y);
+		g.drawString("- Rendered Faces : ", POS_X, y);
 		g.drawString(rTris, POS_X2, y);
 		if (isLogging()) {
 			System.out.println("GRAPHICS DATA");
 			System.out.println("- FPS :\t\t\t" + fps);
 			System.out.println("- Render time :\t\t" + rTime);
 			System.out.println("- Rendering res. :\t" + rRes);
-			System.out.println("- Rendered Tris :\t" + rTris);
+			System.out.println("- Rendered Faces :\t" + rTris);
 		}
 		return y;
 	}

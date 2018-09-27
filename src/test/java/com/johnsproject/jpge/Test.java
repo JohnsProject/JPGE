@@ -28,8 +28,8 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 			e.printStackTrace();
 		}
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
-		sceneObject = new SceneObject("test", new Transform(new int[] {-100, 0, 1000}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), cube);
-		sceneObject2 = new SceneObject("test2", new Transform(new int[] {100, 0, 1000}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), monkey);
+		sceneObject = new SceneObject("test", new Transform(new int[] {-200, 0, 1000}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), cube);
+		sceneObject2 = new SceneObject("test2", new Transform(new int[] {200, 0, 1000}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), monkey);
 		sceneObject.setShader(new TestShader());
 		sceneObject2.setShader(new TestShader());
 		try {
@@ -57,7 +57,7 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		//sceneFrame.getScene().addCamera(camera2);
 		//sceneFrame.setTitle("JPGE Test");
 		sceneFrame.getScene().addCamera(camera);
-		//sceneObject.getMesh().playAnimation(1);
+//		sceneObject.getMesh().playAnimation(1);
 		KeyInputManager.getInstance().addKeyListener(this);
 		MouseInputManager.getInstance().addMouseListener(this);
 		//Profiler.getInstance().start();

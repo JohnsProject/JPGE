@@ -7,7 +7,6 @@ import com.johnsproject.jpge.graphics.Light;
 import com.johnsproject.jpge.graphics.Mesh;
 import com.johnsproject.jpge.graphics.Shader;
 import com.johnsproject.jpge.graphics.Transform;
-import com.johnsproject.jpge.utils.MathUtils;
 import com.johnsproject.jpge.utils.RenderUtils;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
 
@@ -21,16 +20,16 @@ public class TestShader extends Shader{
 	public int[] shadeVertex(int[] vertex, Transform sceneObjectTransform, Camera camera) {
 		Transform objt = sceneObjectTransform;
 		Transform camt = camera.getTransform();
-		//transforming vertex in object space
+		//transform vertex in object space
 		vertex = Vector3MathUtils.movePointByScale(vertex, objt.getScale(), vertex);
 		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, objt.getRotation(), vertex);
-		//transforming vertex to world space
+		//transform vertex to world space
 		vertex = Vector3MathUtils.add(vertex, objt.getPosition(), vertex);
-		//transforming vertex in camera space
+		//transform vertex in camera space
 		vertex = Vector3MathUtils.subtract(vertex, camt.getPosition(), vertex);
 		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, camt.getRotation(), vertex);
-		//projecting vertex into screen coordinates
-		vertex = RenderUtils.project(vertex, objt.getPosition(), camera);
+		//project vertex into screen space
+		vertex = RenderUtils.project(vertex, camera);
 		return vertex;
 	}
 
@@ -50,12 +49,12 @@ public class TestShader extends Shader{
 					cache2 = Vector3MathUtils.subtract(v1, v3, cache2);
 					cache3 = Vector3MathUtils.crossProduct(cache1, cache2, cache3);
 					l += Vector3MathUtils.dotProduct(lightPosition, cache3);
-					l -= light.getLightStrength() << 3;
+					l -= light.getLightStrength();
 				}
 				v1[Mesh.SHADE_FACTOR] = l;
 				v2[Mesh.SHADE_FACTOR] = l;
 				v3[Mesh.SHADE_FACTOR] = l;
-				RenderUtils.drawPolygon(polygon, mesh, zBuffer, camera);
+				RenderUtils.drawFace(polygon, mesh, zBuffer, camera);
 			}
 		}
 		return polygon;

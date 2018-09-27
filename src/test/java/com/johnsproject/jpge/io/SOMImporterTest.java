@@ -63,8 +63,8 @@ public class SOMImporterTest {
 	public void parsePolygonsTest() throws Exception {
 		String rawData = template.replace(" ", "").replace("\n", "");
 		String[] rawPolygonsData = rawData.split("Polygons<")[1].split(">Polygons", 2)[0].split(",");
-		int[][] polygons = SOMImporter.parsePolygons(rawPolygonsData);
-		assert(polygons[1].length == Mesh.POLYGON_LENGTH);
+		int[][] polygons = SOMImporter.parseFaces(rawPolygonsData);
+		assert(polygons[1].length == Mesh.FACE_LENGTH);
 		assert(polygons[1][Mesh.VERTEX_1] == 3);
 		assert(polygons[1][Mesh.VERTEX_2] == 6);
 		assert(polygons[1][Mesh.VERTEX_3] == 2);

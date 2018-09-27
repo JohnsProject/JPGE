@@ -108,6 +108,7 @@ public class ColorUtilsTest {
 		int cc = ColorUtils.convert(50, 50, 50, 50);
 		cc = ColorUtils.addBlue(cc, +20);
 		assert(70 == ColorUtils.getBlue(cc));
+		assert(50 == ColorUtils.getRed(cc));
 		cc = ColorUtils.addBlue(cc, -20);
 		assert(50 == ColorUtils.getBlue(cc));
 	}

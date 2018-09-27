@@ -3,6 +3,7 @@ import math
 import bmesh
 
 bonesCount = 0
+materialsCount = 0
 
 def write(filepath,
 			applyMods=False
@@ -18,7 +19,10 @@ def write(filepath,
 				bones.append(bone)
 	global bonesCount
 	bonesCount = len(bones)
+	global materialsCount
+	materialsCount = 0
 	for obj in bpy.context.visible_objects:
+		materialsCount += (len(obj.material_slots)-1)
 		if applyMods or obj.type != "MESH":
 			try:
 				me = obj.to_mesh(scene, True, "PREVIEW")
@@ -173,7 +177,8 @@ class MeshData:
 		self.polygons.append(value.vertices[0])
 		self.polygons.append(value.vertices[1])
 		self.polygons.append(value.vertices[2])
-		self.polygons.append(value.material_index)
+		global materialsCount
+		self.polygons.append(materialsCount + value.material_index)
 		self.polygons.append(value.loop_indices[0])
 		self.polygons.append(value.loop_indices[1])
 		self.polygons.append(value.loop_indices[2])
