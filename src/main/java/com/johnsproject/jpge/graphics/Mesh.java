@@ -79,6 +79,18 @@ public class Mesh {
 	}
 	
 	/**
+	 * Returns all buffered vertexes of this mesh.
+	 * The buffered vertexes are used by the {@link SceneRenderer} at the rendering process.
+	 * This vertexes are transformed, rotated and projected. 
+	 * the vertex buffer is a buffer used to prevent loosing original position of vertexes.
+	 * 
+	 * @return all buffered vertexes of this mesh.
+	 */
+	public int[][] getBufferedVertexes(){
+		return vertexesBuffer;
+	}
+	
+	/**
 	 * Returns the buffered vertex at the given index.
 	 * The buffered vertexes are used by the {@link SceneRenderer} at the rendering process.
 	 * This vertexes are transformed, rotated and projected. 

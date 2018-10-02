@@ -148,12 +148,28 @@ public class MathUtilsTest {
 	
 	@Test
 	public void randomTest() throws Exception {
-		int[] values = new int[100000];
+		int[] values = new int[100000000];
 		for (int i = 0; i < values.length; i++) {
 			values[i] = MathUtils.random();
 		}
 		// shows that this random value ins't equals to any other of the array
 		int random = MathUtils.random();
+		for (int i = 0; i < values.length; i++) {
+			assert(random != values[i]);
+		}
+	}
+	
+	@Test
+	public void randomRangeTest() throws Exception {
+		int min = 0, max = 1000;
+		int[] values = new int[50];
+		for (int i = 0; i < values.length; i++) {
+			values[i] = MathUtils.random(min, max);
+			assert(values[i] >= min);
+			assert(values[i] <= max);
+		}
+		// shows that this random value ins't equals to any other of the array
+		int random = MathUtils.random(min, max);
 		for (int i = 0; i < values.length; i++) {
 			assert(random != values[i]);
 		}

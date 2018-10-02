@@ -105,7 +105,7 @@ public class Texture {
 	 * @return color of the pixel at the given position.
 	 */
 	public int getPixel(int x, int y){
-		return image[x + (y*width)];
+		return image[(x + (y*width))];
 	}
 	
 	/**

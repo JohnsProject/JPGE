@@ -1,15 +1,11 @@
 package com.johnsproject.jpge.graphics;
 
-import com.johnsproject.jpge.utils.VectorUtils;
-
 /**
  * The PixelShader class is used to used shade the pixels that are set to the {@link Camera}.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
 public class PixelShader {
-
-	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
 	/**
 	 * This method is called by the {@link Camera} when a pixel is set.

@@ -194,7 +194,7 @@ public class ColorUtils {
 	 */
 	public static int darker(int color, int factor) {
 		int r = getRed(color), g = getGreen(color), b = getBlue(color), a = getAlpha(color);
-		if (factor < 0) factor = 0;
+		if (factor <= 0) factor = 0;
 		if (factor > MAXFACTOR)
 			factor = MAXFACTOR;
 		r -= (r >> (MAXVALUE - factor));
@@ -220,6 +220,50 @@ public class ColorUtils {
 		r += (r >> (MAXVALUE - factor));
 		g += (g >> (MAXVALUE - factor));
 		b += (b >> (MAXVALUE - factor));
+		return convert(r, g, b, a);
+	}
+	
+	/**
+	 * Returns a color that is the result of the linear interpolation 
+	 * between color1 and color2 by the given factor.
+	 * Only the red, blue and green components are interpolated.
+	 * The factor should be in the range 0-255.
+	 * 
+	 * @param color1 color to interpolate.
+	 * @param color2 color to interpolate.
+	 * @param factor interpolation factor.
+	 * @return a color that is the result of the linear interpolation.
+	 */
+	public static int lerpRBG(int color1, int color2, int factor) {
+		int r = 0, g = 0, b = 0;
+		int r1 = getRed(color1), g1 = getGreen(color1), b1 = getBlue(color1), a1 = getAlpha(color1);
+		int r2 = getRed(color2), g2 = getGreen(color2), b2 = getBlue(color2);
+		factor = MathUtils.clamp(factor, -255, 255);
+		r = MathUtils.clamp((r1 + ((r2 - r1) * factor)>>8), 0, 255);
+		g = MathUtils.clamp((g1 + ((g2 - g1) * factor)>>8), 0, 255);
+		b = MathUtils.clamp((b1 + ((b2 - b1) * factor)>>8), 0, 255);
+		return convert(r, g, b, a1);
+	}
+	
+	/**
+	 * Returns a color that is the result of the linear interpolation 
+	 * between color1 and color2 by the given factor.
+	 * The factor should be in the range 0-255.
+	 * 
+	 * @param color1 color to interpolate.
+	 * @param color2 color to interpolate.
+	 * @param factor interpolation factor.
+	 * @return a color that is the result of the linear interpolation.
+	 */
+	public static int lerp(int color1, int color2, int factor) {
+		int r = 0, g = 0, b = 0, a = 0;
+		int r1 = getRed(color1), g1 = getGreen(color1), b1 = getBlue(color1), a1 = getAlpha(color1);
+		int r2 = getRed(color2), g2 = getGreen(color2), b2 = getBlue(color2), a2 = getAlpha(color2);
+		factor = MathUtils.clamp(factor, -255, 255);
+		r = MathUtils.clamp((r1 + ((r2 - r1) * factor)>>8), 0, 255);
+		g = MathUtils.clamp((g1 + ((g2 - g1) * factor)>>8), 0, 255);
+		b = MathUtils.clamp((b1 + ((b2 - b1) * factor)>>8), 0, 255);
+		a = MathUtils.clamp((a1 + ((a2 - a1) * factor)>>8), 0, 255);
 		return convert(r, g, b, a);
 	}
 

@@ -8,6 +8,7 @@ import com.johnsproject.jpge.graphics.Transform;
 import com.johnsproject.jpge.graphics.Animation;
 import com.johnsproject.jpge.graphics.Texture;
 import com.johnsproject.jpge.utils.ColorUtils;
+import com.johnsproject.jpge.utils.MathUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
@@ -95,11 +96,12 @@ public class SOMImporter {
 		int[][] vertexes = new int[rawVertexesData.length/step][Mesh.VERTEX_LENGTH];
 		if(rawVertexesData.length > 2){
 			for (int i = 0; i < rawVertexesData.length; i+= step) {
-				int x = toInt(rawVertexesData[i + vx]);
-				int y = toInt(rawVertexesData[i + vy]);
-				int z = toInt(rawVertexesData[i + vz]);
-				int boneIndex = toInt(rawVertexesData[i + Mesh.BONE_INDEX]);
-				vertexes[i/step] = new int[] {x, y, z, boneIndex, 0};
+				int[] vertex = new int[Mesh.VERTEX_LENGTH];
+				vertex[vx] = toInt(rawVertexesData[i + vx]);
+				vertex[vy] = toInt(rawVertexesData[i + vy]);
+				vertex[vz] = toInt(rawVertexesData[i + vz]);
+				vertex[Mesh.BONE_INDEX] = toInt(rawVertexesData[i + Mesh.BONE_INDEX]);
+				vertexes[i/step] = vertex;
 			}
 		}
 		return vertexes;
@@ -109,7 +111,7 @@ public class SOMImporter {
 	 * Parses the faces of a {@link Mesh} from the given string and returns it.
 	 * The parameter should contain the content inside the "Faces<" and ">Faces" 
 	 * pieces of the som file and should be by ',' splited because the method only sorts 
-	 * and parses the sorted integer values to the right place in the Faces.
+	 * and parses the sorted integer values to the right place in the faces.
 	 * 
 	 * @param rawFacesData the string array containing the splited data.
 	 * @return an face array.
@@ -117,21 +119,21 @@ public class SOMImporter {
 	 */
 	static int[][] parseFaces(String[] rawFacesData) throws ImportExeption {
 		int step = Mesh.FACE_LENGTH-1;
-		int[][] polygons = new int[rawFacesData.length/step][Mesh.FACE_LENGTH];
+		int[][] faces = new int[rawFacesData.length/step][Mesh.FACE_LENGTH];
 		if(rawFacesData.length > 2){
 			for (int i = 0; i < rawFacesData.length; i+=step) {
-				int[] polygon = new int[Mesh.FACE_LENGTH];
-				polygon[Mesh.VERTEX_1] = toInt(rawFacesData[i + Mesh.VERTEX_1]);
-				polygon[Mesh.VERTEX_2] = toInt(rawFacesData[i + Mesh.VERTEX_2]);
-				polygon[Mesh.VERTEX_3] = toInt(rawFacesData[i + Mesh.VERTEX_3]);
-				polygon[Mesh.MATERIAL_INDEX] = toInt(rawFacesData[i + Mesh.MATERIAL_INDEX]);
-				polygon[Mesh.UV_1] = toInt(rawFacesData[i + Mesh.UV_1]);
-				polygon[Mesh.UV_2] = toInt(rawFacesData[i + Mesh.UV_2]);
-				polygon[Mesh.UV_3] = toInt(rawFacesData[i + Mesh.UV_3]);
-				polygons[i/step] = polygon;
+				int[] face = new int[Mesh.FACE_LENGTH];
+				face[Mesh.VERTEX_1] = toInt(rawFacesData[i + Mesh.VERTEX_1]);
+				face[Mesh.VERTEX_2] = toInt(rawFacesData[i + Mesh.VERTEX_2]);
+				face[Mesh.VERTEX_3] = toInt(rawFacesData[i + Mesh.VERTEX_3]);
+				face[Mesh.MATERIAL_INDEX] = toInt(rawFacesData[i + Mesh.MATERIAL_INDEX]);
+				face[Mesh.UV_1] = toInt(rawFacesData[i + Mesh.UV_1]);
+				face[Mesh.UV_2] = toInt(rawFacesData[i + Mesh.UV_2]);
+				face[Mesh.UV_3] = toInt(rawFacesData[i + Mesh.UV_3]);
+				faces[i/step] = face;
 			}
 		}
-		return polygons;
+		return faces;
 	}
 	
 	/**
@@ -150,9 +152,10 @@ public class SOMImporter {
 		if(rawUVsData.length > 2){
 			uvs = new int[rawUVsData.length/step][Mesh.UV_LENGTH];
 			for (int i = 0; i < rawUVsData.length; i+= step) {
-				int u = toInt(rawUVsData[i + vx]);
-				int v = toInt(rawUVsData[i + vy]);
-				uvs[i/step] = new int[] {u, v};
+				int[] uv = new int[Mesh.UV_LENGTH];
+				uv[vx] = MathUtils.clamp(toInt(rawUVsData[i + vx]), 0, 128);
+				uv[vy] = MathUtils.clamp(toInt(rawUVsData[i + vy]), 0, 128);
+				uvs[i/step] = uv;
 			}
 		}else {
 			uvs = new int[1][Mesh.UV_LENGTH];

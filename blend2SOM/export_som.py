@@ -56,9 +56,9 @@ def write(filepath,
 			bm.free()
 			del bm
 			for vertex in me.vertices:
-				meshData.addVertex(vertex.undeformed_co[0]*100)
-				meshData.addVertex(vertex.undeformed_co[1]*100)
-				meshData.addVertex(vertex.undeformed_co[2]*100)
+				meshData.addVertex(vertex.undeformed_co[0]*1024)
+				meshData.addVertex(vertex.undeformed_co[1]*1024)
+				meshData.addVertex(vertex.undeformed_co[2]*1024)
 				found = 0
 				for group in vertex.groups:
 					i = 0

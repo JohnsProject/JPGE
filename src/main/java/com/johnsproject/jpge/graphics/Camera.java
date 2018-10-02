@@ -32,7 +32,7 @@ public class Camera extends JPanel{
 	private int[] screenSize, halfscreenSize;
 	private int FieldOfView = 90;
 	private int nearClippingPlane = 50;
-	private int farClippingPlane = 90000;
+	private int farClippingPlane = 4000;
 	private int scaleFactor;
 	private Transform transform;
 	private BufferedImage viewBuffer;

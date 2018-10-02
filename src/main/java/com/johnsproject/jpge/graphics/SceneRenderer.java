@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.johnsproject.jpge.Profiler;
 import com.johnsproject.jpge.utils.RenderUtils;
+import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * The SceneRenderer class renders the {@link Scene} assigned to the {@link SceneFrame}.
@@ -84,6 +85,9 @@ public class SceneRenderer {
 	 * @param camera {@link Camera} that the {@link SceneObject} will be rendered to.
 	 * @param lights {@link Light Lights} influencing the {@link SceneObject}.
 	 */
+	int[] vertexCache1 = new int[3];
+	int[] vertexCache2 = new int[3];
+	int[] vertexCache3 = new int[3];
 	void render(SceneObject sceneObject, Camera camera, List<Light> lights) {
 		Mesh mesh = sceneObject.getMesh();
 		Animation animation = mesh.getCurrentAnimation();
@@ -91,17 +95,16 @@ public class SceneRenderer {
 		// reset mesh buffer
 		mesh.resetBuffer();
 		// animate and shade vertexes
-		for (int i = 0; i < mesh.getVertexes().length; i++) {
-			int[] vertex = mesh.getBufferedVertex(i);
+		for (int[] vertex : mesh.getBufferedVertexes()) {
 			vertex = RenderUtils.animate(vertex, animation);
-			vertex = shader.shadeVertex(vertex, sceneObject.getTransform(), camera);
+			vertex = shader.shadeVertex(vertex, camera, sceneObject.getTransform(), lights);
 		}
 		// get profiler values to update
 		int maxFaces = Profiler.getInstance().getData().getMaxFaces();
 		int rendFaces = Profiler.getInstance().getData().getRenderedFaces();
 		// shade faces
 		for (int[] face : mesh.getFaces()) {
-			face = shader.shadePolygon(face, mesh, zBuffer, camera, lights);
+			face = shader.shadeFace(face, mesh, camera, zBuffer, sceneObject.getTransform(), lights);
 			maxFaces++;
 			if (face[Mesh.CULLED] == 0) rendFaces++;
 		}

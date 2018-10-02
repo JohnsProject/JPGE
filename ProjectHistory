@@ -179,8 +179,11 @@ v0.1 - 24/08/2018
 27/09/2018
 -Fixed some bugs
 -Added new methods to VectorUtils and MathUtils
-
-
+02/10/2018
+-Added lerp method to the ColorUtils
+-Optimized random algorithm and added ranged random method to MathUtils
+-Optimized and improved the default Shader
+-Fixed some bugs
 
 
 

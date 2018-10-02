@@ -226,7 +226,8 @@ public class MathUtils {
 	
 	/**
 	 * Returns the given value as min or max.
-	 * if value < (min + max) / 2 return min else max. 
+	 * if value < min return min.
+	 * if value > max return max.
 	 * 
 	 * @param value value to clamp.
 	 * @param min min value.
@@ -239,16 +240,27 @@ public class MathUtils {
 		return value;
 	}
 
-	private static int r = 541648465;
+	static int r = 545;
 	/**
-	 * Returns a random value.
+	 * Returns a pseudo generated random value.
 	 * 
-	 * @return a random value.
+	 * @return a pseudo generated random value.
 	 */
 	public static int random() {
-		int x = r + (int) System.nanoTime();
-		r *= x >> 1;
-		return (int) x;
+		r += r + (r & r);
+		return r;
+	}
+	
+	/**
+	 * Returns a pseudo generated random value in the range min-max.
+	 * 
+	 * @param min lowest random value.
+	 * @param max highest random value.
+	 * @return a pseudo generated random value.
+	 */
+	public static int random(int min, int max) {
+		r += r + (r & r);
+		return min + (r & (max - min));
 	}
 	
 	/**

@@ -145,7 +145,7 @@ public class VectorUtils {
      * @param target target vector.
      * @return target containing values of vector.
      */
-    public static int[] copy3(int[] vector, int[] target) {
+    public static int[] copy3(int[] target, int[] vector) {
     	target[X] = vector[X];
     	target[Y] = vector[Y];
     	target[Z] = vector[Z];
@@ -159,7 +159,7 @@ public class VectorUtils {
      * @param target target vector.
      * @return target containing values of vector.
      */
-    public static int[] copy2(int[] vector, int[] target) {
+    public static int[] copy2(int[] target, int[] vector) {
     	target[X] = vector[X];
     	target[Y] = vector[Y];
     	return target;

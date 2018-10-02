@@ -22,7 +22,7 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 	int w = 1200, h = 920;
 	public Test() {
 		try {
-			cube = SOMImporter.load("/home/john/Development/Cube.som");
+			cube = SOMImporter.load("/home/john/Development/test.som");
 			monkey = SOMImporter.load("/home/john/Development/Monkey.som");
 		} catch (ImportExeption e) {
 			e.printStackTrace();
@@ -30,8 +30,8 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
 		sceneObject = new SceneObject("test", new Transform(new int[] {-200, 0, 1000}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), cube);
 		sceneObject2 = new SceneObject("test2", new Transform(new int[] {200, 0, 1000}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), monkey);
-		sceneObject.setShader(new TestShader());
-		sceneObject2.setShader(new TestShader());
+//		sceneObject.setShader(new TestShader());
+//		sceneObject2.setShader(new TestShader());
 		try {
 			Texture t = new Texture(getClass().getResourceAsStream("/JohnsProject.png"));
 			//Texture t = new Texture("/home/john/Development/Brick.jpg");
@@ -47,8 +47,7 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		camera = new Camera("testCam", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), new int[] {0, 0}, new int[] {w, h});
 		camera.setShader(new TestPixelShader());
 		camera2 = new Camera("testCam2", new Transform(new int[] {0, -2000, 1200}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), new int[] {w-(w/3), 0}, new int[] {w/3, h/3});	
-		light = new Light("testLight", new Transform(new int[] {1, 1, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
-		light2 = new Light("testLight2", new Transform(new int[] {-50, 50, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
+		light = new Light("testLight", new int[] {1, 1, 0});
 		sceneFrame = new SceneFrame(w, h);
 		sceneFrame.getScene().addLight(light);
 		//sceneFrame.getScene().addLight(light2);
@@ -164,16 +163,16 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 			GameManager.getInstance().pause();
 		}
 		if (event.getKeyCode() == 38) { 
-			light.getTransform().translateLocal(0, 0, 6);
+			light.translateDirection(0, 0, 1);
 		}
 		if (event.getKeyCode() == 40) { 
-			light.getTransform().translateLocal(0, 0, -6);
+			light.translateDirection(0, 0, -1);
 		}
 		if (event.getKeyCode() == 37) { 
-			light.getTransform().translateLocal(6, 0, 0);
+			light.translateDirection(1, 0, 0);
 		}
 		if (event.getKeyCode() == 39) { 
-			light.getTransform().translateLocal(-6, 0, 0);
+			light.translateDirection(-1, 0, 0);
 		}
 		//System.out.println(event.getKeyCode());
 	}

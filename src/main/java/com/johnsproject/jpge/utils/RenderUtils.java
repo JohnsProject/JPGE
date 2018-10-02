@@ -3,7 +3,6 @@ package com.johnsproject.jpge.utils;
 import com.johnsproject.jpge.graphics.Animation;
 import com.johnsproject.jpge.graphics.Camera;
 import com.johnsproject.jpge.graphics.Mesh;
-import com.johnsproject.jpge.graphics.SceneObject;
 import com.johnsproject.jpge.graphics.Texture;
 import com.johnsproject.jpge.graphics.Transform;
 import com.johnsproject.jpge.graphics.SceneRenderer.ProjectionType;
@@ -35,7 +34,7 @@ public class RenderUtils {
 		int rescalef = camera.getScaleFactor();
 		switch (camera.getProjectionType()) {
 		case perspective: // this projectionType uses depth
-			pz = pz + fov;
+			pz =  pz + fov;
 			if (pz <= 0) pz = 1;
 			px = (px * rescalef * fov) / pz;
 			py = (py * rescalef * fov) / pz;
@@ -82,14 +81,20 @@ public class RenderUtils {
 	public static boolean isInsideViewFrustum(int[] face, Mesh mesh, Camera camera) {
 		face[Mesh.CULLED] = 0;
 		int[] v1 = mesh.getBufferedVertex(face[Mesh.VERTEX_1]);
+		int[] v2 = mesh.getBufferedVertex(face[Mesh.VERTEX_2]);
+		int[] v3 = mesh.getBufferedVertex(face[Mesh.VERTEX_3]);
 		int ncp = camera.getNearClippingPlane();
 		int fcp = camera.getFarClippingPlane();
 		int w = camera.getWidth();
 		int h = camera.getHeight();
-		int x = v1[vx];
-		int y = v1[vy];
-		int z = v1[vz];
-		if (x > -400 && x < w+400 && y > -400 && y < h+400 && z > ncp && z < fcp) {
+		// calculate center of face
+		int x = (v1[vx] + v2[vx] + v3[vx]) / 3;
+		int y = (v1[vy] + v2[vy] + v3[vy]) / 3;
+		int z = (v1[vz] + v2[vz] + v3[vz]) / 3;
+		// tolerance
+		int t = 100;
+		// check if its inside view
+		if (x > -t && x < w + t && y > -t && y < h + t && z > ncp && z < fcp) {
 			return false;
 		}
 		face[Mesh.CULLED] = 1;
@@ -112,7 +117,10 @@ public class RenderUtils {
 		int v1x = v1[vx], v1y = v1[vy];
 		int v2x = v2[vx], v2y = v2[vy];
 		int v3x = v3[vx], v3y = v3[vy];
+		// calculate area of face
+		// ">> 1" = "/ 2"
 		int a = ((v2x - v1x) * (v3y - v1y) - (v3x - v1x) * (v2y - v1y)) >> 1;
+		// if area is negative then its a backface
 		if (a < 0) return false;
 		face[Mesh.CULLED] = 1;
 		return true;
@@ -127,8 +135,6 @@ public class RenderUtils {
 	 * @param camera {@link Camera} to draw.
 	 */
 	public static void drawFace(int[] face, Mesh mesh, int[] zBuffer, Camera camera) {
-		int px = camera.getScreenPosition()[vx];
-		int py = camera.getScreenPosition()[vy];
 		int width = camera.getScreenSize()[vx];
 		int height = camera.getScreenSize()[vy];
 		int[] vt1 = mesh.getBufferedVertex(face[Mesh.VERTEX_1]);
@@ -153,17 +159,17 @@ public class RenderUtils {
 		   				tmp = x2; x2 = x1; x1 = tmp;
 		   				tmp = v2; v2 = v1; v1 = tmp; 
 		   				tmp = u2; u2 = u1; u1 = tmp;
-		   				tmp = sf2; sf2 = sf1; sf1 = tmp;}
+		   				}
 		if (y2 > y3) { tmp = y3; y3 = y2; y2 = tmp; 
 		   				tmp = x3; x3 = x2; x2 = tmp;
 		   				tmp = v3; v3 = v2; v2 = tmp; 
 		   				tmp = u3; u3 = u2; u2 = tmp;
-		   				tmp = sf3; sf3 = sf2; sf2 = tmp;}
+		   				}
 		if (y1 > y2) { tmp = y2; y2 = y1; y1 = tmp; 
 		   				tmp = x2; x2 = x1; x1 = tmp;
 		   				tmp = v2; v2 = v1; v1 = tmp; 
 		   				tmp = u2; u2 = u1; u1 = tmp;
-		   				tmp = sf2; sf2 = sf1; sf1 = tmp;}
+		   				}
 		// hack to fix fill bug
 		if (y2 == y1) y2++;
 		if (y3 == y1) y3++;
@@ -171,44 +177,51 @@ public class RenderUtils {
 		int z = z1;
 		if (z1 > z2) z = z2;
 	    if (z2 > z3) z = z3;
-	    z = camera.getNearClippingPlane() - z;
-	    // draw
+	    // prepare z for culling
+	    // near clipping plane - center (no need to be exact so don't waste time doing division)
+	    z = camera.getNearClippingPlane() - (z1 + z2 + z3);
+	    int shadedColor = ColorUtils.darker(color, sf1);
+	    // draw based on the cameras rendering type
 	    switch (camera.getRenderingType()) {
 		case vertex:
 			if(y1 > 0 && y1 < height && x1 > 0 && x1 < width)
-	    		setPixel(x1, y1, z1, color, px, py, zBuffer, width, camera);
+	    		setPixel(x1, y1, z1, shadedColor, zBuffer, width, camera);
 	    	if(y2 > 0 && y2 < height && x2 > 0 && x2 < width)
-	    		setPixel(x2, y2, z2, color, px, py, zBuffer, width, camera);
+	    		setPixel(x2, y2, z2, shadedColor, zBuffer, width, camera);
 	    	if(y3 > 0 && y3 < height && x3 > 0 && x3 < width)
-	    		setPixel(x3, y3, z3, color, px, py, zBuffer, width, camera);
+	    		setPixel(x3, y3, z3, shadedColor, zBuffer, width, camera);
 			break;
 			
 		case wireframe:
-			drawLine(x1, y1, x2, y2, z, color, px, py, zBuffer, width, height, camera);
-			drawLine(x2, y2, x3, y3, z, color, px, py, zBuffer, width, height, camera);
-			drawLine(x3, y3, x1, y1, z, color, px, py, zBuffer, width, height, camera);
+			drawLine(x1, y1, x2, y2, z, shadedColor, zBuffer, width, height, camera);
+			drawLine(x2, y2, x3, y3, z, shadedColor, zBuffer, width, height, camera);
+			drawLine(x3, y3, x1, y1, z, shadedColor, zBuffer, width, height, camera);
 			break;
 			
 		case solid:
-			drawFace(x1, y1, sf1, x2, y2, sf2, x3, y3, sf3, z, px, py, zBuffer, width, height, color, camera);
+			drawFace(x1, y1, sf1, x2, y2, sf2, x3, y3, sf3, z, zBuffer, width, height, color, camera);
 			break;
 			
 		case textured:
 			Texture img = mesh.getMaterial(0).getTexture();
-			drawFaceAffine(x1, y1, x2, y2, x3, y3, z, u1, v1, u2, v2, u3, v3, sf1, img, px, py, zBuffer, width, height, camera);
+			drawFaceAffine(x1, y1, x2, y2, x3, y3, z, u1, v1, u2, v2, u3, v3, sf1, img, zBuffer, width, height, camera);
 			break;
 		}
 	}
 	
-	static void setPixel(int x, int y, int z, int color, int cameraX, int cameraY, int[] zBuffer, int width, Camera camera) {
-		int pos = (x + cameraX) + ((y + cameraY)*width);
+	static void setPixel(int x, int y, int z, int color, int[] zBuffer, int width, Camera camera) {
+		// get position of pixel in the zBuffer
+		int pos = x + (y * width);
+		// z test
 		if(zBuffer[pos] < z) {
 			zBuffer[pos] = z;
 			camera.setPixel(x, y, color);
 		}
 	}
 	
-	static void drawLine(int x1, int y1, int x2, int y2, int z, int color, int cameraX, int cameraY, int[] zBuffer, int width, int height, Camera camera) {
+	// line drawing with fixed point Brenseham's
+	static void drawLine(int x1, int y1, int x2, int y2, int z, int color,
+						int[] zBuffer, int width, int height, Camera camera) {
 		int w = x2 - x1;
 		int h = y2 - y1;
 		int dx1 = 0, dy1 = 0, dz1 = 0, dx2 = 0, dy2 = 0, dz2 = 0;
@@ -227,7 +240,7 @@ public class RenderUtils {
 		int numerator = longest >> 1;
 		for (int i = 0; i < longest; i++, numerator += shortest) {
 			if(y1 > 0 && y1 < height && x1 > 0 && x1 < width) {
-				setPixel(x1, y1, z, color, cameraX, cameraY, zBuffer, width, camera);
+				setPixel(x1, y1, z, color, zBuffer, width, camera);
 				if (numerator > longest) {
 					numerator -= longest;
 					x1 += dx1; y1 += dy1; z += dz1;
@@ -239,10 +252,12 @@ public class RenderUtils {
 	}
 	
 	static void drawFace(int x1, int y1, int sf1, int x2, int y2, int sf2, int x3, int y3, int sf3, int z,
-			int cameraX, int cameraY, int[] zBuffer, int width, int height, int c, Camera cam) {
-		int dx1 = 0, dx2 = 0, dx3 = 0; // x deltas
-		int df1 = 0, df2 = 0, df3 = 0; // shade factor deltas
-		c = ColorUtils.darker(c, sf1);
+							int[] zBuffer, int width, int height, int color, Camera cam) {
+		// x deltas
+		int dx1 = 0, dx2 = 0, dx3 = 0;
+		// shade factor deltas
+		int df1 = 0, df2 = 0, df3 = 0;
+		color = ColorUtils.darker(color, sf1);
 		int y2y1 = y2-y1, y3y1 = y3-y1, y3y2 = y3-y2;
 	    if (y2y1 > 0) { 
 	    	dx1=(((x2-x1)<<SHIFT)/(y2y1));
@@ -261,32 +276,35 @@ public class RenderUtils {
 	    int sy = y1;
 	    if (dx1 > dx2) {
 		    for (; sy <= y2-1; sy++, sx += dx2, ex += dx1, sf += df2, ef += df1)
-		    	drawHLine(sx >> SHIFT, ex >> SHIFT, sf, ef, sy, z, c, cameraX, cameraY, zBuffer, width, height, cam);
+		    	drawHLine(sx >> SHIFT, ex >> SHIFT, sf, ef, sy, z, color, zBuffer, width, height, cam);
 			ex = x2 << SHIFT;
 			for (; sy <= y3; sy++, sx += dx2, ex += dx3, sf += df2, ef += df3)
-				drawHLine(sx >> SHIFT, ex >> SHIFT, sf, ef, sy, z, c, cameraX, cameraY, zBuffer, width, height, cam);
+				drawHLine(sx >> SHIFT, ex >> SHIFT, sf, ef, sy, z, color, zBuffer, width, height, cam);
 	    }else {
 	    	for (; sy <= y2-1; sy++, sx += dx1, ex += dx2, sf += df1, ef += df2)
-	    		drawHLine(sx >> SHIFT, ex >> SHIFT, sf, ef, sy, z, c, cameraX, cameraY, zBuffer, width, height, cam);
+	    		drawHLine(sx >> SHIFT, ex >> SHIFT, sf, ef, sy, z, color, zBuffer, width, height, cam);
 	    	sx = x2 << SHIFT;
 			for (; sy <= y3; sy++, sx += dx3, ex += dx2, sf += df3, ef += df2)
-				drawHLine(sx >> SHIFT, ex >> SHIFT, sf, ef, sy, z, c, cameraX, cameraY, zBuffer, width, height, cam);
+				drawHLine(sx >> SHIFT, ex >> SHIFT, sf, ef, sy, z, color, zBuffer, width, height, cam);
 	    }
 	}
 	
-	static void drawHLine(int sx, int ex, int sf, int ef, int sy, int z, int color, int cameraX, int cameraY, int[] zBuffer, int width, int height, Camera camera) {
+	static void drawHLine(int sx, int ex, int sf, int ef, int sy, int z, int color,
+							int[] zBuffer, int width, int height, Camera camera) {
 		int df = 0;
 		if (ex-sx > 0) { df = (ef-sf)/(ex-sx); }
 		if(sy > 0 && sy < height) {
 			for (int i = sx; i < ex; i ++, sf += df) {
-				if(i > 0 && i < width) 
-					setPixel(i, sy, z, color, cameraX, cameraY, zBuffer, width, camera);
+				if(i > 0 && i < width) {
+					setPixel(i, sy, z, ColorUtils.lerpRBG(color, 0, sf >> SHIFT), zBuffer, width, camera);
+				}
 			}
 		}
 	}
 	
-	static void drawFaceAffine(int x1, int y1, int x2, int y2, int x3, int y3, int z, int u1, int v1, int u2, int v2, int u3, int v3, int sf,
-							Texture img, int cameraX, int cameraY, int[] zBuffer, int width, int height, Camera cam) {
+	static void drawFaceAffine(int x1, int y1, int x2, int y2, int x3, int y3, int z,
+								int u1, int v1, int u2, int v2, int u3, int v3, int sf,
+								Texture img, int[] zBuffer, int width, int height, Camera cam) {
 		int w = img.getWidth()-1, h = img.getHeight()-1;
 		u1 = (u1*w)>>7; u2 = (u2*w)>>7; u3 = (u3*w)>>7;
 		v1 = (v1*h)>>7; v2 = (v2*h)>>7; v3 = (v3*h)>>7;
@@ -314,25 +332,25 @@ public class RenderUtils {
 	    int sy = y1;
 	    if (dx1 > dx2) {
 		    for (; sy <= y2 - 1; sy++) {
-		    	drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, cameraX, cameraY, zBuffer, width, height, cam);
+		    	drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, zBuffer, width, height, cam);
 				sx += dx2; su += du2; sv += dv2;
 				ex += dx1; eu += du1; ev += dv1;
 			}
 			ex = x2<<SHIFT;
 			for (; sy <= y3; sy++) {
-				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, cameraX, cameraY, zBuffer, width, height, cam);
+				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, zBuffer, width, height, cam);
 				sx += dx2; su += du2; sv += dv2;
 				ex += dx3; eu += du3; ev += dv3;
 			}
 	    }else{
 			for (; sy <= y2 - 1; sy++) {
-				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, cameraX, cameraY, zBuffer, width, height, cam);
+				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, zBuffer, width, height, cam);
 				sx += dx1; su += du1; sv += dv1;
 				ex += dx2; eu += du2; ev += dv2;
 			}
 			sx = x2<<SHIFT;
 			for (; sy <= y3; sy++) {
-				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, cameraX, cameraY, zBuffer, width, height, cam);
+				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, zBuffer, width, height, cam);
 				sx += dx3; su += du3; sv += dv3;
 				ex += dx2; eu += du2; ev += dv2;
 			}
@@ -340,7 +358,7 @@ public class RenderUtils {
 	}
 	
 	static void drawHLineAffine(int sx, int ex, int sy, int z, int su, int eu, int sv, int ev, int sf,
-			Texture img, int cameraX, int cameraY, int[] zBuffer, int width, int height, Camera camera) {
+								Texture img, int[] zBuffer, int width, int height, Camera camera) {
 		int du = 0, dv = 0;
 		su = Math.abs(su); sv = Math.abs(sv);
 		if (ex-sx > 0) {
@@ -350,8 +368,9 @@ public class RenderUtils {
 		if(sy > 1 && sy < height-1) {
 			for (int i = sx; i < ex; i++, su += du, sv += dv) {
 				if(i > 1 && i < width-1) {
-					int c = img.getPixel(su>>SHIFT, sv>>SHIFT);
-					setPixel(i, sy, z, ColorUtils.darker(c, sf), cameraX, cameraY, zBuffer, width, camera);
+					int c = 0;
+					c = img.getPixel(su>>SHIFT, sv>>SHIFT);
+					setPixel(i, sy, z, ColorUtils.lerpRBG(c, 0, sf), zBuffer, width, camera);
 				}
 			}
 		}
