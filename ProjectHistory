@@ -184,6 +184,8 @@ v0.1 - 24/08/2018
 -Optimized random algorithm and added ranged random method to MathUtils
 -Optimized and improved the default Shader
 -Fixed some bugs
+02/10/2018
+-Added gouraud shading to the affine texture mapping algorithm in RenderUtils
 
 
 

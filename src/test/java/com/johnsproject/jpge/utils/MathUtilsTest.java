@@ -125,7 +125,7 @@ public class MathUtilsTest {
 	public void wrap0toTest() throws Exception {
 		int value = -123;
 		int lvalue = MathUtils.wrap0to(value, 360);
-		System.out.println(lvalue);
+//		System.out.println(lvalue);
 		assert(lvalue >= 0);
 		assert(lvalue <= 360);
 	}

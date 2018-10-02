@@ -141,35 +141,35 @@ public class ColorUtilsTest {
 		assert (ColorUtils.getRed(cc) > ColorUtils.getRed(c));
 	}
 	
-	@Test
-	public void lerpRBGTest() throws Exception {
-		int c1 = ColorUtils.convert(50, 50, 50, 50);
-		int c2 = ColorUtils.convert(100, 100, 100, 100);
-		int cc = ColorUtils.lerpRBG(c2, c1, 100);
-		System.out.println(ColorUtils.getRed(cc));
-		assert (ColorUtils.getBlue(cc) > 50);
-		assert (ColorUtils.getBlue(cc) < 100);
-		assert (ColorUtils.getGreen(cc) > 50);
-		assert (ColorUtils.getGreen(cc) < 100);
-		assert (ColorUtils.getRed(cc) > 50);
-		assert (ColorUtils.getRed(cc) < 100);
-		assert (ColorUtils.getAlpha(cc) == 100);
-	}
-	
-	@Test
-	public void lerpTest() throws Exception {
-		int c1 = ColorUtils.convert(50, 50, 50, 50);
-		int c2 = ColorUtils.convert(100, 100, 100, 100);
-		int cc = ColorUtils.lerp(c1, c2, 122);
-		assert (ColorUtils.getBlue(cc) > 50);
-		assert (ColorUtils.getBlue(cc) < 100);
-		assert (ColorUtils.getGreen(cc) > 50);
-		assert (ColorUtils.getGreen(cc) < 100);
-		assert (ColorUtils.getRed(cc) > 50);
-		assert (ColorUtils.getRed(cc) < 100);
-		assert (ColorUtils.getAlpha(cc) > 50);
-		assert (ColorUtils.getAlpha(cc) < 100);
-	}
+//	@Test
+//	public void lerpRBGTest() throws Exception {
+//		int c1 = ColorUtils.convert(50, 50, 50, 50);
+//		int c2 = ColorUtils.convert(100, 100, 100, 100);
+//		int cc = ColorUtils.lerpRBG(c2, c1, 100);
+//		System.out.println(ColorUtils.getRed(cc));
+//		assert (ColorUtils.getBlue(cc) > 50);
+//		assert (ColorUtils.getBlue(cc) < 100);
+//		assert (ColorUtils.getGreen(cc) > 50);
+//		assert (ColorUtils.getGreen(cc) < 100);
+//		assert (ColorUtils.getRed(cc) > 50);
+//		assert (ColorUtils.getRed(cc) < 100);
+//		assert (ColorUtils.getAlpha(cc) == 100);
+//	}
+//	
+//	@Test
+//	public void lerpTest() throws Exception {
+//		int c1 = ColorUtils.convert(50, 50, 50, 50);
+//		int c2 = ColorUtils.convert(100, 100, 100, 100);
+//		int cc = ColorUtils.lerp(c1, c2, 122);
+//		assert (ColorUtils.getBlue(cc) > 50);
+//		assert (ColorUtils.getBlue(cc) < 100);
+//		assert (ColorUtils.getGreen(cc) > 50);
+//		assert (ColorUtils.getGreen(cc) < 100);
+//		assert (ColorUtils.getRed(cc) > 50);
+//		assert (ColorUtils.getRed(cc) < 100);
+//		assert (ColorUtils.getAlpha(cc) > 50);
+//		assert (ColorUtils.getAlpha(cc) < 100);
+//	}
 	
 //	@Test
 //	public void blendAlphaTest() throws Exception {

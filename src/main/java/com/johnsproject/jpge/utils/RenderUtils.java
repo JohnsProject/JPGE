@@ -177,13 +177,15 @@ public class RenderUtils {
 		int z = z1;
 		if (z1 > z2) z = z2;
 	    if (z2 > z3) z = z3;
-	    // prepare z for culling
+	    // prepare z for z buffer
 	    // near clipping plane - center (no need to be exact so don't waste time doing division)
 	    z = camera.getNearClippingPlane() - (z1 + z2 + z3);
+	    // color used if rendering type is wireframe of vertex
 	    int shadedColor = ColorUtils.darker(color, sf1);
 	    // draw based on the cameras rendering type
 	    switch (camera.getRenderingType()) {
 		case vertex:
+			// if its a vertex just check if its inside the camera and set a pixel
 			if(y1 > 0 && y1 < height && x1 > 0 && x1 < width)
 	    		setPixel(x1, y1, z1, shadedColor, zBuffer, width, camera);
 	    	if(y2 > 0 && y2 < height && x2 > 0 && x2 < width)
@@ -204,7 +206,7 @@ public class RenderUtils {
 			
 		case textured:
 			Texture img = mesh.getMaterial(0).getTexture();
-			drawFaceAffine(x1, y1, x2, y2, x3, y3, z, u1, v1, u2, v2, u3, v3, sf1, img, zBuffer, width, height, camera);
+			drawFaceAffine(x1, y1, sf1, x2, y2, sf2, x3, y3, sf3, z, u1, v1, u2, v2, u3, v3, img, zBuffer, width, height, camera);
 			break;
 		}
 	}
@@ -224,7 +226,9 @@ public class RenderUtils {
 						int[] zBuffer, int width, int height, Camera camera) {
 		int w = x2 - x1;
 		int h = y2 - y1;
-		int dx1 = 0, dy1 = 0, dz1 = 0, dx2 = 0, dy2 = 0, dz2 = 0;
+		// deltas
+		int dx1 = 0, dy1 = 0, dz1 = 0,
+			dx2 = 0, dy2 = 0, dz2 = 0;
 		if (w < 0) dx1 = -1; else if (w > 0) dx1 = 1;
 		if (h < 0) dy1 = -1; else if (h > 0) dy1 = 1;
 		if (w < 0) dx2 = -1; else if (w > 0) dx2 = 1;
@@ -239,141 +243,209 @@ public class RenderUtils {
 		}
 		int numerator = longest >> 1;
 		for (int i = 0; i < longest; i++, numerator += shortest) {
+			// check if its inside the camera
 			if(y1 > 0 && y1 < height && x1 > 0 && x1 < width) {
+				// set pixel
 				setPixel(x1, y1, z, color, zBuffer, width, camera);
+				// increase deltas
 				if (numerator > longest) {
 					numerator -= longest;
-					x1 += dx1; y1 += dy1; z += dz1;
+					x1 += dx1;
+					y1 += dy1;
+					z += dz1;
 				} else {
-					x1 += dx2; y1 += dy2; z += dz2;
+					x1 += dx2;
+					y1 += dy2;
+					z += dz2;
 				}
 			}
 		}
 	}
 	
+	// face drawing and filling with fixed point scanline algorithm that supports gouraud shading
 	static void drawFace(int x1, int y1, int sf1, int x2, int y2, int sf2, int x3, int y3, int sf3, int z,
 							int[] zBuffer, int width, int height, int color, Camera cam) {
 		// x deltas
 		int dx1 = 0, dx2 = 0, dx3 = 0;
 		// shade factor deltas
 		int df1 = 0, df2 = 0, df3 = 0;
-		color = ColorUtils.darker(color, sf1);
-		int y2y1 = y2-y1, y3y1 = y3-y1, y3y2 = y3-y2;
-	    if (y2y1 > 0) { 
-	    	dx1=(((x2-x1)<<SHIFT)/(y2y1));
-	    	df1=(((sf2-sf1)<<SHIFT)/(y2y1)); 
-	    } else dx1=0;
-	    if (y3y1 > 0) { 
-	    	dx2=(((x3-x1)<<SHIFT)/(y3y1)); 
-	    	df2=(((sf3-sf1)<<SHIFT)/(y3y1)); 
-	    }else dx2=0;
-	    if (y3y2 > 0) { 
-	    	dx3=(((x3-x2)<<SHIFT)/(y3y2)); 
-	    	df3=(((sf3-sf2)<<SHIFT)/(y3y2)); 
-	    } else dx3=0;
-	    int sx = x1 <<SHIFT, ex = x1 <<SHIFT;
-	    int sf = sf1 <<SHIFT, ef = sf1 <<SHIFT;
+		// precalculate used values to save performance
+		int y2y1 = y2 - y1, y3y1 = y3 - y1, y3y2 = y3 - y2;
+		// calculate x and shade factor deltas
+		// needed to get x and shade factor values for each y position
+		if (y2y1 > 0) {
+			// bitshift left to increase precision
+			dx1 = ((x2 - x1) << SHIFT) / (y2y1);
+			df1 = ((sf2 - sf1) << SHIFT) / (y2y1);
+		} else dx1 = 0;
+		if (y3y1 > 0) {
+			dx2 = ((x3 - x1) << SHIFT) / (y3y1);
+			df2 = ((sf3 - sf1) << SHIFT) / (y3y1);
+		} else dx2 = 0;
+		if (y3y2 > 0) {
+			dx3 = ((x3 - x2) << SHIFT) / (y3y2);
+			df3 = ((sf3 - sf2) << SHIFT) / (y3y2);
+		} else dx3 = 0;
+		// left and right side values starting at the top of face
+		// bitshift left to increase precision
+		int sx = x1 << SHIFT, ex = x1 << SHIFT;
+		int sf = sf1 << SHIFT, ef = sf1 << SHIFT;
 	    int sy = y1;
 	    if (dx1 > dx2) {
-		    for (; sy <= y2-1; sy++, sx += dx2, ex += dx1, sf += df2, ef += df1)
+		    for (; sy <= y2-1; sy++) {
+		    	// bitshift right to get right values
 		    	drawHLine(sx >> SHIFT, ex >> SHIFT, sf, ef, sy, z, color, zBuffer, width, height, cam);
+		    	// increase left and right values by the calculated delta
+		    	sx += dx2; ex += dx1;
+		    	sf += df2; ef += df1;
+	    	}
+		    // make sure that correct x position is used to draw the other part
 			ex = x2 << SHIFT;
-			for (; sy <= y3; sy++, sx += dx2, ex += dx3, sf += df2, ef += df3)
+			for (; sy <= y3; sy++) {
 				drawHLine(sx >> SHIFT, ex >> SHIFT, sf, ef, sy, z, color, zBuffer, width, height, cam);
+				sx += dx2; ex += dx3;
+		    	sf += df2; ef += df3;
+			}
 	    }else {
-	    	for (; sy <= y2-1; sy++, sx += dx1, ex += dx2, sf += df1, ef += df2)
+	    	for (; sy <= y2-1; sy++) {
 	    		drawHLine(sx >> SHIFT, ex >> SHIFT, sf, ef, sy, z, color, zBuffer, width, height, cam);
+	    		sx += dx1; ex += dx2;
+		    	sf += df1; ef += df2;
+	    	}
 	    	sx = x2 << SHIFT;
-			for (; sy <= y3; sy++, sx += dx3, ex += dx2, sf += df3, ef += df2)
+			for (; sy <= y3; sy++) {
 				drawHLine(sx >> SHIFT, ex >> SHIFT, sf, ef, sy, z, color, zBuffer, width, height, cam);
+				sx += dx3; ex += dx2;
+		    	sf += df3; ef += df2;
+			}
 	    }
 	}
 	
 	static void drawHLine(int sx, int ex, int sf, int ef, int sy, int z, int color,
 							int[] zBuffer, int width, int height, Camera camera) {
 		int df = 0;
-		if (ex-sx > 0) { df = (ef-sf)/(ex-sx); }
+		int exsx = ex - sx;
+		// calculate shade factor delta needed to get shade factor values for each x position
+		if (exsx > 0) {
+			df = (ef - sf) / (exsx);
+		}
 		if(sy > 0 && sy < height) {
-			for (int i = sx; i < ex; i ++, sf += df) {
+			for (int i = sx; i < ex; i ++) {
 				if(i > 0 && i < width) {
+					// lerp face color with black using shade factor as lerp factor to get shading effect
 					setPixel(i, sy, z, ColorUtils.lerpRBG(color, 0, sf >> SHIFT), zBuffer, width, camera);
+					sf += df;
 				}
 			}
 		}
 	}
 	
-	static void drawFaceAffine(int x1, int y1, int x2, int y2, int x3, int y3, int z,
-								int u1, int v1, int u2, int v2, int u3, int v3, int sf,
+	// face drawing and filling with fixed point scanline algorithm that supports gouraud shading
+	static void drawFaceAffine(int x1, int y1, int sf1, int x2, int y2, int sf2, int x3, int y3, int sf3, int z,
+								int u1, int v1, int u2, int v2, int u3, int v3,
 								Texture img, int[] zBuffer, int width, int height, Camera cam) {
 		int w = img.getWidth()-1, h = img.getHeight()-1;
 		u1 = (u1*w)>>7; u2 = (u2*w)>>7; u3 = (u3*w)>>7;
 		v1 = (v1*h)>>7; v2 = (v2*h)>>7; v3 = (v3*h)>>7;
+		// x deltas
 		int dx1 = 0, dx2 = 0, dx3 = 0;
+		// u deltas
 		int du1 = 0, du2 = 0, du3 = 0;
+		// v deltas
 		int dv1 = 0, dv2 = 0, dv3 = 0;
+		// shade factor deltas
+		int df1 = 0, df2 = 0, df3 = 0;
+		// precalculate used values to save performance
 		int y2y1 = y2-y1, y3y1 = y3-y1, y3y2 = y3-y2;
-	    if (y2y1 > 0) {
-	    	dx1=(((x2-x1)<<SHIFT)/(y2y1));
-	    	du1=(((u2-u1)<<SHIFT)/(y2y1));
-	    	dv1=(((v2-v1)<<SHIFT)/(y2y1));
-	    } else dx1=du1=dv1=0;
-	    if (y3y1 > 0) {
-	    	dx2=(((x3-x1)<<SHIFT)/(y3y1));
-	    	du2=(((u3-u1)<<SHIFT)/(y3y1));
-	    	dv2=(((v3-v1)<<SHIFT)/(y3y1));
-	    } else dx2=du2=dv2=0;
-	    if (y3y2 > 0) {
-	    	dx3=(((x3-x2)<<SHIFT)/(y3y2));
-	    	du3=(((u3-u2)<<SHIFT)/(y3y2));
-	    	dv3=(((v3-v2)<<SHIFT)/(y3y2));
-	    } else dx3=du3=dv3=0;
-	    int sx = x1<<SHIFT, sv = v1<<SHIFT, su = u1<<SHIFT,
-	    	ex = x1<<SHIFT, eu = u1<<SHIFT, ev = v1<<SHIFT;
+		// calculate x, u, v and shade factor deltas
+		// needed to get x, u, v and shade factor values for each y position
+		if (y2y1 > 0) {
+			// bitshift left to increase precision
+			dx1 = (((x2 - x1) << SHIFT) / (y2y1));
+			du1 = (((u2 - u1) << SHIFT) / (y2y1));
+			dv1 = (((v2 - v1) << SHIFT) / (y2y1));
+			df1 = (((sf2 - sf1) << SHIFT) / (y2y1));
+		} else dx1 = du1 = dv1 = 0;
+		if (y3y1 > 0) {
+			dx2 = (((x3 - x1) << SHIFT) / (y3y1));
+			du2 = (((u3 - u1) << SHIFT) / (y3y1));
+			dv2 = (((v3 - v1) << SHIFT) / (y3y1));
+			df2 = (((sf3 - sf1) << SHIFT) / (y3y1));
+		} else dx2 = du2 = dv2 = 0;
+		if (y3y2 > 0) {
+			dx3 = (((x3 - x2) << SHIFT) / (y3y2));
+			du3 = (((u3 - u2) << SHIFT) / (y3y2));
+			dv3 = (((v3 - v2) << SHIFT) / (y3y2));
+			df3 = (((sf3 - sf2) << SHIFT) / (y3y2));
+		} else dx3 = du3 = dv3 = 0;
+		// left and right side values starting at the top of face
+		// bitshift left to increase precision
+		int sx = x1 << SHIFT, ex = x1 << SHIFT;
+		int su = u1 << SHIFT, eu = u1 << SHIFT;
+		int sv = v1 << SHIFT, ev = v1 << SHIFT;
+		int sf = sf1 << SHIFT, ef = sf1 << SHIFT;
 	    int sy = y1;
 	    if (dx1 > dx2) {
 		    for (; sy <= y2 - 1; sy++) {
-		    	drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, zBuffer, width, height, cam);
-				sx += dx2; su += du2; sv += dv2;
-				ex += dx1; eu += du1; ev += dv1;
+		    	// bitshift right to get right values
+		    	drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sy, z, su, eu, sv, ev, sf, ef, img, zBuffer, width, height, cam);
+		    	// increase left and right values by the calculated delta
+				sx += dx2; ex += dx1;
+				su += du2; eu += du1;
+				sv += dv2; ev += dv1;
+				sf += df2; ef += df1;
 			}
-			ex = x2<<SHIFT;
+		    // make sure that correct x position is used to draw the other part
+			ex = x2 << SHIFT;
 			for (; sy <= y3; sy++) {
-				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, zBuffer, width, height, cam);
-				sx += dx2; su += du2; sv += dv2;
-				ex += dx3; eu += du3; ev += dv3;
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sy, z, su, eu, sv, ev, sf, ef, img, zBuffer, width, height, cam);
+				sx += dx2; ex += dx3;
+				su += du2; eu += du3;
+				sv += dv2; ev += dv3;
+				sf += df2; ef += df3;
 			}
 	    }else{
 			for (; sy <= y2 - 1; sy++) {
-				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, zBuffer, width, height, cam);
-				sx += dx1; su += du1; sv += dv1;
-				ex += dx2; eu += du2; ev += dv2;
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sy, z, su, eu, sv, ev, sf, ef, img, zBuffer, width, height, cam);
+				sx += dx1; ex += dx2;
+				su += du1; eu += du2;
+				sv += dv1; ev += dv2;
+				sf += df1; ef += df2;
 			}
-			sx = x2<<SHIFT;
+			sx = x2 << SHIFT;
 			for (; sy <= y3; sy++) {
-				drawHLineAffine(sx>>SHIFT, ex>>SHIFT, sy, z, su, eu, sv, ev, sf, img, zBuffer, width, height, cam);
-				sx += dx3; su += du3; sv += dv3;
-				ex += dx2; eu += du2; ev += dv2;
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sy, z, su, eu, sv, ev, sf, ef, img, zBuffer, width, height, cam);
+				sx += dx3; ex += dx2;
+				su += du3; eu += du2;
+				sv += dv3; ev += dv2;
+				sf += df3; ef += df2;
 			}
 	    }
 	}
 	
-	static void drawHLineAffine(int sx, int ex, int sy, int z, int su, int eu, int sv, int ev, int sf,
+	static void drawHLineAffine(int sx, int ex, int sy, int z, int su, int eu, int sv, int ev, int sf, int ef,
 								Texture img, int[] zBuffer, int width, int height, Camera camera) {
-		int du = 0, dv = 0;
+		int du = 0, dv = 0, df = 0;
 		su = Math.abs(su); sv = Math.abs(sv);
-		if (ex-sx > 0) {
-			du = (eu-su)/(ex-sx);
-			dv = (ev-sv)/(ex-sx);
+		int exsx = ex - sx;
+		// calculate u, v and shade factor deltas needed to get u, v and shade factor values for each y position
+		if (exsx > 0) {
+			du = (eu-su) / (exsx);
+			dv = (ev-sv) / (exsx);
+			df = (ef-sf) / (exsx);
 		}
 		if(sy > 1 && sy < height-1) {
-			for (int i = sx; i < ex; i++, su += du, sv += dv) {
+			for (int i = sx; i < ex; i++) {
 				if(i > 1 && i < width-1) {
-					int c = 0;
-					c = img.getPixel(su>>SHIFT, sv>>SHIFT);
-					setPixel(i, sy, z, ColorUtils.lerpRBG(c, 0, sf), zBuffer, width, camera);
+					// get texture pixel / texel color
+					int color = img.getPixel(su >> SHIFT, sv >> SHIFT);
+					// lerp texture pixel color with black using shade factor as lerp factor to get shading effect
+					setPixel(i, sy, z, ColorUtils.lerpRBG(color, 0, sf >> SHIFT), zBuffer, width, camera);
+					su += du;
+					sv += dv;
+					sf += df;
 				}
 			}
 		}
 	}
-
 }
