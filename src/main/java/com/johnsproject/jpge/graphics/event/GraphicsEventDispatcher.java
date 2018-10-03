@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.johnsproject.jpge.event.UpdateListener;
+
 /**
  * The GraphicsEventDispatcher class is used to dispatch graphics events.
  * 
@@ -47,7 +49,8 @@ public class GraphicsEventDispatcher {
 	 */
 	public void dispatchAddEvent(CameraEvent event) {
 		synchronized (cameraListeners) {
-			for (CameraListener cameraListener : cameraListeners) {
+			for (int i = 0; i < cameraListeners.size(); i++) {
+				CameraListener cameraListener = cameraListeners.get(i);
 				cameraListener.add(event);
 			}
 		}
@@ -61,7 +64,8 @@ public class GraphicsEventDispatcher {
 	 */
 	public void dispatchRemoveEvent(CameraEvent event) {
 		synchronized (cameraListeners) {
-			for (CameraListener cameraListener : cameraListeners) {
+			for (int i = 0; i < cameraListeners.size(); i++) {
+				CameraListener cameraListener = cameraListeners.get(i);
 				cameraListener.remove(event);
 			}
 		}

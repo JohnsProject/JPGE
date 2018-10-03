@@ -5,16 +5,73 @@ import java.util.List;
 import com.johnsproject.jpge.graphics.Camera;
 import com.johnsproject.jpge.graphics.Light;
 import com.johnsproject.jpge.graphics.Mesh;
-import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
 import com.johnsproject.jpge.graphics.Shader;
 import com.johnsproject.jpge.graphics.Transform;
-import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.RenderUtils;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
-import com.johnsproject.jpge.utils.VectorUtils;
 
 public class TestShader extends Shader{
-
+	
+	private int[] cache1 = new int[3];
+	private int[] cache2 = new int[3];
+	private int[] cache3 = new int[3];
+	
+	@Override
+	public int[] shadeVertex(int[] vertex, Camera camera, Transform objectTransform, List<Light> lights) {
+		// transform vertex in object space
+		vertex = Vector3MathUtils.movePointByScale(vertex, objectTransform.getScale(), vertex);
+		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, objectTransform.getRotation(), vertex);
+		// transform vertex to world space
+		vertex = Vector3MathUtils.add(vertex, objectTransform.getPosition(), vertex);		
+		// transform vertex to camera space
+		vertex = Vector3MathUtils.subtract(vertex, camera.getTransform().getPosition(), vertex);
+		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, camera.getTransform().getRotation(), vertex);
+		// project vertex into screen space
+		vertex = RenderUtils.project(vertex, camera);
+		return vertex;
+	}
+	
+	@Override
+	public int[] shadeFace(int[] face, Mesh mesh, Camera camera, int[] zBuffer, Transform objectTransform, List<Light> lights) {
+		// view frustum culling
+		if (!RenderUtils.isInsideViewFrustum(face, mesh, camera)) {
+			int[] v1 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_1]);
+			int[] v2 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_2]);
+			int[] v3 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_3]);
+			// calculate normal
+			cache1 = Vector3MathUtils.subtract(v1, v2, cache1);
+			cache2 = Vector3MathUtils.subtract(v1, v3, cache2);
+			cache3 = Vector3MathUtils.crossProduct(cache1, cache2, cache3);
+			// backface culling using normal
+			// also can use RenderUtils.isBackface(face, mesh) which is usually faster
+			// but the normal is already used for lighting so why not use it here too
+			// set if face is culled or not (1 is true and 0 is false)
+			face[Mesh.F_CULLED] = 1;
+			if (cache3[2] < 0) {
+				face[Mesh.F_CULLED] = 0;
+				int l = -255;
+				// flat shading
+				for (int i = 0; i < lights.size(); i++) {
+					Light light = lights.get(i);
+					int[] lightPosition = light.getDirection();
+					l += Vector3MathUtils.dotProduct(lightPosition, cache3);
+					l -= light.getLightStrength() << 3;
+				}
+				// set shade factor for each vertex
+				v1[Mesh.V_SHADE_FACTOR] = l;
+				v2[Mesh.V_SHADE_FACTOR] = l;
+				v3[Mesh.V_SHADE_FACTOR] = l;
+				// draw face
+				RenderUtils.drawFace(face, mesh, zBuffer, camera);
+			}
+			
+//			if(!RenderUtils.isBackface(face, mesh)) {
+//				RenderUtils.drawFace(face, mesh, zBuffer, camera);
+//			}
+		}
+		return face;
+	}
+	
 //	@Override
 //	public int[] shadeVertex(int[] vertex, Transform objectTransform) {
 ////		Transform objt = objectTransform;

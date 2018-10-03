@@ -47,7 +47,8 @@ public class EventDispatcher {
 	 */
 	public void dispatchUpdateEvent(UpdateEvent event) {
 		synchronized (updateListeners) {
-			for (UpdateListener updateListener : updateListeners) {
+			for (int i = 0; i < updateListeners.size(); i++) {
+				UpdateListener updateListener = updateListeners.get(i);
 				updateListener.update(event);
 			}
 		}

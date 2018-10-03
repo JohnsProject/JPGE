@@ -56,7 +56,7 @@ public class SOMImporterTest {
 		assert(vertexes[1][vx] == -100);
 		assert(vertexes[1][vy] == -100);
 		assert(vertexes[1][vz] == 100);
-		assert(vertexes[1][Mesh.BONE_INDEX] == 1);
+		assert(vertexes[1][Mesh.V_BONE_INDEX] == 1);
 	}
 	
 	@Test
@@ -65,13 +65,13 @@ public class SOMImporterTest {
 		String[] rawPolygonsData = rawData.split("Polygons<")[1].split(">Polygons", 2)[0].split(",");
 		int[][] polygons = SOMImporter.parseFaces(rawPolygonsData);
 		assert(polygons[1].length == Mesh.FACE_LENGTH);
-		assert(polygons[1][Mesh.VERTEX_1] == 3);
-		assert(polygons[1][Mesh.VERTEX_2] == 6);
-		assert(polygons[1][Mesh.VERTEX_3] == 2);
-		assert(polygons[1][Mesh.MATERIAL_INDEX] == 0);
-		assert(polygons[1][Mesh.UV_1] == 3);
-		assert(polygons[1][Mesh.UV_2] == 4);
-		assert(polygons[1][Mesh.UV_3] == 5);
+		assert(polygons[1][Mesh.F_VERTEX_1] == 3);
+		assert(polygons[1][Mesh.F_VERTEX_2] == 6);
+		assert(polygons[1][Mesh.F_VERTEX_3] == 2);
+		assert(polygons[1][Mesh.F_MATERIAL_INDEX] == 0);
+		assert(polygons[1][Mesh.F_UV_1] == 3);
+		assert(polygons[1][Mesh.F_UV_2] == 4);
+		assert(polygons[1][Mesh.F_UV_3] == 5);
 	}
 	
 	@Test

@@ -30,8 +30,8 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
 		sceneObject = new SceneObject("test", new Transform(new int[] {-200, 0, 1000}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), cube);
 		sceneObject2 = new SceneObject("test2", new Transform(new int[] {200, 0, 1000}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), monkey);
-//		sceneObject.setShader(new TestShader());
-//		sceneObject2.setShader(new TestShader());
+		sceneObject.setShader(new TestShader());
+		sceneObject2.setShader(new TestShader());
 		try {
 			Texture t = new Texture(getClass().getResourceAsStream("/JohnsProject.png"));
 			//Texture t = new Texture("/home/john/Development/Brick.jpg");
@@ -163,16 +163,16 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 			GameManager.getInstance().pause();
 		}
 		if (event.getKeyCode() == 38) { 
-			light.translateDirection(0, 0, 1);
+			light.translateDirection(0, 0, 6);
 		}
 		if (event.getKeyCode() == 40) { 
-			light.translateDirection(0, 0, -1);
+			light.translateDirection(0, 0, -6);
 		}
 		if (event.getKeyCode() == 37) { 
-			light.translateDirection(1, 0, 0);
+			light.translateDirection(6, 0, 0);
 		}
 		if (event.getKeyCode() == 39) { 
-			light.translateDirection(-1, 0, 0);
+			light.translateDirection(-6, 0, 0);
 		}
 		//System.out.println(event.getKeyCode());
 	}

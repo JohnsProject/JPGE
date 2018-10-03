@@ -2,8 +2,6 @@ package com.johnsproject.jpge;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;

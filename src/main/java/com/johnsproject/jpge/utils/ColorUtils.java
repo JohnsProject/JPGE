@@ -227,7 +227,7 @@ public class ColorUtils {
 	 * Returns a color that is the result of the linear interpolation 
 	 * between color1 and color2 by the given factor.
 	 * Only the red, blue and green components are interpolated.
-	 * The factor should be in the range 0-255.
+	 * The factor should be in the range -255-255.
 	 * 
 	 * @param color1 color to interpolate.
 	 * @param color2 color to interpolate.
@@ -248,7 +248,7 @@ public class ColorUtils {
 	/**
 	 * Returns a color that is the result of the linear interpolation 
 	 * between color1 and color2 by the given factor.
-	 * The factor should be in the range 0-255.
+	 * The factor should be in the range -255-255.
 	 * 
 	 * @param color1 color to interpolate.
 	 * @param color2 color to interpolate.

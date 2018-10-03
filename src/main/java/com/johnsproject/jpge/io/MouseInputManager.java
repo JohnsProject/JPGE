@@ -17,6 +17,7 @@ import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 import com.johnsproject.jpge.event.UpdateListener;
 import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
+import com.johnsproject.jpge.graphics.event.CameraListener;
 import com.johnsproject.jpge.utils.VectorUtils;
 
 public class MouseInputManager implements UpdateListener {
@@ -65,7 +66,8 @@ public class MouseInputManager implements UpdateListener {
 					for (int key : pressedKeys.keySet()) {
 						mouseEvent.setPosition(pressedKeys.get(key));
 						data += key + ", ";
-						for (JPGEMouseListener mouseListener : mouseListeners) {
+						for (int i = 0; i < mouseListeners.size(); i++) {
+							JPGEMouseListener mouseListener = mouseListeners.get(i);
 							if (key == LEFT)
 								mouseListener.leftClick(mouseEvent);
 							if (key == MIDDLE)
@@ -74,7 +76,8 @@ public class MouseInputManager implements UpdateListener {
 								mouseListener.rightClick(mouseEvent);
 						}
 					}
-					for (JPGEMouseListener mouseListener : mouseListeners) {
+					for (int i = 0; i < mouseListeners.size(); i++) {
+						JPGEMouseListener mouseListener = mouseListeners.get(i);
 						cache[vx] = (int) MouseInfo.getPointerInfo().getLocation().getX();
 						cache[vy] = (int) MouseInfo.getPointerInfo().getLocation().getY();
 						mouseEvent.setPosition(cache);

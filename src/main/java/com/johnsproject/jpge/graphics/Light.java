@@ -18,7 +18,7 @@ public class Light {
 	
 	private LightType lightType = LightType.sun;
 	private int lightStrength = 10;
-	private static final int CLAMP = 5;
+	private static final int CLAMP = 10;
 	
 	/**
 	 * Creates a new instance of the Light class filled with the given values.

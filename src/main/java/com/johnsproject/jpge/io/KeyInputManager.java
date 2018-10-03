@@ -51,7 +51,8 @@ public class KeyInputManager implements UpdateListener {
 				case KeyEvent.KEY_RELEASED:
 					synchronized (keyListeners) {
 						synchronized (pressedKeys) {
-							for (JPGEKeyListener keyListener : keyListeners) {
+							for (int i = 0; i < keyListeners.size(); i++) {
+								JPGEKeyListener keyListener = keyListeners.get(i);
 								keyEvent.setKey(e.getKeyChar());
 								keyEvent.setKeyCode(e.getKeyCode());
 								keyListener.keyReleased(keyEvent);
@@ -77,7 +78,8 @@ public class KeyInputManager implements UpdateListener {
 						keyEvent.setKey(keyChar);
 						keyEvent.setKeyCode(key);
 						data += "(" + keyChar + ", " + key + "), ";
-						for (JPGEKeyListener keyListener : keyListeners) {
+						for (int i = 0; i < keyListeners.size(); i++) {
+							JPGEKeyListener keyListener = keyListeners.get(i);
 							keyListener.keyPressed(keyEvent);
 						}
 					}

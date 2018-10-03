@@ -15,15 +15,15 @@ public class Mesh {
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
 	/** Values containing location of data in a vertex. */
-	public static final byte BONE_INDEX = 3, SHADE_FACTOR = 4;
+	public static final byte V_NORMAL = 3, V_BONE_INDEX = 6, V_SHADE_FACTOR = 7;
 	/** Default vertex length. This is used by the SOM importer when parsing values */
-	public static final byte VERTEX_LENGTH = 5;
+	public static final byte VERTEX_LENGTH = 8;
 	private int[][] vertexes;
 	private int[][] vertexesBuffer;
 	/** Values containing location of data in a face. */
-	public static final byte VERTEX_1 = 0, VERTEX_2 = 1, VERTEX_3 = 2, 
-							UV_1 = 4, UV_2 = 5, UV_3 = 6,
-							MATERIAL_INDEX = 3, CULLED = 7;
+	public static final byte F_VERTEX_1 = 0, F_VERTEX_2 = 1, F_VERTEX_3 = 2, 
+							F_UV_1 = 4, F_UV_2 = 5, F_UV_3 = 6,
+							F_MATERIAL_INDEX = 3, F_CULLED = 7;
 	/** Default face length. This is used by the SOM importer when parsing values */
 	public static final byte FACE_LENGTH = 8;
 	private int[][] faces;
@@ -113,8 +113,8 @@ public class Mesh {
 			vertexesBuffer[i][vx] = vertexes[i][vx];
 			vertexesBuffer[i][vy] = vertexes[i][vy];
 			vertexesBuffer[i][vz] = vertexes[i][vz];
-			vertexesBuffer[i][BONE_INDEX] = vertexes[i][BONE_INDEX];
-			vertexesBuffer[i][SHADE_FACTOR] = vertexes[i][SHADE_FACTOR];
+			vertexesBuffer[i][V_BONE_INDEX] = vertexes[i][V_BONE_INDEX];
+			vertexesBuffer[i][V_SHADE_FACTOR] = vertexes[i][V_SHADE_FACTOR];
 		}
 	}
 	
@@ -153,7 +153,7 @@ public class Mesh {
 	 * @param index index of polygon.
 	 * @return the faces at the given index.
 	 */
-	public int[] getFaces(int index) {
+	public int[] getFace(int index) {
 		return faces[index];
 	}
 	

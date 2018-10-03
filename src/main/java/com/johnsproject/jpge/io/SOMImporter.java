@@ -100,7 +100,10 @@ public class SOMImporter {
 				vertex[vx] = toInt(rawVertexesData[i + vx]);
 				vertex[vy] = toInt(rawVertexesData[i + vy]);
 				vertex[vz] = toInt(rawVertexesData[i + vz]);
-				vertex[Mesh.BONE_INDEX] = toInt(rawVertexesData[i + Mesh.BONE_INDEX]);
+				vertex[Mesh.V_NORMAL + vx] = toInt(rawVertexesData[i + Mesh.V_NORMAL + vx]);
+				vertex[Mesh.V_NORMAL + vy] = toInt(rawVertexesData[i + Mesh.V_NORMAL + vy]);
+				vertex[Mesh.V_NORMAL + vz] = toInt(rawVertexesData[i + Mesh.V_NORMAL + vz]);
+				vertex[Mesh.V_BONE_INDEX] = toInt(rawVertexesData[i + Mesh.V_BONE_INDEX]);
 				vertexes[i/step] = vertex;
 			}
 		}
@@ -123,13 +126,13 @@ public class SOMImporter {
 		if(rawFacesData.length > 2){
 			for (int i = 0; i < rawFacesData.length; i+=step) {
 				int[] face = new int[Mesh.FACE_LENGTH];
-				face[Mesh.VERTEX_1] = toInt(rawFacesData[i + Mesh.VERTEX_1]);
-				face[Mesh.VERTEX_2] = toInt(rawFacesData[i + Mesh.VERTEX_2]);
-				face[Mesh.VERTEX_3] = toInt(rawFacesData[i + Mesh.VERTEX_3]);
-				face[Mesh.MATERIAL_INDEX] = toInt(rawFacesData[i + Mesh.MATERIAL_INDEX]);
-				face[Mesh.UV_1] = toInt(rawFacesData[i + Mesh.UV_1]);
-				face[Mesh.UV_2] = toInt(rawFacesData[i + Mesh.UV_2]);
-				face[Mesh.UV_3] = toInt(rawFacesData[i + Mesh.UV_3]);
+				face[Mesh.F_VERTEX_1] = toInt(rawFacesData[i + Mesh.F_VERTEX_1]);
+				face[Mesh.F_VERTEX_2] = toInt(rawFacesData[i + Mesh.F_VERTEX_2]);
+				face[Mesh.F_VERTEX_3] = toInt(rawFacesData[i + Mesh.F_VERTEX_3]);
+				face[Mesh.F_MATERIAL_INDEX] = toInt(rawFacesData[i + Mesh.F_MATERIAL_INDEX]);
+				face[Mesh.F_UV_1] = toInt(rawFacesData[i + Mesh.F_UV_1]);
+				face[Mesh.F_UV_2] = toInt(rawFacesData[i + Mesh.F_UV_2]);
+				face[Mesh.F_UV_3] = toInt(rawFacesData[i + Mesh.F_UV_3]);
 				faces[i/step] = face;
 			}
 		}

@@ -22,7 +22,6 @@ def write(filepath,
 	global materialsCount
 	materialsCount = 0
 	for obj in bpy.context.visible_objects:
-		materialsCount += (len(obj.material_slots)-1)
 		if applyMods or obj.type != "MESH":
 			try:
 				me = obj.to_mesh(scene, True, "PREVIEW")
@@ -56,9 +55,12 @@ def write(filepath,
 			bm.free()
 			del bm
 			for vertex in me.vertices:
-				meshData.addVertex(vertex.undeformed_co[0]*1024)
-				meshData.addVertex(vertex.undeformed_co[1]*1024)
-				meshData.addVertex(vertex.undeformed_co[2]*1024)
+				meshData.addVertex(vertex.co[0]*100)
+				meshData.addVertex(vertex.co[1]*100)
+				meshData.addVertex(vertex.co[2]*100)
+				meshData.addVertex(vertex.normal[0]*100)
+				meshData.addVertex(vertex.normal[1]*100)
+				meshData.addVertex(vertex.normal[2]*100)
 				found = 0
 				for group in vertex.groups:
 					i = 0
@@ -77,6 +79,7 @@ def write(filepath,
 				meshData.addMaterial(mat_slot)  	  
 			if is_tmp_mesh:
 				bpy.data.meshes.remove(me)
+			materialsCount += len(obj.material_slots)
 	writeToFile(filepath, meshData, animsData)
 
 
@@ -88,7 +91,7 @@ def writeToFile(filepath, meshData, animsData):
 	commons = "".join("SOM (SceneObjectMesh) file created by Blender SOM exporter version 1.2"
 						+ "\n" + "project page: https://github.com/JohnsProject/JPGE" + "\n" 
 						+ "\n" + "Wiki : "
-						+ "\n" + " Vertexes contains the vertex data (x, y, z, bone) of all visible objects in the scene."
+						+ "\n" + " Vertexes contains the vertex data (x, y, z, normal_x, normal_y, normal_z, boneIndex) of all visible objects in the scene"
 						+ "\n" + " Polygons contains the polygon data (vertex1, vertex2, vertex3, material, uv1, uv2, uv3) of all visible objects in the scene."
 						+ "\n" + " Materials contains the material (red, green, blue, alpha) data of all visible objects in the scene."
 						+ "\n" + " Animations contains the animation data of all visible objects in the scene,"
@@ -105,16 +108,16 @@ def writeToFile(filepath, meshData, animsData):
 		else:
 			file.write(("%i" % value))
 	file.write(" > Vertexes" + "\n\n")
-	# write the polygons to the file
+	# write the faces to the file
 	i = 0
-	file.write("Polygons < ")
+	file.write("Faces < ")
 	for value in meshData.polygons:
 		i += 1
 		if (i < len(meshData.polygons)):
 			file.write("%i," % value)
 		else:
 			file.write(("%i" % value))
-	file.write(" > Polygons" + "\n\n")
+	file.write(" > Faces" + "\n\n")
 	# write the uvs to the file
 	i = 0
 	file.write("UVs < ")

@@ -58,7 +58,7 @@ public class RenderUtils {
 	 * @return animated vertex.
 	 */
 	public static int[] animate(int[] vertex, Animation animation) {
-		int boneIndex = vertex[Mesh.BONE_INDEX];
+		int boneIndex = vertex[Mesh.V_BONE_INDEX];
 		for (int i = 0; i <= boneIndex; i++) {
 			Transform bone = animation.getBone(i, animation.getCurrentFrame());
 			//Transform bone = animation.getBone(i, animation.getCurrentFrame());
@@ -79,10 +79,10 @@ public class RenderUtils {
 	 * @return if the given face is inside the view frustum of the given camera.
 	 */
 	public static boolean isInsideViewFrustum(int[] face, Mesh mesh, Camera camera) {
-		face[Mesh.CULLED] = 0;
-		int[] v1 = mesh.getBufferedVertex(face[Mesh.VERTEX_1]);
-		int[] v2 = mesh.getBufferedVertex(face[Mesh.VERTEX_2]);
-		int[] v3 = mesh.getBufferedVertex(face[Mesh.VERTEX_3]);
+		face[Mesh.F_CULLED] = 0;
+		int[] v1 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_1]);
+		int[] v2 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_2]);
+		int[] v3 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_3]);
 		int ncp = camera.getNearClippingPlane();
 		int fcp = camera.getFarClippingPlane();
 		int w = camera.getWidth();
@@ -97,7 +97,7 @@ public class RenderUtils {
 		if (x > -t && x < w + t && y > -t && y < h + t && z > ncp && z < fcp) {
 			return false;
 		}
-		face[Mesh.CULLED] = 1;
+		face[Mesh.F_CULLED] = 1;
 		return true;
 	}
 
@@ -110,10 +110,10 @@ public class RenderUtils {
 	 * @return if the given face is a backface.
 	 */
 	public static boolean isBackface(int[] face, Mesh mesh) {
-		face[Mesh.CULLED] = 0;
-		int[] v1 = mesh.getBufferedVertex(face[Mesh.VERTEX_1]);
-		int[] v2 = mesh.getBufferedVertex(face[Mesh.VERTEX_2]);
-		int[] v3 = mesh.getBufferedVertex(face[Mesh.VERTEX_3]);
+		face[Mesh.F_CULLED] = 0;
+		int[] v1 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_1]);
+		int[] v2 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_2]);
+		int[] v3 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_3]);
 		int v1x = v1[vx], v1y = v1[vy];
 		int v2x = v2[vx], v2y = v2[vy];
 		int v3x = v3[vx], v3y = v3[vy];
@@ -122,7 +122,7 @@ public class RenderUtils {
 		int a = ((v2x - v1x) * (v3y - v1y) - (v3x - v1x) * (v2y - v1y)) >> 1;
 		// if area is negative then its a backface
 		if (a < 0) return false;
-		face[Mesh.CULLED] = 1;
+		face[Mesh.F_CULLED] = 1;
 		return true;
 	}
 	
@@ -137,16 +137,16 @@ public class RenderUtils {
 	public static void drawFace(int[] face, Mesh mesh, int[] zBuffer, Camera camera) {
 		int width = camera.getScreenSize()[vx];
 		int height = camera.getScreenSize()[vy];
-		int[] vt1 = mesh.getBufferedVertex(face[Mesh.VERTEX_1]);
-		int[] vt2 = mesh.getBufferedVertex(face[Mesh.VERTEX_2]);
-		int[] vt3 = mesh.getBufferedVertex(face[Mesh.VERTEX_3]);
-		int[] uv1 = mesh.getUV(face[Mesh.UV_1]);
-		int[] uv2 = mesh.getUV(face[Mesh.UV_2]);
-		int[] uv3 = mesh.getUV(face[Mesh.UV_3]);
-		int sf1 = vt1[Mesh.SHADE_FACTOR];
-		int sf2 = vt2[Mesh.SHADE_FACTOR];
-		int sf3 = vt3[Mesh.SHADE_FACTOR];
-		int color = mesh.getMaterial(face[Mesh.MATERIAL_INDEX]).getColor();
+		int[] vt1 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_1]);
+		int[] vt2 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_2]);
+		int[] vt3 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_3]);
+		int[] uv1 = mesh.getUV(face[Mesh.F_UV_1]);
+		int[] uv2 = mesh.getUV(face[Mesh.F_UV_2]);
+		int[] uv3 = mesh.getUV(face[Mesh.F_UV_3]);
+		int sf1 = vt1[Mesh.V_SHADE_FACTOR];
+		int sf2 = vt2[Mesh.V_SHADE_FACTOR];
+		int sf3 = vt3[Mesh.V_SHADE_FACTOR];
+		int color = mesh.getMaterial(face[Mesh.F_MATERIAL_INDEX]).getColor();
 		int tmp = 0;
 		int x1 = vt1[vx], y1 = vt1[vy], z1 = vt1[vz],
 			x2 = vt2[vx], y2 = vt2[vy], z2 = vt2[vz],
@@ -159,17 +159,17 @@ public class RenderUtils {
 		   				tmp = x2; x2 = x1; x1 = tmp;
 		   				tmp = v2; v2 = v1; v1 = tmp; 
 		   				tmp = u2; u2 = u1; u1 = tmp;
-		   				}
+		   				tmp = sf2; sf2 = sf1; sf1 = tmp;}
 		if (y2 > y3) { tmp = y3; y3 = y2; y2 = tmp; 
 		   				tmp = x3; x3 = x2; x2 = tmp;
 		   				tmp = v3; v3 = v2; v2 = tmp; 
 		   				tmp = u3; u3 = u2; u2 = tmp;
-		   				}
+		   				tmp = sf3; sf3 = sf2; sf2 = tmp;}
 		if (y1 > y2) { tmp = y2; y2 = y1; y1 = tmp; 
 		   				tmp = x2; x2 = x1; x1 = tmp;
 		   				tmp = v2; v2 = v1; v1 = tmp; 
 		   				tmp = u2; u2 = u1; u1 = tmp;
-		   				}
+		   				tmp = sf2; sf2 = sf1; sf1 = tmp;}
 		// hack to fix fill bug
 		if (y2 == y1) y2++;
 		if (y3 == y1) y3++;

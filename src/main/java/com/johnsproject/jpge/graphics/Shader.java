@@ -2,7 +2,6 @@ package com.johnsproject.jpge.graphics;
 
 import java.util.List;
 
-import com.johnsproject.jpge.utils.MathUtils;
 import com.johnsproject.jpge.utils.RenderUtils;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
 
@@ -14,6 +13,11 @@ import com.johnsproject.jpge.utils.Vector3MathUtils;
  */
 public class Shader {
 
+	// instead of instantiating a new int[] continuously why not use a cache?
+	private int[] cache1 = new int[3];
+	private int[] cache2 = new int[3];
+	private int[] cache3 = new int[3];
+	
 	/**
 	 * This method is called by the {@link SceneRenderer} at the rendering process.
 	 * 
@@ -39,9 +43,6 @@ public class Shader {
 		return vertex;
 	}
 
-	int[] cache1 = new int[3];
-	int[] cache2 = new int[3];
-	int[] cache3 = new int[3];
 	/**
 	 * This method is called by the {@link SceneRenderer} at the rendering process.
 	 * 
@@ -56,9 +57,9 @@ public class Shader {
 	public int[] shadeFace(int[] face, Mesh mesh, Camera camera, int[] zBuffer, Transform objectTransform, List<Light> lights) {
 		// view frustum culling
 		if (!RenderUtils.isInsideViewFrustum(face, mesh, camera)) {
-			int[] v1 = mesh.getBufferedVertex(face[Mesh.VERTEX_1]);
-			int[] v2 = mesh.getBufferedVertex(face[Mesh.VERTEX_2]);
-			int[] v3 = mesh.getBufferedVertex(face[Mesh.VERTEX_3]);
+			int[] v1 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_1]);
+			int[] v2 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_2]);
+			int[] v3 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_3]);
 			// calculate normal
 			cache1 = Vector3MathUtils.subtract(v1, v2, cache1);
 			cache2 = Vector3MathUtils.subtract(v1, v3, cache2);
@@ -75,9 +76,9 @@ public class Shader {
 					l -= light.getLightStrength() << 3;
 				}
 				// set shade factor for each vertex
-				v1[Mesh.SHADE_FACTOR] = l;
-				v2[Mesh.SHADE_FACTOR] = l;
-				v3[Mesh.SHADE_FACTOR] = l;
+				v1[Mesh.V_SHADE_FACTOR] = l;
+				v2[Mesh.V_SHADE_FACTOR] = l;
+				v3[Mesh.V_SHADE_FACTOR] = l;
 				// draw face
 				RenderUtils.drawFace(face, mesh, zBuffer, camera);
 			}
