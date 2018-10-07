@@ -195,5 +195,6 @@ v0.1 - 24/08/2018
 -Added Vertex class
 -Added Face class
 -Changed things to work with Face and Vertex class
+-Added per pixel depth value interpolation to the affine texture mapper
 
 

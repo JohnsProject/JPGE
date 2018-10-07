@@ -213,7 +213,7 @@ public class RenderUtils {
 			
 		case textured:
 			Texture img = mesh.getMaterial(face.getMaterial()).getTexture();
-			//drawFaceAffine(x1, y1, vc1, x2, y2, vc2, x3, y3, vc3, u1, v1, u2, v2, u3, v3, img, zBuffer, width, height, camera);
+			drawFaceAffine(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, u1, v1, u2, v2, u3, v3, img, zBuffer, width, height, camera);
 			break;
 		}
 	}
@@ -384,6 +384,7 @@ public class RenderUtils {
 			for (int i = sx; i < ex; i ++) {
 				if(i > 0 && i < width) {
 					int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
+					// no need to shift sz as the z test is just check if its a higher value
 					setPixel(i, sy, sz, ColorUtils.lerpRBG(color, iColor, -255), zBuffer, width, camera);
 				}
 				sz += dz;
@@ -396,7 +397,7 @@ public class RenderUtils {
 	}
 	
 	// face drawing and filling with fixed point scanline algorithm that supports gouraud shading
-	static void drawFaceAffine(int x1, int y1, int vc1, int x2, int y2, int vc2, int x3, int y3, int vc3, int z,
+	static void drawFaceAffine(int x1, int y1, int z1, int vc1, int x2, int y2, int z2, int vc2, int x3, int y3, int z3, int vc3,
 								int u1, int v1, int u2, int v2, int u3, int v3,
 								Texture img, int[] zBuffer, int width, int height, Camera cam) {
 		// interpolate uv coordinates
@@ -409,6 +410,8 @@ public class RenderUtils {
 		int r3 = ColorUtils.getRed(vc3), g3 = ColorUtils.getGreen(vc3), b3 = ColorUtils.getBlue(vc3), a3 = ColorUtils.getAlpha(vc3);	
 		// x deltas
 		int dx1 = 0, dx2 = 0, dx3 = 0;
+		// z deltas
+		int dz1 = 0, dz2 = 0, dz3 = 0;
 		// u deltas
 		int du1 = 0, du2 = 0, du3 = 0;
 		// v deltas
@@ -423,27 +426,30 @@ public class RenderUtils {
 		// needed to get x, u, v and shade factor values for each y position
 		if (y2y1 > 0) {
 			// bitshift left to increase precision
-			dx1 = (((x2 - x1) << SHIFT) / (y2y1));
-			du1 = (((u2 - u1) << SHIFT) / (y2y1));
-			dv1 = (((v2 - v1) << SHIFT) / (y2y1));
+			dx1 = ((x2 - x1) << SHIFT) / (y2y1);
+			dz1 = ((z2 - z1) << SHIFT) / (y2y1);
+			du1 = ((u2 - u1) << SHIFT) / (y2y1);
+			dv1 = ((v2 - v1) << SHIFT) / (y2y1);
 			dr1 = ((r2 - r1) << SHIFT) / (y2y1);
 			dg1 = ((g2 - g1) << SHIFT) / (y2y1);
 			db1 = ((b2 - b1) << SHIFT) / (y2y1);
 			da1 = ((a2 - a1) << SHIFT) / (y2y1);
 		} else dx1 = du1 = dv1 = 0;
 		if (y3y1 > 0) {
-			dx2 = (((x3 - x1) << SHIFT) / (y3y1));
-			du2 = (((u3 - u1) << SHIFT) / (y3y1));
-			dv2 = (((v3 - v1) << SHIFT) / (y3y1));
+			dx2 = ((x3 - x1) << SHIFT) / (y3y1);
+			dz2 = ((z3 - z1) << SHIFT) / (y3y1);
+			du2 = ((u3 - u1) << SHIFT) / (y3y1);
+			dv2 = ((v3 - v1) << SHIFT) / (y3y1);
 			dr2 = ((r3 - r1) << SHIFT) / (y3y1);
 			dg2 = ((g3 - g1) << SHIFT) / (y3y1);
 			db2 = ((b3 - b1) << SHIFT) / (y3y1);
 			da2 = ((a3 - a1) << SHIFT) / (y3y1);
 		} else dx2 = du2 = dv2 = 0;
 		if (y3y2 > 0) {
-			dx3 = (((x3 - x2) << SHIFT) / (y3y2));
-			du3 = (((u3 - u2) << SHIFT) / (y3y2));
-			dv3 = (((v3 - v2) << SHIFT) / (y3y2));
+			dx3 = ((x3 - x2) << SHIFT) / (y3y2);
+			dz3 = ((z3 - z2) << SHIFT) / (y3y2);
+			du3 = ((u3 - u2) << SHIFT) / (y3y2);
+			dv3 = ((v3 - v2) << SHIFT) / (y3y2);
 			dr3 = ((r3 - r2) << SHIFT) / (y3y2);
 			dg3 = ((g3 - g2) << SHIFT) / (y3y2);
 			db3 = ((b3 - b2) << SHIFT) / (y3y2);
@@ -452,6 +458,7 @@ public class RenderUtils {
 		// left and right side values starting at the top of face
 		// bitshift left to increase precision
 		int sx = x1 << SHIFT, ex = x1 << SHIFT;
+		int sz = z1 << SHIFT, ez = z1 << SHIFT;
 		int su = u1 << SHIFT, eu = u1 << SHIFT;
 		int sv = v1 << SHIFT, ev = v1 << SHIFT;
 		int sr = r1 << SHIFT, er = r1 << SHIFT;
@@ -462,9 +469,10 @@ public class RenderUtils {
 	    if (dx1 > dx2) {
 		    for (; sy <= y2 - 1; sy++) {
 		    	// bitshift right to get right values
-		    	drawHLineAffine(sx >> SHIFT, ex >> SHIFT, su, eu, sv, ev, sr, er, sg, eg, sb, eb, sa, ea, sy, z, img, zBuffer, width, height, cam);
+		    	drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, ez, su, eu, sv, ev, sr, er, sg, eg, sb, eb, sa, ea, sy, img, zBuffer, width, height, cam);
 		    	// increase left and right values by the calculated delta
 				sx += dx2; ex += dx1;
+				sz += dz2; ez += dz1;
 				su += du2; eu += du1;
 				sv += dv2; ev += dv1;
 				sr += dr2; er += dr1;
@@ -475,8 +483,9 @@ public class RenderUtils {
 		    // make sure that correct x position is used to draw the other part
 			ex = x2 << SHIFT;
 			for (; sy <= y3; sy++) {
-				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, su, eu, sv, ev, sr, er, sg, eg, sb, eb, sa, ea, sy, z, img, zBuffer, width, height, cam);
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, ez, su, eu, sv, ev, sr, er, sg, eg, sb, eb, sa, ea, sy, img, zBuffer, width, height, cam);
 				sx += dx2; ex += dx3;
+				sz += dz2; ez += dz3;
 				su += du2; eu += du3;
 				sv += dv2; ev += dv3;
 				sr += dr2; er += dr3;
@@ -486,8 +495,9 @@ public class RenderUtils {
 			}
 	    }else{
 			for (; sy <= y2 - 1; sy++) {
-				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, su, eu, sv, ev, sr, er, sg, eg, sb, eb, sa, ea, sy, z, img, zBuffer, width, height, cam);
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, ez, su, eu, sv, ev, sr, er, sg, eg, sb, eb, sa, ea, sy, img, zBuffer, width, height, cam);
 				sx += dx1; ex += dx2;
+				sz += dz1; ez += dz2;
 				su += du1; eu += du2;
 				sv += dv1; ev += dv2;
 				sr += dr1; er += dr2;
@@ -497,8 +507,9 @@ public class RenderUtils {
 			}
 			sx = x2 << SHIFT;
 			for (; sy <= y3; sy++) {
-				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, su, eu, sv, ev, sr, er, sg, eg, sb, eb, sa, ea, sy, z, img, zBuffer, width, height, cam);
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, ez, su, eu, sv, ev, sr, er, sg, eg, sb, eb, sa, ea, sy, img, zBuffer, width, height, cam);
 				sx += dx3; ex += dx2;
+				sz += dz3; ez += dz2;
 				su += du3; eu += du2;
 				sv += dv3; ev += dv2;
 				sr += dr3; er += dr2;
@@ -509,14 +520,15 @@ public class RenderUtils {
 	    }
 	}
 	
-	static void drawHLineAffine(int sx, int ex, int su, int eu, int sv, int ev, int sr, int er, int sg, int eg, int sb, int eb, int sa, int ea, int sy, int z,
+	static void drawHLineAffine(int sx, int ex, int sz, int ez, int su, int eu, int sv, int ev, int sr, int er, int sg, int eg, int sb, int eb, int sa, int ea, int sy,
 								Texture img, int[] zBuffer, int width, int height, Camera camera) {
-		int du = 0, dv = 0, dr = 0, dg = 0, db = 0, da = 0;
+		int dz = 0,du = 0, dv = 0, dr = 0, dg = 0, db = 0, da = 0;
 		int exsx = ex - sx;
 		// calculate u, v and shade factor deltas needed to get u, v and shade factor values for each y position
 		if (exsx > 0) {
-			du = (eu-su) / (exsx);
-			dv = (ev-sv) / (exsx);
+			dz = (ez - sz) / (exsx);
+			du = (eu - su) / (exsx);
+			dv = (ev - sv) / (exsx);
 			dr = (er - sr) / (exsx);
 			dg = (eg - sg) / (exsx);
 			db = (eb - sb) / (exsx);
@@ -528,8 +540,10 @@ public class RenderUtils {
 					// get texture pixel / texel color
 					int color = img.getPixel(su >> SHIFT, sv >> SHIFT);
 					int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
-					setPixel(i, sy, z, ColorUtils.lerpRBG(color, iColor, -255), zBuffer, width, camera);
+					// no need to shift sz as the z test is just check if its a higher value
+					setPixel(i, sy, sz, ColorUtils.lerpRBG(color, iColor, -255), zBuffer, width, camera);
 				}
+				sz += dz;
 				su += du;
 				sv += dv;
 				sr += dr;
