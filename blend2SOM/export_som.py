@@ -69,12 +69,10 @@ def write(filepath,
 							found = i
 						i+=1
 				meshData.addVertex(found)
+				# empty value as place for material index later
+				meshData.addVertex(0)
 			for polygon in me.polygons:
-				meshData.addPolygon(polygon)
-			if me.uv_layers.active is not None:
-				for uvl in me.uv_layers.active.data:
-					meshData.addUV(uvl.uv[0]*128)
-					meshData.addUV(uvl.uv[1]*128)
+				meshData.addPolygon(polygon, me)
 			for mat_slot in obj.material_slots:
 				meshData.addMaterial(mat_slot)  	  
 			if is_tmp_mesh:
@@ -91,8 +89,8 @@ def writeToFile(filepath, meshData, animsData):
 	commons = "".join("SOM (SceneObjectMesh) file created by Blender SOM exporter version 1.2"
 						+ "\n" + "project page: https://github.com/JohnsProject/JPGE" + "\n" 
 						+ "\n" + "Wiki : "
-						+ "\n" + " Vertexes contains the vertex data (x, y, z, normal_x, normal_y, normal_z, boneIndex) of all visible objects in the scene"
-						+ "\n" + " Polygons contains the polygon data (vertex1, vertex2, vertex3, material, uv1, uv2, uv3) of all visible objects in the scene."
+						+ "\n" + " Vertexes contains the vertex data (x, y, z, normal_x, normal_y, normal_z, boneIndex, material) of all visible objects in the scene"
+						+ "\n" + " Faces contains the face data (vertex1, vertex2, vertex3, material, uv1_x, uv1_y, uv2_x, uv2_y, uv3_x, uv3_y) of all visible objects in the scene."
 						+ "\n" + " Materials contains the material (red, green, blue, alpha) data of all visible objects in the scene."
 						+ "\n" + " Animations contains the animation data of all visible objects in the scene,"
 						+ "\n" + " a animation contains the data of bones at each keyframe and a bone is composed of (px, py, pz, rx, ry, rz, sx, sy, sz),"
@@ -118,16 +116,6 @@ def writeToFile(filepath, meshData, animsData):
 		else:
 			file.write(("%i" % value))
 	file.write(" > Faces" + "\n\n")
-	# write the uvs to the file
-	i = 0
-	file.write("UVs < ")
-	for value in meshData.uvs:
-		i += 1
-		if (i < len(meshData.uvs)):
-			file.write("%i," % value)
-		else:
-			file.write(("%i" % value))
-	file.write(" > UVs" + "\n\n")
 	# write the materials to the file
 	i = 0
 	file.write("Materials < ")
@@ -166,25 +154,35 @@ class MeshData:
 
 	def __init__(self):
 		self.vertexes = []
-		self.uvs = []
 		self.polygons = []
 		self.materials = []
 		
 	def addVertex(self, value):
 		self.vertexes.append(value)
-
-	def addUV(self, value):
-		self.uvs.append(value)
 		
-	def addPolygon(self, value):
+	def addPolygon(self, value, me):
 		self.polygons.append(value.vertices[0])
 		self.polygons.append(value.vertices[1])
 		self.polygons.append(value.vertices[2])
 		global materialsCount
 		self.polygons.append(materialsCount + value.material_index)
-		self.polygons.append(value.loop_indices[0])
-		self.polygons.append(value.loop_indices[1])
-		self.polygons.append(value.loop_indices[2])
+		self.vertexes[(value.vertices[0] * 8) + 7] = materialsCount + value.material_index
+		self.vertexes[(value.vertices[1] * 8) + 7] = materialsCount + value.material_index
+		self.vertexes[(value.vertices[2] * 8) + 7] = materialsCount + value.material_index
+		if me.uv_layers.active is not None:
+			self.polygons.append(me.uv_layers.active.data[value.loop_indices[0]].uv[0]*128)
+			self.polygons.append(me.uv_layers.active.data[value.loop_indices[0]].uv[1]*128)
+			self.polygons.append(me.uv_layers.active.data[value.loop_indices[1]].uv[0]*128)
+			self.polygons.append(me.uv_layers.active.data[value.loop_indices[1]].uv[1]*128)
+			self.polygons.append(me.uv_layers.active.data[value.loop_indices[2]].uv[0]*128)
+			self.polygons.append(me.uv_layers.active.data[value.loop_indices[2]].uv[1]*128)
+		else:
+			self.polygons.append(0)
+			self.polygons.append(0)
+			self.polygons.append(0)
+			self.polygons.append(0)
+			self.polygons.append(0)
+			self.polygons.append(0)
 	
 	def addMaterial(self, value):
 		if value.material is not None:
