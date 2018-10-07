@@ -190,6 +190,10 @@ v0.1 - 24/08/2018
 -Added vertex normal exporting/importing
 -Fixed growing ram usage bug (it was the foreach light loop in the Shader class, wtf ???,
  it fixed when i changed to for loop, now changed all foreach to for loops)
-
+07/10/2018
+-Fixed depth buffer bug!!! (added per pixel depth value interpolation)
+-Added Vertex class
+-Added Face class
+-Changed things to work with Face and Vertex class
 
 

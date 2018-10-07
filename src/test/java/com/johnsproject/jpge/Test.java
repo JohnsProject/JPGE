@@ -37,8 +37,12 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 			//Texture t = new Texture("/home/john/Development/Brick.jpg");
 			//Texture t = new Texture("/home/john/Development/TestMonkey.png", 512, 512);
 			//t = new Texture(50, 50);
-			sceneObject.getMesh().getMaterial(0).setTexture(t);
-			sceneObject2.getMesh().getMaterial(0).setTexture(t);
+			for (int i = 0; i < cube.getMaterials().length; i++) {
+				cube.getMaterial(i).setTexture(t);
+			}
+			for (int i = 0; i < monkey.getMaterials().length; i++) {
+				monkey.getMaterial(i).setTexture(t);
+			}
 			//sceneObject.getMesh().getMaterial(0).setTexture(new Texture("/home/john/Development/Brick.jpg", 101, 101));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -47,7 +51,8 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		camera = new Camera("testCam", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), new int[] {0, 0}, new int[] {w, h});
 		camera.setShader(new TestPixelShader());
 		camera2 = new Camera("testCam2", new Transform(new int[] {0, -2000, 1200}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), new int[] {w-(w/3), 0}, new int[] {w/3, h/3});	
-		light = new Light("testLight", new int[] {1, 1, 0});
+		light = new Light("testLight", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
+		//light2 = new Light("testLight2", new int[] {10, 0, 0});
 		sceneFrame = new SceneFrame(w, h);
 		sceneFrame.getScene().addLight(light);
 		//sceneFrame.getScene().addLight(light2);
@@ -65,22 +70,22 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 	public void keyPressed(JPGEKeyEvent event) {
 		switch (event.getKey()) {
 		case 'w':
-			camera.getTransform().translateLocal(0, 0, 6);
+			camera.getTransform().translate(0, 0, 6);
 			break;
 		case 's':
-			camera.getTransform().translateLocal(0, 0, -6);
+			camera.getTransform().translate(0, 0, -6);
 			break;
 		case 'a':
-			camera.getTransform().translateLocal(-6, 0, 0);
+			camera.getTransform().translate(-6, 0, 0);
 			break;
 		case 'd':
-			camera.getTransform().translateLocal(6, 0, 0);
+			camera.getTransform().translate(6, 0, 0);
 			break;
 		case 'e':
-			camera.getTransform().translateLocal(0, 6, 0);
+			camera.getTransform().translate(0, 6, 0);
 			break;
 		case 'y':
-			camera.getTransform().translateLocal(0, -6, 0);
+			camera.getTransform().translate(0, -6, 0);
 			break;
 		case 'b':
 			sceneObject.getTransform().rotate(0, 4, 0);
@@ -138,10 +143,10 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 			sceneObject2.setActive(true);
 			break;
 		case '+':
-			light.setLightStrength(light.getLightStrength()+1);
+			light.setStrength(light.getStrength()+1);
 			break;
 		case '-':
-			light.setLightStrength(light.getLightStrength()-1);
+			light.setStrength(light.getStrength()-1);
 			break;
 		}
 		if (event.getKeyCode() == 112) { 
@@ -163,16 +168,16 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 			GameManager.getInstance().pause();
 		}
 		if (event.getKeyCode() == 38) { 
-			light.translateDirection(0, 0, 6);
+			light.getTransform().translate(0, 0, 6);
 		}
 		if (event.getKeyCode() == 40) { 
-			light.translateDirection(0, 0, -6);
+			light.getTransform().translate(0, 0, -6);
 		}
 		if (event.getKeyCode() == 37) { 
-			light.translateDirection(6, 0, 0);
+			light.getTransform().translate(6, 0, 0);
 		}
 		if (event.getKeyCode() == 39) { 
-			light.translateDirection(-6, 0, 0);
+			light.getTransform().translate(-6, 0, 0);
 		}
 		//System.out.println(event.getKeyCode());
 	}

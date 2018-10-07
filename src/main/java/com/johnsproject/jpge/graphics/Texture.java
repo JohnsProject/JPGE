@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import com.johnsproject.jpge.io.FileIO;
+import com.johnsproject.jpge.utils.MathUtils;
 
 /**
  * The Texture class contains data of a texture used by the {@link Material} class.
@@ -94,7 +95,7 @@ public class Texture {
 	 * @param color color of pixel to set.
 	 */
 	public void setPixel(int x, int y, int color){
-		image[x + (y*width)] = color;
+		image[MathUtils.clamp((x + (y*width)), 0, image.length)] = color;
 	}
 	
 	/**
@@ -105,7 +106,7 @@ public class Texture {
 	 * @return color of the pixel at the given position.
 	 */
 	public int getPixel(int x, int y){
-		return image[(x + (y*width))];
+		return image[MathUtils.clamp((x + (y*width)), 0, image.length)];
 	}
 	
 	/**

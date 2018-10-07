@@ -21,25 +21,31 @@ public class Shader {
 	/**
 	 * This method is called by the {@link SceneRenderer} at the rendering process.
 	 * 
-	 * @param vertex          	vertex to shade.
+	 * @param vertex          	{@link Vertex} to shade.
+	 * @param mesh   			{@link Mesh} this face belongs to.
 	 * @param camera 			{@link Camera} being rendered to.
 	 * @param objectTransform 	{@link Transform} of the {@link SceneObject} this vertex belongs to.
 	 * @param lights All 		{@link Light Lights} of the {@link Scene} being rendered.
 	 * @return shaded vertex.
 	 */
-	public int[] shadeVertex(int[] vertex, Camera camera, Transform objectTransform, List<Light> lights) {
+	public Vertex shadeVertex(Vertex vertex, Mesh mesh, Camera camera, Transform objectTransform, List<Light> lights) {
 		Transform objt = objectTransform;
 		Transform camt = camera.getTransform();
+		int[] pos = vertex.getPosition();
+		int[] normal = vertex.getNormal();
 		// transform vertex in object space
-		vertex = Vector3MathUtils.movePointByScale(vertex, objt.getScale(), vertex);
-		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, objt.getRotation(), vertex);
+		pos = Vector3MathUtils.movePointByScale(pos, objt.getScale(), pos);
+		pos = Vector3MathUtils.movePointByAnglesXYZ(pos, objt.getRotation(), pos);
 		// transform vertex to world space
-		vertex = Vector3MathUtils.add(vertex, objt.getPosition(), vertex);
+		pos = Vector3MathUtils.add(pos, objt.getPosition(), pos);
 		// transform vertex to camera space
-		vertex = Vector3MathUtils.subtract(vertex, camt.getPosition(), vertex);
-		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, camt.getRotation(), vertex);
+		pos = Vector3MathUtils.subtract(pos, camt.getPosition(), pos);
+		pos = Vector3MathUtils.movePointByAnglesXYZ(pos, camt.getRotation(), pos);
 		// project vertex into screen space
-		vertex = RenderUtils.project(vertex, camera);
+		pos = RenderUtils.project(pos, camera);
+		// transform normal in object space
+		normal = Vector3MathUtils.movePointByScale(normal, objt.getScale(), normal);
+		normal = Vector3MathUtils.movePointByAnglesXYZ(normal, objt.getRotation(), normal);
 		return vertex;
 	}
 
@@ -54,31 +60,25 @@ public class Shader {
 	 * @param lights All 		{@link Light Lights} of the {@link Scene} being rendered.
 	 * @return shaded polygon.
 	 */
-	public int[] shadeFace(int[] face, Mesh mesh, Camera camera, int[] zBuffer, Transform objectTransform, List<Light> lights) {
+	public Face shadeFace(Face face, Mesh mesh, Camera camera, int[] zBuffer, Transform objectTransform, List<Light> lights) {
 		// view frustum culling
 		if (!RenderUtils.isInsideViewFrustum(face, mesh, camera)) {
-			int[] v1 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_1]);
-			int[] v2 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_2]);
-			int[] v3 = mesh.getBufferedVertex(face[Mesh.F_VERTEX_3]);
-			// calculate normal
-			cache1 = Vector3MathUtils.subtract(v1, v2, cache1);
-			cache2 = Vector3MathUtils.subtract(v1, v3, cache2);
-			cache3 = Vector3MathUtils.crossProduct(cache1, cache2, cache3);
-			// backface culling using normal
-			// also can use RenderUtils.isBackface(face, mesh) which is usually faster
-			// but the normal is already used for lighting so why not use it here too
-			if (cache3[2] < 0) {
-				int l = 0;
-				// flat shading
-				for (Light light : lights) {
-					int[] lightPosition = light.getDirection();
-					l += Vector3MathUtils.dotProduct(lightPosition, cache3);
-					l -= light.getLightStrength() << 3;
-				}
-				// set shade factor for each vertex
-				v1[Mesh.V_SHADE_FACTOR] = l;
-				v2[Mesh.V_SHADE_FACTOR] = l;
-				v3[Mesh.V_SHADE_FACTOR] = l;
+//			Vertex v1 = mesh.getBufferedVertex(face.getVertex1());
+//			Vertex v2 = mesh.getBufferedVertex(face.getVertex2());
+//			Vertex v3 = mesh.getBufferedVertex(face.getVertex3());
+//			cache3 = v1.getNormal();
+			if (!RenderUtils.isBackface(face, mesh)) {
+//				int l = 0;
+//				// flat shading
+//				for (Light light : lights) {
+//					int[] lightPosition = light.getDirection();
+//					l += Vector3MathUtils.dotProduct(lightPosition, cache3);
+//					l -= light.getLightStrength() << 3;
+//				}
+//				// set shade factor for each vertex
+//				v1.setShadeFactor(l);
+//				v2.setShadeFactor(l);
+//				v3.setShadeFactor(l);
 				// draw face
 				RenderUtils.drawFace(face, mesh, zBuffer, camera);
 			}

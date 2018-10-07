@@ -1,5 +1,7 @@
 package com.johnsproject.jpge.graphics;
 
+import com.johnsproject.jpge.utils.ColorUtils;
+
 /**
  *The Material class contains appearance data of a {@link Mesh}.
  *It contains the color data, texture data and so on.
@@ -8,7 +10,8 @@ package com.johnsproject.jpge.graphics;
  */
 public class Material {
 
-	private int color = 0;
+	private int color;
+	private int ambientColor;
 	private Texture texture;
 	
 	/**
@@ -19,6 +22,7 @@ public class Material {
 	 */
 	public Material(int color, Texture texture){
 		this.color = color;
+		this.ambientColor = ColorUtils.convert(20, 20, 20);
 		this.texture = texture;
 	}
 

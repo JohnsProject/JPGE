@@ -1,7 +1,6 @@
 package com.johnsproject.jpge.graphics;
 
-import com.johnsproject.jpge.utils.MathUtils;
-import com.johnsproject.jpge.utils.VectorUtils;
+import com.johnsproject.jpge.utils.ColorUtils;
 
 /**
  * The Light class contains data of a light object in the {@link Scene}.
@@ -10,15 +9,15 @@ import com.johnsproject.jpge.utils.VectorUtils;
  */
 public class Light {
 	
-	private String name;
-	private int[] lightDirection;
 	public enum LightType{
-		sun
+		sun, point
 	}
 	
-	private LightType lightType = LightType.sun;
-	private int lightStrength = 10;
-	private static final int CLAMP = 10;
+	private String name;
+	private Transform transform;
+	private LightType type = LightType.sun;
+	private int strength = 10;
+	private int color = 0;
 	
 	/**
 	 * Creates a new instance of the Light class filled with the given values.
@@ -26,74 +25,10 @@ public class Light {
 	 * @param name name of this light.
 	 * @param lightDirection direction of this light.
 	 */
-	public Light(String name, int[] lightDirection) {
+	public Light(String name, Transform position) {
 		this.name = name;
-		int[] pos = lightDirection;
-		pos[0] = MathUtils.clamp(pos[0], -CLAMP, CLAMP);
-		pos[1] = MathUtils.clamp(pos[1], -CLAMP, CLAMP);
-		pos[2] = MathUtils.clamp(pos[2], -CLAMP, CLAMP);
-		this.lightDirection = lightDirection;
-	}
-	
-	/**
-	 * Returns the direction of this light.
-	 * 
-	 * @return direction of this light.
-	 */
-	public int[] getDirection() {
-		return this.lightDirection;
-	}
-	
-	/**
-	 * Sets the direction of this light equals to the given vector.
-	 * 
-	 * @param lightDirection direction to set.
-	 */
-	public void setDirection(int[] lightDirection) {
-		int[] pos = lightDirection;
-		pos[0] = MathUtils.clamp(pos[0], -CLAMP, CLAMP);
-		pos[1] = MathUtils.clamp(pos[1], -CLAMP, CLAMP);
-		pos[2] = MathUtils.clamp(pos[2], -CLAMP, CLAMP);
-		this.lightDirection = lightDirection;
-	}
-	
-	/**
-	 * Sets the direction of this light equals to the given values.
-	 * 
-	 * @param x direction in the x axis to set.
-	 * @param y direction in the y axis to set.
-	 * @param z direction in the z axis to set.
-	 */
-	public void setDirection(int x, int y, int z) {
-		lightDirection[0] = MathUtils.clamp(x, -CLAMP, CLAMP);
-		lightDirection[1] = MathUtils.clamp(y, -CLAMP, CLAMP);
-		lightDirection[2] = MathUtils.clamp(z, -CLAMP, CLAMP);
-	}
-	
-	/**
-	 * Translates the direction of this light by the given vector.
-	 * 
-	 * @param lightDirection direction to translate.
-	 */
-	public void translateDirection(int[] lightDirection) {
-		int[] pos = lightDirection;
-		pos[0] = lightDirection[0] + MathUtils.clamp(pos[0], -CLAMP, CLAMP);
-		pos[1] = lightDirection[1] + MathUtils.clamp(pos[1], -CLAMP, CLAMP);
-		pos[2] = lightDirection[2] + MathUtils.clamp(pos[2], -CLAMP, CLAMP);
-		this.lightDirection = lightDirection;
-	}
-	
-	/**
-	 * Translates the direction of this light by the given values.
-	 * 
-	 * @param x direction in the x axis to translate.
-	 * @param y direction in the y axis to translate.
-	 * @param z direction in the z axis to translate.
-	 */
-	public void translateDirection(int x, int y, int z) {
-		lightDirection[0] = MathUtils.clamp(lightDirection[0] + x, -CLAMP, CLAMP);
-		lightDirection[1] = MathUtils.clamp(lightDirection[1] + y, -CLAMP, CLAMP);
-		lightDirection[2] = MathUtils.clamp(lightDirection[2] + z, -CLAMP, CLAMP);
+		this.color = ColorUtils.convert(254, 254, 254);
+		this.transform = position;
 	}
 	
 	/**
@@ -106,21 +41,30 @@ public class Light {
 	}
 
 	/**
+	 * Returns the {@link Transform} of this light.
+	 * 
+	 * @return {@link Transform} of this light.
+	 */
+	public Transform getTransform() {
+		return transform;
+	}
+	
+	/**
 	 * Returns the type of this light.
 	 * 
 	 * @return type of this light.
 	 */
-	public LightType getLightType() {
-		return lightType;
+	public LightType getType() {
+		return type;
 	}
 
 	/**
 	 * Sets the type of this light equals to the given type.
 	 * 
-	 * @param lightType light type to set.
+	 * @param type light type to set.
 	 */
-	public void setLightType(LightType lightType) {
-		this.lightType = lightType;
+	public void setType(LightType type) {
+		this.type = type;
 	}
 
 	/**
@@ -128,22 +72,40 @@ public class Light {
 	 * 
 	 * @return strength of this light.
 	 */
-	public int getLightStrength() {
-		return lightStrength;
+	public int getStrength() {
+		return strength;
 	}
 
 	/**
 	 * Sets the strength of this light equals to the given value.
 	 * 
-	 * @param lightStrength light strength to set.
+	 * @param strength light strength to set.
 	 */
-	public void setLightStrength(int lightStrength) {
-		this.lightStrength = lightStrength;
+	public void setStrength(int strength) {
+		this.strength = strength;
+	}
+
+	/**
+	 * Returns the color of this light.
+	 * 
+	 * @return color of this light.
+	 */
+	public int getColor() {
+		return color;
+	}
+
+	/**
+	 * Sets the color of this light equals to the given value.
+	 * 
+	 * @param color light color to set.
+	 */
+	public void setColor(int color) {
+		this.color = color;
 	}
 
 	@Override
 	public String toString() {
-		return "Light [name=" + name + ", lightDirection=" + VectorUtils.toString(lightDirection) + ", lightType=" + lightType + ", lightStrength="
-				+ lightStrength + "]";
+		return "Light [name=" + name + ", transform=" + transform.toString() + ", type=" + type + ", strength="
+				+ strength + "]";
 	}
 }

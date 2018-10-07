@@ -5,10 +5,11 @@ import java.io.IOException;
 import com.johnsproject.jpge.graphics.Material;
 import com.johnsproject.jpge.graphics.Mesh;
 import com.johnsproject.jpge.graphics.Transform;
+import com.johnsproject.jpge.graphics.Vertex;
 import com.johnsproject.jpge.graphics.Animation;
+import com.johnsproject.jpge.graphics.Face;
 import com.johnsproject.jpge.graphics.Texture;
 import com.johnsproject.jpge.utils.ColorUtils;
-import com.johnsproject.jpge.utils.MathUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
@@ -69,12 +70,10 @@ public class SOMImporter {
 		String rawData = data.replace(" ", "").replace("\n", "");
 		String[] rawVertexesData = rawData.split("Vertexes<")[1].split(">Vertexes", 2)[0].split(",");
 		String[] rawFacesData = rawData.split("Faces<")[1].split(">Faces", 2)[0].split(",");
-		String[] rawUVsData = rawData.split("UVs<")[1].split(">UVs", 2)[0].split(",");
 		String[] rawMaterialsData = rawData.split("Materials<")[1].split(">Materials", 2)[0].split(",");
 		String[] rawAnimationsData = rawData.split("Animations<")[1].split(">Animations", 2)[0].split("Animation<");
 		Mesh result = new Mesh(parseVertexes(rawVertexesData),
 								parseFaces(rawFacesData),
-								parseUVs(rawUVsData),
 								parseMaterials(rawMaterialsData),
 								parseAnimations(rawAnimationsData));
 		System.gc();
@@ -82,88 +81,68 @@ public class SOMImporter {
 	}
 	
 	/**
-	 * Parses the vertexes of a {@link Mesh} from the given string and returns it.
+	 * Parses the {@link Vertex Vertexes} of a {@link Mesh} from the given string and returns it.
 	 * The parameter should contain the content inside the "Vertexes<" and ">Vertexes" 
 	 * pieces of the som file and should be by ',' splited because the method only sorts 
-	 * and parses the sorted integer values to the right place in the vertex.
+	 * and parses the sorted integer values to the right place in the {@link Vertex Vertexes}.
 	 * 
 	 * @param rawVertexesData the string array containing the splited data.
-	 * @return an vertex array.
+	 * @return an {@link Vertex} array.
 	 * @throws ImportExeption
 	 */
-	static int[][] parseVertexes(String[] rawVertexesData) throws ImportExeption {
-		int step = Mesh.VERTEX_LENGTH-1;
-		int[][] vertexes = new int[rawVertexesData.length/step][Mesh.VERTEX_LENGTH];
+	static Vertex[] parseVertexes(String[] rawVertexesData) throws ImportExeption {
+		int step = Mesh.VERTEX_LENGTH;
+		Vertex[] vertexes = new Vertex[rawVertexesData.length/step];
 		if(rawVertexesData.length > 2){
 			for (int i = 0; i < rawVertexesData.length; i+= step) {
-				int[] vertex = new int[Mesh.VERTEX_LENGTH];
-				vertex[vx] = toInt(rawVertexesData[i + vx]);
-				vertex[vy] = toInt(rawVertexesData[i + vy]);
-				vertex[vz] = toInt(rawVertexesData[i + vz]);
-				vertex[Mesh.V_NORMAL + vx] = toInt(rawVertexesData[i + Mesh.V_NORMAL + vx]);
-				vertex[Mesh.V_NORMAL + vy] = toInt(rawVertexesData[i + Mesh.V_NORMAL + vy]);
-				vertex[Mesh.V_NORMAL + vz] = toInt(rawVertexesData[i + Mesh.V_NORMAL + vz]);
-				vertex[Mesh.V_BONE_INDEX] = toInt(rawVertexesData[i + Mesh.V_BONE_INDEX]);
-				vertexes[i/step] = vertex;
+				int[] position = new int[3];
+				position[vx] = toInt(rawVertexesData[i + vx]);
+				position[vy] = toInt(rawVertexesData[i + vy]);
+				position[vz] = toInt(rawVertexesData[i + vz]);
+				int[] normal = new int[3];
+				normal[vx] = toInt(rawVertexesData[i + Mesh.V_NORMAL + vx]);
+				normal[vy] = toInt(rawVertexesData[i + Mesh.V_NORMAL + vy]);
+				normal[vz] = toInt(rawVertexesData[i + Mesh.V_NORMAL + vz]);
+				int bone = toInt(rawVertexesData[i + Mesh.V_BONE_INDEX]);
+				int material = toInt(rawVertexesData[i + Mesh.V_MATERIAL_INDEX]);
+				vertexes[i/step] = new Vertex(position, normal, bone, material);
 			}
 		}
 		return vertexes;
 	}
 	
 	/**
-	 * Parses the faces of a {@link Mesh} from the given string and returns it.
+	 * Parses the {@link Face Faces} of a {@link Mesh} from the given string and returns it.
 	 * The parameter should contain the content inside the "Faces<" and ">Faces" 
 	 * pieces of the som file and should be by ',' splited because the method only sorts 
-	 * and parses the sorted integer values to the right place in the faces.
+	 * and parses the sorted integer values to the right place in the {@link Face Faces}.
 	 * 
 	 * @param rawFacesData the string array containing the splited data.
-	 * @return an face array.
+	 * @return an {@link Face} array.
 	 * @throws ImportExeption
 	 */
-	static int[][] parseFaces(String[] rawFacesData) throws ImportExeption {
+	static Face[] parseFaces(String[] rawFacesData) throws ImportExeption {
 		int step = Mesh.FACE_LENGTH-1;
-		int[][] faces = new int[rawFacesData.length/step][Mesh.FACE_LENGTH];
+		Face[] faces = new Face[rawFacesData.length/step];
 		if(rawFacesData.length > 2){
 			for (int i = 0; i < rawFacesData.length; i+=step) {
-				int[] face = new int[Mesh.FACE_LENGTH];
-				face[Mesh.F_VERTEX_1] = toInt(rawFacesData[i + Mesh.F_VERTEX_1]);
-				face[Mesh.F_VERTEX_2] = toInt(rawFacesData[i + Mesh.F_VERTEX_2]);
-				face[Mesh.F_VERTEX_3] = toInt(rawFacesData[i + Mesh.F_VERTEX_3]);
-				face[Mesh.F_MATERIAL_INDEX] = toInt(rawFacesData[i + Mesh.F_MATERIAL_INDEX]);
-				face[Mesh.F_UV_1] = toInt(rawFacesData[i + Mesh.F_UV_1]);
-				face[Mesh.F_UV_2] = toInt(rawFacesData[i + Mesh.F_UV_2]);
-				face[Mesh.F_UV_3] = toInt(rawFacesData[i + Mesh.F_UV_3]);
-				faces[i/step] = face;
+				int vertex1 = toInt(rawFacesData[i + Mesh.F_VERTEX_1]);
+				int vertex2 = toInt(rawFacesData[i + Mesh.F_VERTEX_2]);
+				int vertex3 = toInt(rawFacesData[i + Mesh.F_VERTEX_3]);
+				int material = toInt(rawFacesData[i + Mesh.F_MATERIAL_INDEX]);
+				int[] uv1 = new int[2];
+				uv1[vx] = toInt(rawFacesData[i + Mesh.F_UV_1 + vx]);
+				uv1[vy] = toInt(rawFacesData[i + Mesh.F_UV_1 + vy]);
+				int[] uv2 = new int[2];
+				uv2[vx] = toInt(rawFacesData[i + Mesh.F_UV_2 + vx]);
+				uv2[vy] = toInt(rawFacesData[i + Mesh.F_UV_2 + vy]);
+				int[] uv3 = new int[2];
+				uv3[vx] = toInt(rawFacesData[i + Mesh.F_UV_3 + vx]);
+				uv3[vy] = toInt(rawFacesData[i + Mesh.F_UV_3 + vy]);
+				faces[i/step] = new Face(vertex1, vertex2, vertex3, material, uv1, uv2, uv3);
 			}
 		}
 		return faces;
-	}
-	
-	/**
-	 * Parses the uvs of a {@link Mesh} from the given string and returns it.
-	 * The parameter should contain the content inside the "UVs<" and ">UVs" 
-	 * pieces of the som file and should be by ',' splited because the method only sorts 
-	 * and parses the sorted integer values to the right place in the uv.
-	 * 
-	 * @param rawUVsData the string array containing the splited data.
-	 * @return an uv array.
-	 * @throws ImportExeption
-	 */
-	static int[][] parseUVs(String[] rawUVsData) throws ImportExeption {
-		int step = Mesh.UV_LENGTH;
-		int[][] uvs = null;
-		if(rawUVsData.length > 2){
-			uvs = new int[rawUVsData.length/step][Mesh.UV_LENGTH];
-			for (int i = 0; i < rawUVsData.length; i+= step) {
-				int[] uv = new int[Mesh.UV_LENGTH];
-				uv[vx] = MathUtils.clamp(toInt(rawUVsData[i + vx]), 0, 128);
-				uv[vy] = MathUtils.clamp(toInt(rawUVsData[i + vy]), 0, 128);
-				uvs[i/step] = uv;
-			}
-		}else {
-			uvs = new int[1][Mesh.UV_LENGTH];
-		}
-		return uvs;
 	}
 	
 	/**
@@ -227,7 +206,7 @@ public class SOMImporter {
 				int[] vector = new int[] {1, 1, 1};
 				bones[0] = new Transform(vector, vector, vector);
 			}
-			animations[0] = new Animation("Animation", 1, bonesCount, bones);
+			animations[0] = new Animation("Default", 1, bonesCount, bones);
 		}
 		return animations;
 	}

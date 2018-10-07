@@ -95,19 +95,19 @@ public class SceneRenderer {
 		mesh.resetBuffer();
 		// animate and shade vertexes
 		for (int i = 0; i < mesh.getBufferedVertexes().length; i++) {
-			int[] vertex = mesh.getBufferedVertex(i);
+			Vertex vertex = mesh.getBufferedVertex(i);
 			vertex = RenderUtils.animate(vertex, animation);
-			vertex = shader.shadeVertex(vertex, camera, sceneObject.getTransform(), lights);
+			vertex = shader.shadeVertex(vertex, mesh, camera, sceneObject.getTransform(), lights);
 		}
 		// get profiler values to update
 		int maxFaces = Profiler.getInstance().getData().getMaxFaces();
 		int rendFaces = Profiler.getInstance().getData().getRenderedFaces();
 		// shade faces
 		for (int i = 0; i < mesh.getFaces().length; i++) {
-			int[] face = mesh.getFace(i);
+			Face face = mesh.getFace(i);
 			face = shader.shadeFace(face, mesh, camera, zBuffer, sceneObject.getTransform(), lights);
 			maxFaces++;
-			if (face[Mesh.F_CULLED] == 0) rendFaces++;
+			if (!face.isCulled()) rendFaces++;
 		}
 		// update profiler values
 		Profiler.getInstance().getData().setMaxFaces(maxFaces);
@@ -119,7 +119,7 @@ public class SceneRenderer {
 	 */
 	public void resetZBuffer() {
 		for (int i = 0; i < zBuffer.length; i++) {
-			zBuffer[i] = Integer.MIN_VALUE;
+			zBuffer[i] = Integer.MAX_VALUE;
 		}
 	}
 }

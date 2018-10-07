@@ -243,12 +243,15 @@ public class ColorUtils {
 		g = MathUtils.clamp((g1 + ((g2 - g1) * factor)>>8), 0, 255);
 		b = MathUtils.clamp((b1 + ((b2 - b1) * factor)>>8), 0, 255);
 		return convert(r, g, b, a1);
+//		factor = MathUtils.clamp(factor, 0, 2);
+//		for (int i = 0; i < factor; i++) color1 = ((color1 & 0x0EFEFEFE) >> 1) + ((color2 & 0x0EFEFEFE) >> 1);
+//	    return color1;
 	}
 	
 	/**
 	 * Returns a color that is the result of the linear interpolation 
 	 * between color1 and color2 by the given factor.
-	 * The factor should be in the range -255-255.
+	 * The factor should be in the range 0-255.
 	 * 
 	 * @param color1 color to interpolate.
 	 * @param color2 color to interpolate.
@@ -265,6 +268,11 @@ public class ColorUtils {
 		b = MathUtils.clamp((b1 + ((b2 - b1) * factor)>>8), 0, 255);
 		a = MathUtils.clamp((a1 + ((a2 - a1) * factor)>>8), 0, 255);
 		return convert(r, g, b, a);
+	}
+	
+	public static String toString(int color) {
+		int r = getRed(color), g = getGreen(color), b = getBlue(color), a = getAlpha(color);
+		return "(" + r + ", " + g + ", " + b + ", " + a + ")";
 	}
 
 //	public static int blendAlpha(int color1, int color2) {

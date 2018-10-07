@@ -77,8 +77,8 @@ public class FileIO {
 			fileInputStream = new FileInputStream(path);
 			BufferedImage tmp = ImageIO.read(fileInputStream);
 			image = new BufferedImage(tmp.getWidth(), tmp.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
-			image.getGraphics().drawImage(tmp, 0, 0, null);
-			image.getGraphics().dispose();
+			image.createGraphics().drawImage(tmp, 0, 0, null);
+			image.createGraphics().dispose();
 		} finally {
 			if (fileInputStream != null) {
 				fileInputStream.close();
@@ -100,8 +100,8 @@ public class FileIO {
 		try {
 			BufferedImage tmp = ImageIO.read(stream);
 			image = new BufferedImage(tmp.getWidth(), tmp.getHeight(), BufferedImage.TYPE_INT_ARGB_PRE);
-			image.getGraphics().drawImage(tmp, 0, 0, null);
-			image.getGraphics().dispose();
+			image.createGraphics().drawImage(tmp, 0, 0, null);
+			image.createGraphics().dispose();
 		} finally {}
 		image.flush();
 		return image;
