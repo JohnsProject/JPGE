@@ -40,7 +40,6 @@ public class MouseInputManager implements UpdateListener {
 	private int[] cache = new int[2];
 	public MouseInputManager() {
 		EventDispatcher.getInstance().addUpdateListener(this);
-		GameManager.getInstance();
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
             public void eventDispatched(AWTEvent event) {
                 if(event instanceof MouseEvent){

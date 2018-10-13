@@ -4,7 +4,9 @@ import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
 import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Mode;
+import org.openjdk.jmh.annotations.State;
 
+import com.johnsproject.jpge.graphics.Vertex;
 import com.johnsproject.jpge.utils.MathUtils;
 
 public class Benchmarks {
@@ -35,18 +37,18 @@ public class Benchmarks {
 //		 value /= 100;
 //	}
 	
-	@Benchmark
-	@Fork(value = 1)
-	@BenchmarkMode(Mode.Throughput)
-	public void vectorIntArrayBenchmark() {
-	    int[] vector = new int[] {50,50,50};
-	    int x = vector[0];
-	    int y = vector[1];
-	    int z = vector[2];
-	    vector[0] = x;
-	    vector[1] = y;
-	    vector[2] = z;
-	}
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void vectorIntArrayBenchmark() {
+//	    int[] vector = new int[] {50,50,50};
+//	    int x = vector[0];
+//	    int y = vector[1];
+//	    int z = vector[2];
+//	    vector[0] = x;
+//	    vector[1] = y;
+//	    vector[2] = z;
+//	}
 	
 //	@Benchmark
 //	@Fork(value = 1)
@@ -61,48 +63,68 @@ public class Benchmarks {
 //		 Vector3Utils.setZ(vector, z);
 //	}	
 	
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void mathSinCosBenchmark() {
+//		Math.sin(Math.toRadians(50));
+//		Math.cos(Math.toRadians(50));
+//	}
+//	
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void mathUtilsSinCosBenchmark() {
+//		MathUtils.sin(50);
+//		MathUtils.cos(50);
+//	}
+//	
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void mathSqrtBenchmark() {
+//		Math.sqrt(125);
+//	}
+//	
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void mathUtilsSqrtBenchmark() {
+//		MathUtils.sqrt(125);
+//	}
+//	
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void mathPowBenchmark() {
+//		Math.pow(5, 5);
+//	}
+//	
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void mathUtilsPowBenchmark() {
+//		MathUtils.pow(5, 5);
+//	}
+	
 	@Benchmark
 	@Fork(value = 1)
 	@BenchmarkMode(Mode.Throughput)
-	public void mathSinCosBenchmark() {
-		Math.sin(Math.toRadians(50));
-		Math.cos(Math.toRadians(50));
+	public void arrayBenchmark() {
+		int[] vector = new int[] {50,50,50};
+	    int x = vector[0];
+	    int y = vector[1];
+	    int z = vector[2];
 	}
 	
 	@Benchmark
 	@Fork(value = 1)
 	@BenchmarkMode(Mode.Throughput)
-	public void mathUtilsSinCosBenchmark() {
-		MathUtils.sin(50);
-		MathUtils.cos(50);
-	}
-	
-	@Benchmark
-	@Fork(value = 1)
-	@BenchmarkMode(Mode.Throughput)
-	public void mathSqrtBenchmark() {
-		Math.sqrt(125);
-	}
-	
-	@Benchmark
-	@Fork(value = 1)
-	@BenchmarkMode(Mode.Throughput)
-	public void mathUtilsSqrtBenchmark() {
-		MathUtils.sqrt(125);
-	}
-	
-	@Benchmark
-	@Fork(value = 1)
-	@BenchmarkMode(Mode.Throughput)
-	public void mathPowBenchmark() {
-		Math.pow(5, 5);
-	}
-	
-	@Benchmark
-	@Fork(value = 1)
-	@BenchmarkMode(Mode.Throughput)
-	public void mathUtilsPowBenchmark() {
-		MathUtils.pow(5, 5);
+	public void classBenchmark() {
+		Vertex vertex = new Vertex(new int[] {50, 50, 50}, new int[] {0,0,0}, 0, 0);
+	    int x = vertex.getPosition()[0];
+	    int y = vertex.getPosition()[1];
+	    int z = vertex.getPosition()[2];
 	}
 }
 
@@ -126,4 +148,7 @@ public class Benchmarks {
  * 
  * Benchmarks.drawPolygonIntegerBenchmark  	thrpt   20     1871815,084 ±      5869,040  ops/s
  * Benchmarks.drawPolygonFloatBenchmark  	thrpt   20     1550902,575 ± 	  7407,074  ops/s
+ * 
+ * Benchmarks.arrayVertexBenchmark  thrpt   20  1188733090,264 ± 5918826,178  ops/s
+ * Benchmarks.classVertexBenchmark  thrpt   20    52771058,701 ±  145610,160  ops/s
  */

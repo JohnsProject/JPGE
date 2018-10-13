@@ -65,12 +65,12 @@ public class Vector3MathUtils extends MathUtils {
 	 * @return a.
 	 */
 	public static int[] divide(int[] a, int[] b, int[] out) {
-		if (b[vx] == 0) b[vx] = 1;
-		if (b[vy] == 0) b[vy] = 1;
-		if (b[vz] == 0) b[vz] = 1;
-		out[vx] = a[vx] / b[vx];
-		out[vy] = a[vy] / b[vy];
-		out[vz] = a[vz] / b[vz];
+		out[vx] = a[vx];
+		out[vy] = a[vy];
+		out[vz] = a[vz];
+		if (b[vx] != 0) out[vx] = a[vx] / b[vx];
+		if (b[vy] != 0) out[vy] = a[vy] / b[vy];
+		if (b[vz] != 0) out[vz] = a[vz] / b[vz];
 		return out;
 	}
 
@@ -128,11 +128,14 @@ public class Vector3MathUtils extends MathUtils {
 	 * @return a.
 	 */
 	public static int[] divide(int[] a, int b, int[] out) {
-		if (b == 0)
-			b = 1;
-		out[vx] = a[vx] / b;
-		out[vy] = a[vy] / b;
-		out[vz] = a[vz] / b;
+		out[vx] = a[vx];
+		out[vy] = a[vy];
+		out[vz] = a[vz];
+		if (b != 0) {
+			out[vx] = a[vx] / b;
+			out[vy] = a[vy] / b;
+			out[vz] = a[vz] / b;
+		}
 		return out;
 	}
 
@@ -178,8 +181,8 @@ public class Vector3MathUtils extends MathUtils {
 	 */
 	public static int[] movePointByAngleZ(int[] vector, int angle, int[] out) {
 		int sin = sin(angle), cos = cos(angle);
-		int x = ((vector[vx] * cos - vector[vy] * sin) >> SHIFT);
-		int y = ((vector[vy] * cos + vector[vx] * sin) >> SHIFT);
+		int x = (vector[vx] * cos - vector[vy] * sin) >> SHIFT;
+		int y = (vector[vy] * cos + vector[vx] * sin) >> SHIFT;
 		out[vx] = x;
 		out[vy] = y;
 		return out;
@@ -195,8 +198,8 @@ public class Vector3MathUtils extends MathUtils {
 	 */
 	public static int[] movePointByAngleY(int[] vector, int angle, int[] out) {
 		int sin = sin(angle), cos = cos(angle);
-		int x = ((vector[vx] * cos - vector[vz] * sin) >> SHIFT);
-		int z = ((vector[vz] * cos + vector[vx] * sin) >> SHIFT);
+		int x = (vector[vx] * cos - vector[vz] * sin) >> SHIFT;
+		int z = (vector[vz] * cos + vector[vx] * sin) >> SHIFT;
 		out[vx] = x;
 		out[vz] = z;
 		return out;
@@ -212,8 +215,8 @@ public class Vector3MathUtils extends MathUtils {
 	 */
 	public static int[] movePointByAngleX(int[] vector, int angle, int[] out) {
 		int sin = sin(angle), cos = cos(angle);
-		int y = ((vector[vy] * cos - vector[vz] * sin)) >> SHIFT;
-		int z = ((vector[vz] * cos + vector[vy] * sin)) >> SHIFT;
+		int y = (vector[vy] * cos - vector[vz] * sin) >> SHIFT;
+		int z = (vector[vz] * cos + vector[vy] * sin) >> SHIFT;
 		out[vy] = y;
 		out[vz] = z;
 		return out;
@@ -322,11 +325,14 @@ public class Vector3MathUtils extends MathUtils {
 	 */
 	public static int[] normalize(int[] a, int[] out) {
 		int m = magnitude(a);
-		if (m == 0)
-			m = 1;
-		out[vx] = (a[vx] << SHIFT) / m;
-		out[vy] = (a[vy] << SHIFT) / m;
-		out[vz] = (a[vz] << SHIFT) / m;
+		out[vx] = 0;
+		out[vy] = 0;
+		out[vz] = 0;
+		if (m != 0) {
+			out[vx] = (a[vx] << SHIFT) / m;
+			out[vy] = (a[vy] << SHIFT) / m;
+			out[vz] = (a[vz] << SHIFT) / m;
+		}
 		return out;
 	}
 

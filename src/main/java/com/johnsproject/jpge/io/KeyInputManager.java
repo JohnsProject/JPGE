@@ -34,7 +34,6 @@ public class KeyInputManager implements UpdateListener {
 	
 	public KeyInputManager() {
 		EventDispatcher.getInstance().addUpdateListener(this);
-		GameManager.getInstance();
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 
 			@Override

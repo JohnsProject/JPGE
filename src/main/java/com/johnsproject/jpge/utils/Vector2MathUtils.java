@@ -62,10 +62,10 @@ public class Vector2MathUtils extends MathUtils {
 	 * @return a.
 	 */
 	public static int[] divide(int[] a, int[] b,  int[] out) {
-		if (b[vx] == 0) b[vx] = 1;
-		if (b[vy] == 0) b[vy] = 1;
-		out[vx] = a[vx] / b[vx];
-		out[vy] = a[vy] / b[vy];
+		out[vx] = a[vx];
+		out[vy] = a[vy];
+		if (b[vx] != 0) out[vx] = a[vx] / b[vx];
+		if (b[vy] != 0) out[vy] = a[vy] / b[vy];
 		return out;
 	}
 
@@ -120,10 +120,12 @@ public class Vector2MathUtils extends MathUtils {
 	 * @return a.
 	 */
 	public static int[] divide(int[] a, int b, int[] out) {
-		if (b == 0)
-			b = 1;
-		out[vx] = a[vx] / b;
-		out[vy] = a[vy] / b;
+		out[vx] = a[vx];
+		out[vy] = a[vy];
+		if (b != 0) {
+			out[vx] = a[vx] / b;
+			out[vy] = a[vy] / b;
+		}
 		return out;
 	}
 
@@ -245,10 +247,12 @@ public class Vector2MathUtils extends MathUtils {
 	 */
 	public static int[] normalize(int[] a, int[] out) {
 		int m = magnitude(a);
-		if (m == 0)
-			m = 1;
-		out[vx] = (a[vx] << SHIFT) / m;
-		out[vy] = (a[vy] << SHIFT) / m;
+		out[vx] = 0;
+		out[vy] = 0;
+		if (m != 0) {
+			out[vx] = (a[vx] << SHIFT) / m;
+			out[vy] = (a[vy] << SHIFT) / m;
+		}
 		return out;
 	}
 

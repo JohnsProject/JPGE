@@ -2,6 +2,8 @@ package com.johnsproject.jpge.utils;
 
 import org.junit.Test;
 
+import com.johnsproject.jpge.graphics.Camera;
+
 /**
  * Test class for {@link MathUtils}.
  * 
@@ -26,9 +28,10 @@ public class MathUtilsTest {
 //	@Test
 //	public void genLookupTableTest() throws Exception {
 //		int langle = 0;
+//		int multValue = 1 << MathUtils.SHIFT;
 //		System.out.print("private static short[] valuesSin = {");
 //		for (int angle = 0; angle < 91; angle++) {
-//			System.out.print((int)Math.round((Math.sin(Math.toRadians(angle)) * 256)) + ", ");
+//			System.out.print((int)Math.round((Math.sin(Math.toRadians(angle)) * multValue)) + ", ");
 //			if (angle >= langle + 15) {
 //				System.out.println("");
 //				langle = angle;

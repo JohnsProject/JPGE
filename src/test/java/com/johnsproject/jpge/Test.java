@@ -19,8 +19,8 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 	Camera camera, camera2;
 	Light light, light2;
 	Mesh cube, monkey;
-	int w = 1200, h = 920;
-	public Test() {
+	int w = 1024, h = 860;
+	public Test() {		
 		try {
 			cube = SOMImporter.load("/home/john/Development/test.som");
 			monkey = SOMImporter.load("/home/john/Development/Monkey.som");
@@ -48,9 +48,9 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 			e.printStackTrace();
 		}
 		//sceneObject2 = new SceneObject("test2", new Vector3(0, 0, 150}, new Vector3(0, 0, 0}, new Vector3(1, 1, 1}, mesh2);
-		camera = new Camera("testCam", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), new int[] {0, 0}, new int[] {w, h});
+		camera = new Camera("testCam", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), 0, 0, w, h);
 		camera.setShader(new TestPixelShader());
-		camera2 = new Camera("testCam2", new Transform(new int[] {0, -2000, 1200}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), new int[] {w-(w/3), 0}, new int[] {w/3, h/3});	
+		camera2 = new Camera("testCam2", new Transform(new int[] {0, -2000, 1200}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), w-(w/3), 0, w/3, h/3);	
 		light = new Light("testLight", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
 		//light2 = new Light("testLight2", new int[] {10, 0, 0});
 		sceneFrame = new SceneFrame(w, h);
@@ -64,36 +64,37 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 //		sceneObject.getMesh().playAnimation(1);
 		KeyInputManager.getInstance().addKeyListener(this);
 		MouseInputManager.getInstance().addMouseListener(this);
+		GameManager.getInstance();
 		//Profiler.getInstance().start();
 	}
 	
 	public void keyPressed(JPGEKeyEvent event) {
 		switch (event.getKey()) {
 		case 'w':
-			camera.getTransform().translate(0, 0, 6);
+			camera.getTransform().translateLocal(0, 0, 6);
 			break;
 		case 's':
-			camera.getTransform().translate(0, 0, -6);
+			camera.getTransform().translateLocal(0, 0, -6);
 			break;
 		case 'a':
-			camera.getTransform().translate(-6, 0, 0);
+			camera.getTransform().translateLocal(-6, 0, 0);
 			break;
 		case 'd':
-			camera.getTransform().translate(6, 0, 0);
+			camera.getTransform().translateLocal(6, 0, 0);
 			break;
 		case 'e':
-			camera.getTransform().translate(0, 6, 0);
+			camera.getTransform().translateLocal(0, 6, 0);
 			break;
 		case 'y':
-			camera.getTransform().translate(0, -6, 0);
+			camera.getTransform().translateLocal(0, -6, 0);
 			break;
 		case 'b':
-			sceneObject.getTransform().rotate(0, 4, 0);
-			sceneObject2.getTransform().rotate(0, 4, 0);
+			sceneObject.getTransform().rotate(0, 1, 0);
+			sceneObject2.getTransform().rotate(0, 1, 0);
 			break;
 		case 'n':
-			sceneObject.getTransform().rotate(4, 0, 0);
-			sceneObject2.getTransform().rotate(4, 0, 0);
+			sceneObject.getTransform().rotate(1, 0, 0);
+			sceneObject2.getTransform().rotate(1, 0, 0);
 			break;
 		case 'k':
 			camera.getTransform().rotate(0, 1, 0);

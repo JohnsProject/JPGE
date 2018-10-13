@@ -95,7 +95,7 @@ public class Texture {
 	 * @param color color of pixel to set.
 	 */
 	public void setPixel(int x, int y, int color){
-		image[MathUtils.clamp((x + (y*width)), 0, image.length)] = color;
+		image[MathUtils.clamp((x + (y*width)), 0, image.length-1)] = color;
 	}
 	
 	/**
@@ -106,7 +106,7 @@ public class Texture {
 	 * @return color of the pixel at the given position.
 	 */
 	public int getPixel(int x, int y){
-		return image[MathUtils.clamp((x + (y*width)), 0, image.length)];
+		return image[MathUtils.clamp((x + (y*width)), 0, image.length-1)];
 	}
 	
 	/**

@@ -5,6 +5,7 @@ import java.io.IOException;
 import javax.swing.JFrame;
 
 import com.johnsproject.jpge.GameManager;
+import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
 import com.johnsproject.jpge.event.UpdateListener;
@@ -70,8 +71,7 @@ public class SceneFrame extends JFrame implements CameraListener, UpdateListener
 		this.setLayout(null);
 		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		GraphicsEventDispatcher.getInstance().addCameraListener(this);
-		com.johnsproject.jpge.event.EventDispatcher.getInstance().addUpdateListener(this);
-		GameManager.getInstance();
+		EventDispatcher.getInstance().addUpdateListener(this);
 	}
 	
 	/**

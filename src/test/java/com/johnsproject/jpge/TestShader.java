@@ -34,7 +34,6 @@ public class TestShader extends Shader{
 		// project vertex into screen space
 		pos = RenderUtils.project(pos, camera);
 		// transform normal in object space
-		normal = Vector3MathUtils.movePointByScale(normal, objt.getScale(), normal);
 		normal = Vector3MathUtils.movePointByAnglesXYZ(normal, objt.getRotation(), normal);
 		
 		// soft shading
@@ -58,7 +57,6 @@ public class TestShader extends Shader{
 		}
 		// set color
 		vertex.setColor(ColorUtils.lerpRBG(lightColor, 0, -factor));
-		
 		return vertex;
 	}
 	
@@ -69,7 +67,6 @@ public class TestShader extends Shader{
 //			Vertex v1 = mesh.getBufferedVertex(face.getVertex1());
 //			Vertex v2 = mesh.getBufferedVertex(face.getVertex2());
 //			Vertex v3 = mesh.getBufferedVertex(face.getVertex3());
-//			cache3 = v1.getNormal();
 			if (!RenderUtils.isBackface(face, mesh)) {
 //				int l = 0;
 //				// flat shading

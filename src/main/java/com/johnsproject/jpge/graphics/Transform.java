@@ -14,6 +14,7 @@ public class Transform {
 	private int[] position;
 	private int[] rotation;
 	private int[] scale;
+	private int[] cache = new int[3];
 	
 	/**
 	 * Creates a new instance of the Transform class filled with the given values.
@@ -48,7 +49,6 @@ public class Transform {
 	 * @param y how much to move in the y axis.
 	 * @param z how much to move in the z axis.
 	 */
-	private int[] cache = new int[3];
 	public void translateLocal(int x, int y, int z) {
 		cache[vx] = x;
 		cache[vy] = y;

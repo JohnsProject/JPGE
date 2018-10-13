@@ -196,5 +196,9 @@ v0.1 - 24/08/2018
 -Added Face class
 -Changed things to work with Face and Vertex class
 -Added per pixel depth value interpolation to the affine texture mapper
-
+13/10/2018
+-Improved performance of Face drawing algorithms
+-Fixed bugs and improved performace in ColorUtils class
+-Fixed bugs
+-Improved performance
 

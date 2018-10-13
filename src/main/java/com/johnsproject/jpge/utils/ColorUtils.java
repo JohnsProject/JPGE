@@ -27,10 +27,10 @@ public class ColorUtils {
 	 */
 	public static int convert(int r, int g, int b, int a) {
 		int color = 0;
-		color |= (a & HEX) << ALPHASHIFT;
-		color |= (r & HEX) << REDSHIFT;
-		color |= (g & HEX) << GREENSHIFT;
-		color |= (b & HEX);
+		color |= MathUtils.clamp(a, 0, 255) << ALPHASHIFT;
+		color |= MathUtils.clamp(r, 0, 255) << REDSHIFT;
+		color |= MathUtils.clamp(g, 0, 255) << GREENSHIFT;
+		color |= MathUtils.clamp(b, 0, 255);
 		return color;
 	}
 
@@ -44,10 +44,10 @@ public class ColorUtils {
 	 */
 	public static int convert(int r, int g, int b) {
 		int color = 0;
-		color |= (255 & HEX) << ALPHASHIFT;
-		color |= (r & HEX) << REDSHIFT;
-		color |= (g & HEX) << GREENSHIFT;
-		color |= (b & HEX);
+		color |= (255) << ALPHASHIFT;
+		color |= MathUtils.clamp(r, 0, 255) << REDSHIFT;
+		color |= MathUtils.clamp(g, 0, 255) << GREENSHIFT;
+		color |= MathUtils.clamp(b, 0, 255);
 		return color;
 	}
 
@@ -99,7 +99,8 @@ public class ColorUtils {
 	 * @return the modified color.
 	 */
 	public static int setBlue(int color, int value) {
-		return (color << GREENSHIFT) | (value & HEX);
+		int r = getRed(color), g = getGreen(color), a = getAlpha(color);
+		return convert(r, g, value, a);
 	}
 
 	/**
@@ -110,7 +111,8 @@ public class ColorUtils {
 	 * @return the modified color.
 	 */
 	public static int setGreen(int color, int value) {
-		return (color << REDSHIFT) | ((value & HEX) << GREENSHIFT);
+		int r = getRed(color), b = getBlue(color), a = getAlpha(color);
+		return convert(r, value, b, a);
 	}
 
 	/**
@@ -121,7 +123,8 @@ public class ColorUtils {
 	 * @return the modified color.
 	 */
 	public static int setRed(int color, int value) {
-		return (color << ALPHASHIFT) | ((value & HEX) << REDSHIFT);
+		int g = getGreen(color), b = getBlue(color), a = getAlpha(color);
+		return convert(value, g, b, a);
 	}
 
 	/**
@@ -132,7 +135,8 @@ public class ColorUtils {
 	 * @return the modified color.
 	 */
 	public static int setAlpha(int color, int value) {
-		return (color << 31) | ((value & HEX) << ALPHASHIFT);
+		int r = getRed(color), g = getGreen(color), b = getBlue(color);
+		return convert(r, g, b, value);
 	}
 
 	/**
@@ -144,7 +148,8 @@ public class ColorUtils {
 	 * @return the modified color.
 	 */
 	public static int addBlue(int color, int value) {
-		return (color << GREENSHIFT) | (getBlue(color) + (value & HEX));
+		int r = getRed(color), g = getGreen(color), b = getBlue(color), a = getAlpha(color);
+		return convert(r, g, b + value, a);
 	}
 
 	/**
@@ -156,7 +161,8 @@ public class ColorUtils {
 	 * @return the modified color.
 	 */
 	public static int addGreen(int color, int value) {
-		return (color << REDSHIFT) | (getGreen(color) + (value & HEX) << GREENSHIFT);
+		int r = getRed(color), g = getGreen(color), b = getBlue(color), a = getAlpha(color);
+		return convert(r, g + value, b, a);
 	}
 
 	/**
@@ -168,7 +174,8 @@ public class ColorUtils {
 	 * @return the modified color.
 	 */
 	public static int addRed(int color, int value) {
-		return (color << ALPHASHIFT) | (getRed(color) + (value & HEX) << REDSHIFT);
+		int r = getRed(color), g = getGreen(color), b = getBlue(color), a = getAlpha(color);
+		return convert(r + value, g, b, a);
 	}
 
 	/**
@@ -180,7 +187,8 @@ public class ColorUtils {
 	 * @return the modified color.
 	 */
 	public static int addAlpha(int color, int value) {
-		return (color << 31) | (getAlpha(color) + (value & HEX) << ALPHASHIFT);
+		int r = getRed(color), g = getGreen(color), b = getBlue(color), a = getAlpha(color);
+		return convert(r, g, b, a + value);
 	}
 
 	/**
@@ -238,20 +246,16 @@ public class ColorUtils {
 		int r = 0, g = 0, b = 0;
 		int r1 = getRed(color1), g1 = getGreen(color1), b1 = getBlue(color1), a1 = getAlpha(color1);
 		int r2 = getRed(color2), g2 = getGreen(color2), b2 = getBlue(color2);
-		factor = MathUtils.clamp(factor, -255, 255);
-		r = MathUtils.clamp((r1 + ((r2 - r1) * factor)>>8), 0, 255);
-		g = MathUtils.clamp((g1 + ((g2 - g1) * factor)>>8), 0, 255);
-		b = MathUtils.clamp((b1 + ((b2 - b1) * factor)>>8), 0, 255);
+		r = (r1 + ((r2 - r1) * factor)>>8);
+		g = (g1 + ((g2 - g1) * factor)>>8);
+		b = (b1 + ((b2 - b1) * factor)>>8);
 		return convert(r, g, b, a1);
-//		factor = MathUtils.clamp(factor, 0, 2);
-//		for (int i = 0; i < factor; i++) color1 = ((color1 & 0x0EFEFEFE) >> 1) + ((color2 & 0x0EFEFEFE) >> 1);
-//	    return color1;
 	}
 	
 	/**
 	 * Returns a color that is the result of the linear interpolation 
 	 * between color1 and color2 by the given factor.
-	 * The factor should be in the range 0-255.
+	 * The factor should be in the range -255-255.
 	 * 
 	 * @param color1 color to interpolate.
 	 * @param color2 color to interpolate.
@@ -262,11 +266,10 @@ public class ColorUtils {
 		int r = 0, g = 0, b = 0, a = 0;
 		int r1 = getRed(color1), g1 = getGreen(color1), b1 = getBlue(color1), a1 = getAlpha(color1);
 		int r2 = getRed(color2), g2 = getGreen(color2), b2 = getBlue(color2), a2 = getAlpha(color2);
-		factor = MathUtils.clamp(factor, -255, 255);
-		r = MathUtils.clamp((r1 + ((r2 - r1) * factor)>>8), 0, 255);
-		g = MathUtils.clamp((g1 + ((g2 - g1) * factor)>>8), 0, 255);
-		b = MathUtils.clamp((b1 + ((b2 - b1) * factor)>>8), 0, 255);
-		a = MathUtils.clamp((a1 + ((a2 - a1) * factor)>>8), 0, 255);
+		r = (r1 + ((r2 - r1) * factor)>>8);
+		g = (g1 + ((g2 - g1) * factor)>>8);
+		b = (b1 + ((b2 - b1) * factor)>>8);
+		a = (a1 + ((a2 - a1) * factor)>>8);
 		return convert(r, g, b, a);
 	}
 	
@@ -274,26 +277,4 @@ public class ColorUtils {
 		int r = getRed(color), g = getGreen(color), b = getBlue(color), a = getAlpha(color);
 		return "(" + r + ", " + g + ", " + b + ", " + a + ")";
 	}
-
-//	public static int blendAlpha(int color1, int color2) {
-//		int r = 0, g = 0, b = 0, a = 0;
-//		int r1 = getRed(color1), g1 = getGreen(color1), b1 = getBlue(color1), a1 = getAlpha(color1);
-//		int r2 = getRed(color2), g2 = getGreen(color2), b2 = getBlue(color2), a2 = getAlpha(color2);
-//		int alpha = a1 + 1;
-//		int inv_alpha = 256 - a1;
-//		r = ((alpha * r1 + inv_alpha * r2) >> 8);
-//		g = ((alpha * g1 + inv_alpha * g2) >> 8);
-//		b = ((alpha * b1 + inv_alpha * b2) >> 8);
-////		r = a1 * r1 + (1 - a1) * r2;
-////		g = a1 * g1 + (1 - a1) * g2;
-////		b = a1 * b1 + (1 - a1) * b2;
-////		a = a1 + (1 - a1) * a2;
-////		r = (r2 - a1) + r1;
-////		g = (g2 - a1) + g1;
-////		b = (b2 - a1) + b1;
-////		a = a2 - a1;
-////		System.out.println("r1 " + r1 + ", g1 " + g1 + ", b1 " + b1);
-//		//System.out.println("r " + r + ", g " + g + ", b " + b);
-//		return ColorUtils.convert(r, g, b, 255);
-//	}
 }

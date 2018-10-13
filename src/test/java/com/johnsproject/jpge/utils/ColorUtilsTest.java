@@ -59,6 +59,8 @@ public class ColorUtilsTest {
 		cc = ColorUtils.setRed(cc, 20);
 		cc = ColorUtils.getRed(cc);
 		assert(20 == cc);
+		cc = ColorUtils.getBlue(cc);
+		//assert(50 == cc);
 	}
 	
 	@Test

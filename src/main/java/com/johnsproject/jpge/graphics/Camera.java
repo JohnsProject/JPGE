@@ -1,8 +1,6 @@
 package com.johnsproject.jpge.graphics;
 
-import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Arrays;
@@ -11,7 +9,6 @@ import javax.swing.JPanel;
 
 import com.johnsproject.jpge.graphics.SceneRenderer.ProjectionType;
 import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
-import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.Vector2MathUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 
@@ -29,17 +26,20 @@ public class Camera extends JPanel{
 	private static final long serialVersionUID = -6288232882538805324L;
 	private String name;
 	private int[] screenPosition;
-	private int[] screenSize, halfscreenSize;
+	private int width = 0;
+	private int height = 0;
+	private int halfWidth = 0;
+	private int halfHeight = 0;
 	private int FieldOfView = 90;
 	private int nearClippingPlane = 50;
-	private int farClippingPlane = 4000;
+	private int farClippingPlane = 9000;
 	private int scaleFactor;
 	private Transform transform;
 	private BufferedImage viewBuffer;
 	private int[] viewBufferData;
 	private boolean changed = false;
 	private ProjectionType projectionType = ProjectionType.perspective;
-	private RenderingType renderingType = RenderingType.textured;
+	private RenderingType renderingType = RenderingType.wireframe;
 	private PixelShader shader;
 	
 	/**
@@ -50,19 +50,18 @@ public class Camera extends JPanel{
 	 * @param screenPosition the position of this camera at the {@link SceneFrame}.
 	 * @param screenSize the size of this camera at the {@link SceneFrame}.
 	 */
-	public Camera(String name, Transform transform, int[] screenPosition, int[] screenSize) {
-		int px = screenPosition[vx], py = screenPosition[vy];
-		int sx = screenSize[vx], sy = screenSize[vy];
+	public Camera(String name, Transform transform, int x, int y, int width, int height) {
 		this.name = name;
 		this.transform = transform;
-		this.screenSize = screenSize;
-		int[] halfSize = screenSize.clone();
-		this.halfscreenSize = Vector2MathUtils.divide(halfSize, 2, halfSize);
-		this.scaleFactor = Math.abs((sx+sy)>>7)+1;
-		this.setSize(sx, sy);
-		this.screenPosition = screenPosition;
-		this.setLocation(px, py);
-		this.viewBuffer = new BufferedImage(sx, sy, BufferedImage.TYPE_INT_ARGB_PRE);
+		this.width = width;
+		this.height = height;
+		this.halfWidth = width >> 1;
+		this.halfHeight = height >> 1;
+		this.scaleFactor = ((width + height) >> 7) + 1;
+		this.screenPosition = new int[] {x, y};
+		this.setSize(width, height);
+		this.setLocation(x, y);
+		this.viewBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
 		this.viewBufferData = ((DataBufferInt)viewBuffer.getRaster().getDataBuffer()).getData();
 		this.changed = true;
 		this.shader = new PixelShader();
@@ -76,7 +75,7 @@ public class Camera extends JPanel{
 	public void clearBuffer() {
 		//for (int i = 0; i < viewBufferData.length; i++) viewBufferData[i] = testC;
 		//viewBuffer.getGraphics().clearRect(0, 0, screenSize[vx], screenSize[vy]);
-		viewBuffer.getGraphics().fillRect(0, 0, screenSize[vx], screenSize[vy]);
+		viewBuffer.getGraphics().fillRect(0, 0, width, height);
 	}
 	
 	@Override
@@ -88,16 +87,16 @@ public class Camera extends JPanel{
 
 	/**
 	 * Sets the pixel of the view buffer of this camera at the given position with given colors.
+	 * This method tells the camera to call the shadePixel method of this cameras shader.
 	 * 
 	 * @param x position of pixel at the x axis.
 	 * @param y position of pixel at the y axis.
+	 * @param z position of pixel at the z axis.
 	 * @param color color of pixel to set.
+	 * @param zBuffer buffer containing depth of pixels of this camera.
 	 */
-	public void setPixel(int x, int y, int color){
-		//if((x > 0 && y > 0) && (x < rect[0] && y < rect[1])) {
-			//viewBufferData[x + (y * Vector2Utils.getX(screenSize))] = color;
-			shader.shadePixel(x, y, color, screenSize[vx], viewBufferData);
-		//}
+	public void setPixel(int x, int y, int z, int color, int[] zBuffer){
+		shader.shadePixel(x, y, z, color,  width, height, viewBufferData, zBuffer);
 	}
 	
 	/**
@@ -110,23 +109,43 @@ public class Camera extends JPanel{
 	}
 
 	/**
-	 * Returns the size of this camera at the {@link SceneFrame}.
+	 * Returns the width of this camera in screen.
 	 * 
-	 * @return size of this camera at the {@link SceneFrame}.
+	 * @return width of this camera in screen.
 	 */
-	public int[] getScreenSize() {
-		return this.screenSize;
+	public int getWidth() {
+		return this.width;
 	}
 	
 	/**
-	 * Returns the half size of this camera at the {@link SceneFrame}.
+	 * Returns the height of this camera in screen.
+	 * 
+	 * @return height of this camera in screen.
+	 */
+	public int getHeight() {
+		return this.height;
+	}
+	
+	/**
+	 * Returns the half width of this camera in screen.
 	 * This is used by the {@link SceneRenderer} at the rendering process 
 	 * and is precalculated here for performance reasons.
 	 * 
-	 * @return half size of this camera at the {@link SceneFrame}.
+	 * @return half width of this camera in screen.
 	 */
-	public int[] getHalfScreenSize() {
-		return this.halfscreenSize;
+	public int getHalfWidth() {
+		return this.halfWidth;
+	}
+	
+	/**
+	 * Returns the half height of this camera in screen.
+	 * This is used by the {@link SceneRenderer} at the rendering process 
+	 * and is precalculated here for performance reasons.
+	 * 
+	 * @return half height of this camera in screen.
+	 */
+	public int getHalfHeight() {
+		return this.halfHeight;
 	}
 	
 	/**
@@ -190,11 +209,12 @@ public class Camera extends JPanel{
 	 * 
 	 * @param size screen size to set.
 	 */
-	public void setScreenSize(int[] size) {
-		this.screenSize = size;
-		setSize(size[vx], size[vy]);
-		int[] halfSize = screenSize.clone();
-		halfscreenSize = Vector2MathUtils.divide(halfSize, 2, halfSize);
+	public void setScreenSize(int width, int height) {
+		this.width = width;
+		this.height = height;
+		this.halfWidth = width >> 1;
+		this.halfHeight = height >> 1;
+		setSize(width, height);
 		changed = true;
 	}
 
@@ -308,15 +328,5 @@ public class Camera extends JPanel{
 	 */
 	public void setShader(PixelShader shader) {
 		this.shader = shader;
-	}
-
-	@Override
-	public String toString() {
-		return "Camera [name=" + name + ", screenPosition=" + screenPosition + ", screenSize=" + screenSize
-				+ ", halfscreenSize=" + halfscreenSize + ", FieldOfView=" + FieldOfView + ", nearClippingPlane="
-				+ nearClippingPlane + ", farClippingPlane=" + farClippingPlane + ", scaleFactor=" + scaleFactor
-				+ ", transform=" + transform + ", viewBuffer=" + viewBuffer + ", viewBufferData="
-				+ Arrays.toString(viewBufferData) + ", changed=" + changed + ", projectionType=" + projectionType
-				+ ", renderingType=" + renderingType + "]";
 	}
 }

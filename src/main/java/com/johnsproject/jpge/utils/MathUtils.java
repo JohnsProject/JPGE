@@ -2,8 +2,7 @@ package com.johnsproject.jpge.utils;
 
 /**
  * The MathUtils class provides fast methods for math operations. 
- * Due to performance reasons the results are less precise as of the default {@link Math} class.
- * Most of the methods are for trigonometric functions like getting sin, cos, Quadrant of angle.
+ * Due to performance reasons the methods only use fixed point math.
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  * 
@@ -11,13 +10,14 @@ package com.johnsproject.jpge.utils;
 public class MathUtils {
 
 	// sin table from 0-90 degrees
-	private static final short[] valuesSin = {0, 4, 9, 13, 18, 22, 27, 31, 36, 40, 44, 49, 53, 58, 62, 66, 
+	private static short[] valuesSin = {0, 4, 9, 13, 18, 22, 27, 31, 36, 40, 44, 49, 53, 58, 62, 66, 
 			71, 75, 79, 83, 88, 92, 96, 100, 104, 108, 112, 116, 120, 124, 128, 
 			132, 136, 139, 143, 147, 150, 154, 158, 161, 165, 168, 171, 175, 178, 181, 
 			184, 187, 190, 193, 196, 199, 202, 204, 207, 210, 212, 215, 217, 219, 222, 
 			224, 226, 228, 230, 232, 234, 236, 237, 239, 241, 242, 243, 245, 246, 247, 
 			248, 249, 250, 251, 252, 253, 254, 254, 255, 255, 255, 256, 256, 256, 256, 
 			};
+
 	// used by the power method
 	private static final short[] highest_bit_set = {
 	        0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
