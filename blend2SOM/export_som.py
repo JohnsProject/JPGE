@@ -55,12 +55,12 @@ def write(filepath,
 			bm.free()
 			del bm
 			for vertex in me.vertices:
-				meshData.addVertex(vertex.co[0]*100)
-				meshData.addVertex(vertex.co[1]*100)
-				meshData.addVertex(vertex.co[2]*100)
-				meshData.addVertex(vertex.normal[0]*100)
-				meshData.addVertex(vertex.normal[1]*100)
-				meshData.addVertex(vertex.normal[2]*100)
+				meshData.addVertex(vertex.co[0]*1000)
+				meshData.addVertex(vertex.co[1]*1000)
+				meshData.addVertex(vertex.co[2]*1000)
+				meshData.addVertex(vertex.normal[0]*1000)
+				meshData.addVertex(vertex.normal[1]*1000)
+				meshData.addVertex(vertex.normal[2]*1000)
 				found = 0
 				for group in vertex.groups:
 					i = 0

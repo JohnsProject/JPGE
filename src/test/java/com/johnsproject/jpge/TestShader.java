@@ -53,7 +53,7 @@ public class TestShader extends Shader{
 				factor /= light.getStrength();
 				break;
 			}
-			lightColor = ColorUtils.lerpRBG(light.getColor(), lightColor, -150);
+			lightColor = ColorUtils.lerpRBG(light.getColor(), lightColor, -100);
 		}
 		// set color
 		vertex.setColor(ColorUtils.lerpRBG(lightColor, 0, -factor));

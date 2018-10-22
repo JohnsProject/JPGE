@@ -3,13 +3,11 @@ package com.johnsproject.jpge.graphics;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.util.Arrays;
 
 import javax.swing.JPanel;
 
 import com.johnsproject.jpge.graphics.SceneRenderer.ProjectionType;
 import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
-import com.johnsproject.jpge.utils.Vector2MathUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
@@ -21,8 +19,6 @@ import com.johnsproject.jpge.utils.VectorUtils;
  */
 public class Camera extends JPanel{
 	
-	private static final int vx = VectorUtils.X, vy = VectorUtils.Y;
-	
 	private static final long serialVersionUID = -6288232882538805324L;
 	private String name;
 	private int[] screenPosition;
@@ -30,9 +26,9 @@ public class Camera extends JPanel{
 	private int height = 0;
 	private int halfWidth = 0;
 	private int halfHeight = 0;
-	private int FieldOfView = 90;
-	private int nearClippingPlane = 50;
-	private int farClippingPlane = 9000;
+	private int FieldOfView = 60;
+	private int nearClippingPlane = 300;
+	private int farClippingPlane = 50000;
 	private int scaleFactor;
 	private Transform transform;
 	private BufferedImage viewBuffer;

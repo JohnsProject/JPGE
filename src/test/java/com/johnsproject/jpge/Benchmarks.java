@@ -112,6 +112,7 @@ public class Benchmarks {
 	@BenchmarkMode(Mode.Throughput)
 	public void arrayBenchmark() {
 		int[] vector = new int[] {50,50,50};
+		Vertex vertex = new Vertex(new int[] {50, 50, 50}, new int[] {0,0,0}, 0, 0);
 	    int x = vector[0];
 	    int y = vector[1];
 	    int z = vector[2];
@@ -121,11 +122,37 @@ public class Benchmarks {
 	@Fork(value = 1)
 	@BenchmarkMode(Mode.Throughput)
 	public void classBenchmark() {
+		int[] vector = new int[] {50,50,50};
 		Vertex vertex = new Vertex(new int[] {50, 50, 50}, new int[] {0,0,0}, 0, 0);
 	    int x = vertex.getPosition()[0];
 	    int y = vertex.getPosition()[1];
 	    int z = vertex.getPosition()[2];
 	}
+	
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void directlyBenchmark() {
+//		int a = 10;
+//		int b = 100;
+//		int x = a * b;
+//		int y = a / b;
+//	}
+//	
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void methodBenchmark() {
+//		test();
+//	}
+//	
+//	public void test() {
+//		int a = 10;
+//		int b = 100;
+//		int x = a * b;
+//		int y = a / b;
+//	}
+	
 }
 
 /* ------------------------------- BENCHMARK RESULTS ----------------------------------------
@@ -149,6 +176,9 @@ public class Benchmarks {
  * Benchmarks.drawPolygonIntegerBenchmark  	thrpt   20     1871815,084 ±      5869,040  ops/s
  * Benchmarks.drawPolygonFloatBenchmark  	thrpt   20     1550902,575 ± 	  7407,074  ops/s
  * 
- * Benchmarks.arrayVertexBenchmark  thrpt   20  1188733090,264 ± 5918826,178  ops/s
- * Benchmarks.classVertexBenchmark  thrpt   20    52771058,701 ±  145610,160  ops/s
+ * Benchmarks.arrayBenchmark  				thrpt   20   155647600,193 ±   1518862,598  ops/s
+ * Benchmarks.classBenchmark  				thrpt   20   155463978,465 ±   1599607,806  ops/s
+ * 
+ * Benchmarks.directlyBenchmark  			thrpt   20  3284081297,588 ±  10104135,657  ops/s
+ * Benchmarks.methodBenchmark    			thrpt   20  3278210219,368 ±   9043291,269  ops/s
  */

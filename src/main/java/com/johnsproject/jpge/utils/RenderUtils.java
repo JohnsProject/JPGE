@@ -29,26 +29,24 @@ public class RenderUtils {
 	 * @return projected vector.
 	 */
 	public static int[] project(int[] vector, Camera camera) {
-		int px = vector[vx];
-		int py = vector[vy];
-		int pz = vector[vz];
+		int px = 0, py = 0, pz = 0;
 		int fov = camera.getFieldOfView();
 		int scalef = fov * camera.getScaleFactor();
 		switch (camera.getProjectionType()) {
 		case perspective: // this projectionType uses depth
-			pz += fov;
+			pz = vector[vz] + fov;
 			if (pz != 0) {
-				px = (px * scalef) / pz;
-				py = (py * scalef) / pz;
+				px = (vector[vx] * scalef) / pz;
+				py = (vector[vy] * scalef) / pz;
 			}
 			break;
 		case orthographic: // this projectionType ignores depth
-			px = (px * scalef);
-			py = (py * scalef);
+			px = (vector[vx] * scalef);
+			py = (vector[vy] * scalef);
 			break;
 		}
-		vector[vx] = (px) + camera.getHalfWidth();
-		vector[vy] = (py) + camera.getHalfHeight();
+		vector[vx] = camera.getHalfWidth() + (px );
+		vector[vy] = camera.getHalfHeight() + (py );
 		vector[vz] = pz;
 		return vector;
 	}
@@ -182,9 +180,7 @@ public class RenderUtils {
 		   				tmp = v2; v2 = v1; v1 = tmp; 
 		   				tmp = u2; u2 = u1; u1 = tmp;
 		   				tmp = vc2; vc2 = vc1; vc1 = tmp;}
-		// hack to fix fill bug
-		if (y2 == y1) y2++;
-		if (y3 == y1) y3++;
+		if (y1 == y2) y1--;
 	    // color used if rendering type is wireframe or vertex
 	    int shadedColor = ColorUtils.lerpRBG(color, vc1, -255);
 	    // draw based on the cameras rendering type
@@ -318,7 +314,7 @@ public class RenderUtils {
 				db = ((db1 - db2) << SHIFT) / (dxdx);
 				da = ((da1 - da2) << SHIFT) / (dxdx);
 			}
-		    for (; sy <= y2-1; sy++) {
+		    for (; sy < y2; sy++) {
 		    	// bitshift right to get right values
 		    	drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, zBuffer, cam);
 		    	// increase left and right values by the calculated delta
@@ -339,7 +335,7 @@ public class RenderUtils {
 				db = ((db3 - db2) << SHIFT) / (dxdx);
 				da = ((da3 - da2) << SHIFT) / (dxdx);
 			}
-			for (; sy <= y3; sy++) {
+			for (; sy < y3; sy++) {
 				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, zBuffer, cam);
 				sx += dx2; ex += dx3;
 				sz += dz2;
@@ -357,7 +353,7 @@ public class RenderUtils {
 				db = ((db2 - db1) << SHIFT) / (dxdx);
 				da = ((da2 - da1) << SHIFT) / (dxdx);
 			}
-	    	for (; sy <= y2-1; sy++) {
+	    	for (; sy < y2; sy++) {
 	    		drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, zBuffer, cam);
 	    		sx += dx1; ex += dx2;
 	    		sz += dz1;
@@ -373,9 +369,9 @@ public class RenderUtils {
 				dr = ((dr2 - dr3) << SHIFT) / (dxdx);
 				dg = ((dg2 - dg3) << SHIFT) / (dxdx);
 				db = ((db2 - db3) << SHIFT) / (dxdx);
-				da = ((da3 - da3) << SHIFT) / (dxdx);
+				da = ((da2 - da3) << SHIFT) / (dxdx);
 			}
-			for (; sy <= y3; sy++) {
+			for (; sy < y3; sy++) {
 				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, zBuffer, cam);
 				sx += dx3; ex += dx2;
 				sz += dz3;
@@ -389,10 +385,10 @@ public class RenderUtils {
 	
 	static void drawHLine(int sx, int ex, int sz, int dz, int sr, int dr, int sg, int dg, int sb, int db, int sa, int da, int sy, int color,
 							int[] zBuffer, Camera camera) {
-		for (int i = sx; i < ex; i++) {
+		for (; sx < ex; sx++) {
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
 			// no need to shift sz as the z test is just check if its a higher value
-			camera.setPixel(i, sy, sz, ColorUtils.lerpRBG(color, iColor, -255), zBuffer);
+			camera.setPixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 255), zBuffer);
 			sz += dz;
 			sr += dr;
 			sg += dg;
@@ -489,7 +485,7 @@ public class RenderUtils {
 				db = ((db1 - db2) << SHIFT) / (dxdx);
 				da = ((da1 - da2) << SHIFT) / (dxdx);
 			}
-		    for (; sy <= y2 - 1; sy++) {
+		    for (; sy < y2; sy++) {
 		    	// bitshift right to get right values
 		    	drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, zBuffer, cam);
 		    	// increase left and right values by the calculated delta
@@ -514,7 +510,7 @@ public class RenderUtils {
 				db = ((db3 - db2) << SHIFT) / (dxdx);
 				da = ((da3 - da2) << SHIFT) / (dxdx);
 			}
-			for (; sy <= y3; sy++) {
+			for (; sy < y3; sy++) {
 				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, zBuffer, cam);
 				sx += dx2; ex += dx3;
 				sz += dz2;
@@ -536,7 +532,7 @@ public class RenderUtils {
 				db = ((db2 - db1) << SHIFT) / (dxdx);
 				da = ((da2 - da1) << SHIFT) / (dxdx);
 			}
-			for (; sy <= y2 - 1; sy++) {
+			for (; sy < y2; sy++) {
 				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, zBuffer, cam);
 				sx += dx1; ex += dx2;
 				sz += dz1;
@@ -558,7 +554,7 @@ public class RenderUtils {
 				db = ((db2 - db3) << SHIFT) / (dxdx);
 				da = ((da2 - da3) << SHIFT) / (dxdx);
 			}
-			for (; sy <= y3; sy++) {
+			for (; sy < y3; sy++) {
 				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, zBuffer, cam);
 				sx += dx3; ex += dx2;
 				sz += dz3;
@@ -580,7 +576,7 @@ public class RenderUtils {
 			int color = img.getPixel(su >> SHIFT, sv >> SHIFT);
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
 			// no need to shift sz as the z test is just check if its a higher value
-			camera.setPixel(i, sy, sz, ColorUtils.lerpRBG(color, iColor, -255), zBuffer);
+			camera.setPixel(i, sy, sz, ColorUtils.lerpRBG(iColor, color, 255), zBuffer);
 			sz += dz;
 			su += du;
 			sv += dv;

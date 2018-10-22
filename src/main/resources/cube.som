@@ -1,0 +1,20 @@
+SOM (SceneObjectMesh) file created by Blender SOM exporter version 1.2
+project page: https://github.com/JohnsProject/JPGE
+
+Wiki : 
+ Vertexes contains the vertex data (x, y, z, normal_x, normal_y, normal_z, boneIndex, material) of all visible objects in the scene
+ Faces contains the face data (vertex1, vertex2, vertex3, material, uv1_x, uv1_y, uv2_x, uv2_y, uv3_x, uv3_y) of all visible objects in the scene.
+ Materials contains the material (red, green, blue, alpha) data of all visible objects in the scene.
+ Animations contains the animation data of all visible objects in the scene,
+ a animation contains the data of bones at each keyframe and a bone is composed of (px, py, pz, rx, ry, rz, sx, sy, sz),
+ where p = position, r = rotation and s = scale.
+
+Vertexes < 1000,999,-1000,577,577,-577,0,0,1000,-1000,-1000,577,-577,-577,0,0,-1000,-999,-1000,-577,-577,-577,0,0,-999,1000,-1000,-577,577,-577,0,0,1000,999,1000,577,577,577,0,0,999,-1000,1000,577,-577,577,0,0,-1000,-999,1000,-577,-577,577,0,0,-999,1000,1000,-577,577,577,0,0 > Vertexes
+
+Faces < 1,3,0,0,128,0,0,128,0,0,7,5,4,0,128,0,0,128,0,0,4,1,0,0,128,0,0,128,0,0,5,2,1,0,128,0,0,128,0,0,2,7,3,0,0,0,128,128,0,128,0,7,4,0,128,0,0,128,0,0,1,2,3,0,128,0,128,128,0,128,7,6,5,0,128,0,128,128,0,128,4,5,1,0,128,0,128,128,0,128,5,6,2,0,128,0,128,128,0,128,2,6,7,0,0,0,128,0,128,128,0,3,7,0,128,0,128,128,0,128 > Faces
+
+Materials < 0,198,204,255 > Materials
+
+Animations < 
+ BonesCount <0> BonesCount 
+> Animations

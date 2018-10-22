@@ -1,5 +1,6 @@
 package com.johnsproject.jpge;
 
+import java.awt.Color;
 import java.io.IOException;
 
 import com.johnsproject.jpge.graphics.*;
@@ -8,7 +9,7 @@ import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
 import com.johnsproject.jpge.io.*;
 import com.johnsproject.jpge.utils.VectorUtils;
 
-public class Test implements JPGEKeyListener, JPGEMouseListener {
+public class Test implements JPGEKeyListener, JPGEMouseListener{
 	
 	public static void main(String[] args){
 		new Test();
@@ -18,18 +19,18 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 	SceneObject sceneObject, sceneObject2;
 	Camera camera, camera2;
 	Light light, light2;
-	Mesh cube, monkey;
-	int w = 1024, h = 860;
+	Mesh mesh1, mesh2;
+	int w = 1024, h = 720;
 	public Test() {		
 		try {
-			cube = SOMImporter.load("/home/john/Development/test.som");
-			monkey = SOMImporter.load("/home/john/Development/Monkey.som");
+			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/torus.som"));
+			mesh2 = SOMImporter.load(getClass().getResourceAsStream("/monkey.som"));
 		} catch (ImportExeption e) {
 			e.printStackTrace();
 		}
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
-		sceneObject = new SceneObject("test", new Transform(new int[] {-200, 0, 1000}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), cube);
-		sceneObject2 = new SceneObject("test2", new Transform(new int[] {200, 0, 1000}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), monkey);
+		sceneObject = new SceneObject("test", new Transform(new int[] {-2000, 0, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh1);
+		sceneObject2 = new SceneObject("test2", new Transform(new int[] {2000, 0, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh2);
 		sceneObject.setShader(new TestShader());
 		sceneObject2.setShader(new TestShader());
 		try {
@@ -37,18 +38,18 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 			//Texture t = new Texture("/home/john/Development/Brick.jpg");
 			//Texture t = new Texture("/home/john/Development/TestMonkey.png", 512, 512);
 			//t = new Texture(50, 50);
-			for (int i = 0; i < cube.getMaterials().length; i++) {
-				cube.getMaterial(i).setTexture(t);
+			for (int i = 0; i < mesh1.getMaterials().length; i++) {
+				mesh1.getMaterial(i).setTexture(t);
 			}
-			for (int i = 0; i < monkey.getMaterials().length; i++) {
-				monkey.getMaterial(i).setTexture(t);
+			for (int i = 0; i < mesh2.getMaterials().length; i++) {
+				mesh2.getMaterial(i).setTexture(t);
 			}
 			//sceneObject.getMesh().getMaterial(0).setTexture(new Texture("/home/john/Development/Brick.jpg", 101, 101));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		//sceneObject2 = new SceneObject("test2", new Vector3(0, 0, 150}, new Vector3(0, 0, 0}, new Vector3(1, 1, 1}, mesh2);
-		camera = new Camera("testCam", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), 0, 0, w, h);
+		camera = new Camera("testCam", new Transform(new int[] {0, 0, -8000}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), 0, 0, w, h);
 		camera.setShader(new TestPixelShader());
 		camera2 = new Camera("testCam2", new Transform(new int[] {0, -2000, 1200}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), w-(w/3), 0, w/3, h/3);	
 		light = new Light("testLight", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
@@ -58,7 +59,7 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 		//sceneFrame.getScene().addLight(light2);
 		sceneFrame.getScene().addSceneObject(sceneObject);
 		sceneFrame.getScene().addSceneObject(sceneObject2);
-		//sceneFrame.getScene().addCamera(camera2);
+//		sceneFrame.getScene().addCamera(camera2);
 		//sceneFrame.setTitle("JPGE Test");
 		sceneFrame.getScene().addCamera(camera);
 //		sceneObject.getMesh().playAnimation(1);
@@ -71,30 +72,30 @@ public class Test implements JPGEKeyListener, JPGEMouseListener {
 	public void keyPressed(JPGEKeyEvent event) {
 		switch (event.getKey()) {
 		case 'w':
-			camera.getTransform().translateLocal(0, 0, 6);
+			camera.getTransform().translateLocal(0, 0, 60);
 			break;
 		case 's':
-			camera.getTransform().translateLocal(0, 0, -6);
+			camera.getTransform().translateLocal(0, 0, -60);
 			break;
 		case 'a':
-			camera.getTransform().translateLocal(-6, 0, 0);
+			camera.getTransform().translateLocal(-60, 0, 0);
 			break;
 		case 'd':
-			camera.getTransform().translateLocal(6, 0, 0);
+			camera.getTransform().translateLocal(60, 0, 0);
 			break;
 		case 'e':
-			camera.getTransform().translateLocal(0, 6, 0);
+			camera.getTransform().translateLocal(0, 60, 0);
 			break;
 		case 'y':
-			camera.getTransform().translateLocal(0, -6, 0);
+			camera.getTransform().translateLocal(0, -60, 0);
 			break;
 		case 'b':
-			sceneObject.getTransform().rotate(0, 1, 0);
-			sceneObject2.getTransform().rotate(0, 1, 0);
+			sceneObject.getTransform().rotate(0, 3, 0);
+			sceneObject2.getTransform().rotate(0, 3, 0);
 			break;
 		case 'n':
-			sceneObject.getTransform().rotate(1, 0, 0);
-			sceneObject2.getTransform().rotate(1, 0, 0);
+			sceneObject.getTransform().rotate(3, 0, 0);
+			sceneObject2.getTransform().rotate(3, 0, 0);
 			break;
 		case 'k':
 			camera.getTransform().rotate(0, 1, 0);

@@ -1,6 +1,7 @@
 package com.johnsproject.jpge.io;
 
 import java.io.IOException;
+import java.io.InputStream;
 
 import com.johnsproject.jpge.graphics.Material;
 import com.johnsproject.jpge.graphics.Mesh;
@@ -45,14 +46,14 @@ public class SOMImporter {
 	 * Loads the som file from the given path at the resources folder,
 	 *  parses it and returns it as a {@link Mesh}.
 	 * 
-	 * @param path path of the som file at the resources folder.
+	 * @param stream {@link InputStream} to read from.
 	 * @return a mesh containing the parsed som file data.
 	 * @throws ImportExeption
 	 */
-	public static Mesh loadFromResources(String path) throws ImportExeption {
+	public static Mesh load(InputStream stream) throws ImportExeption {
 		String content = "";
 		try {
-			content = FileIO.readStream(content.getClass().getResourceAsStream(path));
+			content = FileIO.readStream(stream);
 		} catch (IOException e) {
 			throw new ImportExeption(e);
 		}
@@ -166,7 +167,7 @@ public class SOMImporter {
 			}
 		}else {
 			materials = new Material[1];
-			materials[0] = new Material(ColorUtils.convert(100, 100, 100, 255), new Texture(101, 101));
+			materials[0] = new Material(ColorUtils.convert(100, 100, 100), new Texture(101, 101));
 		}
 		return materials;
 	}

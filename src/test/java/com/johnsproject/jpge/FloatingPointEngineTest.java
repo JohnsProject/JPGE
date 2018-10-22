@@ -29,7 +29,7 @@ public class FloatingPointEngineTest extends JPanel{
 	private int defautColor = ColorUtils.convert(0, 0, 0, 0);
 	private int lastElapsed = 0;
 	
-	private float[] objPos = new float[] {0, 300, 500};
+	private float[] objPos = new float[] {0, 50, -300};
 	private float[] objRot = new float[] {90, 0, 0};
 	
 	private float[][] vertices = new float[0][0];
@@ -89,8 +89,8 @@ public class FloatingPointEngineTest extends JPanel{
 			verticesCache = new float[vertices.length][3];
 			for (int i = 0; i < vertices.length; i++) {
 				for (int j = 0; j < 3; j++) {
-					vertices[i][j] = mesh.getVertex(i).getPosition()[j];
-					verticesCache[i][j] = mesh.getVertex(i).getPosition()[j];
+					vertices[i][j] = mesh.getVertex(i).getPosition()[j] / 100;
+					verticesCache[i][j] = mesh.getVertex(i).getPosition()[j] / 100;
 				}
 			}
 			faces = new int[mesh.getFaces().length][3];
@@ -153,7 +153,7 @@ public class FloatingPointEngineTest extends JPanel{
 		rotateZ(objRot[vz], vector);
 		vector[vx] += objPos[vx];
 		vector[vy] += objPos[vy];
-		vector[vz] += objPos[vz] + last;
+		vector[vz] += objPos[vz];
 	}
 	
 	public void rotateX(float angle, float[] vector) {
