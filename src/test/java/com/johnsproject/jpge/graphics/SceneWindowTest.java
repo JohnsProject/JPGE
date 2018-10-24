@@ -2,11 +2,11 @@ package com.johnsproject.jpge.graphics;
 
 import org.junit.Test;
 
-public class SceneFrameTest {
+public class SceneWindowTest {
 	
 	@Test
-	public void sceneFrameInitialzingTest() throws Exception {
-		SceneFrame frame = new SceneFrame(640, 480);
+	public void SceneWindowInitialzingTest() throws Exception {
+		SceneWindow frame = new SceneWindow(640, 480);
 		assert(frame.getScene() != null);
 		assert(frame.getSceneRenderer() != null);
 	}

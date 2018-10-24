@@ -180,7 +180,8 @@ public class RenderUtils {
 		   				tmp = v2; v2 = v1; v1 = tmp; 
 		   				tmp = u2; u2 = u1; u1 = tmp;
 		   				tmp = vc2; vc2 = vc1; vc1 = tmp;}
-		if (y1 == y2) y1--;
+		if (y1 == y2) y2++;
+		if (y2 == y3) y3++;
 	    // color used if rendering type is wireframe or vertex
 	    int shadedColor = ColorUtils.lerpRBG(color, vc1, -255);
 	    // draw based on the cameras rendering type
@@ -326,7 +327,7 @@ public class RenderUtils {
 		    	sa += da2;
 	    	}
 		    // make sure that correct x position is used to draw the other part
-			ex = x2 << SHIFT;
+		    ex = x2 << SHIFT;
 			dxdx = dx3 - dx2;
 			if (dxdx > 0) {
 				dz = ((dz3 - dz2) << SHIFT) / (dxdx);
@@ -440,7 +441,7 @@ public class RenderUtils {
 			dg1 = ((g2 - g1) << SHIFT) / (y2y1);
 			db1 = ((b2 - b1) << SHIFT) / (y2y1);
 			da1 = ((a2 - a1) << SHIFT) / (y2y1);
-		} else dx1 = du1 = dv1 = 0;
+		};
 		if (y3y1 > 0) {
 			dx2 = ((x3 - x1) << SHIFT) / (y3y1);
 			dz2 = ((z3 - z1) << SHIFT) / (y3y1);
@@ -450,7 +451,7 @@ public class RenderUtils {
 			dg2 = ((g3 - g1) << SHIFT) / (y3y1);
 			db2 = ((b3 - b1) << SHIFT) / (y3y1);
 			da2 = ((a3 - a1) << SHIFT) / (y3y1);
-		} else dx2 = du2 = dv2 = 0;
+		};
 		if (y3y2 > 0) {
 			dx3 = ((x3 - x2) << SHIFT) / (y3y2);
 			dz3 = ((z3 - z2) << SHIFT) / (y3y2);
@@ -460,7 +461,7 @@ public class RenderUtils {
 			dg3 = ((g3 - g2) << SHIFT) / (y3y2);
 			db3 = ((b3 - b2) << SHIFT) / (y3y2);
 			da3 = ((a3 - a2) << SHIFT) / (y3y2);
-		} else dx3 = du3 = dv3 = 0;
+		};
 		// left and right side values starting at the top of face
 		// bitshift left to increase precision
 		int sx = x1 << SHIFT, ex = x1 << SHIFT;
@@ -571,12 +572,12 @@ public class RenderUtils {
 	static void drawHLineAffine(int sx, int ex, int sz, int dz, int su, int du, int sv, int dv, int sr,
 								int dr, int sg, int dg, int sb, int db, int sa, int da, int sy,
 								Texture img, int[] zBuffer, Camera camera) {
-		for (int i = sx; i < ex; i++) {
+		for (; sx < ex; sx++) {
 			// get texture pixel / texel color
 			int color = img.getPixel(su >> SHIFT, sv >> SHIFT);
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
 			// no need to shift sz as the z test is just check if its a higher value
-			camera.setPixel(i, sy, sz, ColorUtils.lerpRBG(iColor, color, 255), zBuffer);
+			camera.setPixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 255), zBuffer);
 			sz += dz;
 			su += du;
 			sv += dv;

@@ -1,6 +1,5 @@
 package com.johnsproject.jpge;
 
-import java.awt.Color;
 import java.io.IOException;
 
 import com.johnsproject.jpge.graphics.*;
@@ -15,7 +14,7 @@ public class Test implements JPGEKeyListener, JPGEMouseListener{
 		new Test();
 	}
 	
-	SceneFrame sceneFrame;
+	SceneWindow SceneWindow;
 	SceneObject sceneObject, sceneObject2;
 	Camera camera, camera2;
 	Light light, light2;
@@ -51,17 +50,17 @@ public class Test implements JPGEKeyListener, JPGEMouseListener{
 		//sceneObject2 = new SceneObject("test2", new Vector3(0, 0, 150}, new Vector3(0, 0, 0}, new Vector3(1, 1, 1}, mesh2);
 		camera = new Camera("testCam", new Transform(new int[] {0, 0, -8000}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), 0, 0, w, h);
 		camera.setShader(new TestPixelShader());
-		camera2 = new Camera("testCam2", new Transform(new int[] {0, -2000, 1200}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), w-(w/3), 0, w/3, h/3);	
+		camera2 = new Camera("testCam2", new Transform(new int[] {0, -10000, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), w-(w/3), 0, w/3, h/3);	
 		light = new Light("testLight", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
 		//light2 = new Light("testLight2", new int[] {10, 0, 0});
-		sceneFrame = new SceneFrame(w, h);
-		sceneFrame.getScene().addLight(light);
-		//sceneFrame.getScene().addLight(light2);
-		sceneFrame.getScene().addSceneObject(sceneObject);
-		sceneFrame.getScene().addSceneObject(sceneObject2);
-//		sceneFrame.getScene().addCamera(camera2);
-		//sceneFrame.setTitle("JPGE Test");
-		sceneFrame.getScene().addCamera(camera);
+		SceneWindow = new SceneWindow(w, h);
+		SceneWindow.getScene().addLight(light);
+		//SceneWindow.getScene().addLight(light2);
+		SceneWindow.getScene().addSceneObject(sceneObject);
+		SceneWindow.getScene().addSceneObject(sceneObject2);
+		SceneWindow.getScene().addCamera(camera2);
+		//SceneWindow.setTitle("JPGE Test");
+		SceneWindow.getScene().addCamera(camera);
 //		sceneObject.getMesh().playAnimation(1);
 		KeyInputManager.getInstance().addKeyListener(this);
 		MouseInputManager.getInstance().addMouseListener(this);
@@ -208,8 +207,8 @@ public class Test implements JPGEKeyListener, JPGEMouseListener{
 	@Override
 	public void positionUpdate(JPGEMouseEvent event) {
 		if (dragged) {
-			int fx = (int)sceneFrame.getLocationOnScreen().getX();
-			int fy = (int)sceneFrame.getLocationOnScreen().getY();
+			int fx = (int)SceneWindow.getLocationOnScreen().getX();
+			int fy = (int)SceneWindow.getLocationOnScreen().getY();
 			int x = (event.getPosition()[VectorUtils.X]-fx) - (w/2);
 			int y = (event.getPosition()[VectorUtils.Y]-fy) - (h/2);
 			int z = camera.getTransform().getRotation()[VectorUtils.Z];

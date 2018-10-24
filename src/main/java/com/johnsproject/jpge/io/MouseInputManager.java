@@ -11,13 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.johnsproject.jpge.GameManager;
 import com.johnsproject.jpge.Profiler;
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 import com.johnsproject.jpge.event.UpdateListener;
 import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
-import com.johnsproject.jpge.graphics.event.CameraListener;
 import com.johnsproject.jpge.utils.VectorUtils;
 
 public class MouseInputManager implements UpdateListener {

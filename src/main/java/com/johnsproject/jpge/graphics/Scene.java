@@ -3,7 +3,6 @@ package com.johnsproject.jpge.graphics;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import com.johnsproject.jpge.graphics.event.*;
 
 /**
  * The Scene class contains {@link SceneObject sceneobjects}, 
@@ -15,7 +14,6 @@ public class Scene {
 
 	private final List<SceneObject> sceneObjects = Collections.synchronizedList(new ArrayList<SceneObject>());
 	private final List<Camera> cameras = Collections.synchronizedList(new ArrayList<Camera>());
-	private final List<GuiComponent> guiComponents = Collections.synchronizedList(new ArrayList<GuiComponent>());
 	private final List<Light> lights = Collections.synchronizedList(new ArrayList<Light>());
 	
 	/**
@@ -92,7 +90,6 @@ public class Scene {
 	public void addCamera(Camera camera){
 		synchronized (cameras) {
 			cameras.add(camera);
-			GraphicsEventDispatcher.getInstance().dispatchAddEvent(new CameraEvent(camera));
 		}
 	}
 	
@@ -103,7 +100,6 @@ public class Scene {
 	 */
 	public void removeCamera(Camera camera){
 		synchronized (cameras) {
-			GraphicsEventDispatcher.getInstance().dispatchRemoveEvent(new CameraEvent(camera));
 			cameras.remove(camera);
 		}
 	}
@@ -121,8 +117,7 @@ public class Scene {
 
 	@Override
 	public String toString() {
-		return "Scene [sceneObjects=" + sceneObjects + ", cameras=" + cameras + ", guiComponents=" + guiComponents
-				+ ", lights=" + lights + "]";
+		return "Scene [sceneObjects=" + sceneObjects + ", cameras=" + cameras + ", lights=" + lights + "]";
 	}
 	
 //	public void addGuiComponent(GuiComponent component){

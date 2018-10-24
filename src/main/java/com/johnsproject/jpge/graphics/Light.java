@@ -16,7 +16,7 @@ public class Light {
 	private String name;
 	private Transform transform;
 	private LightType type = LightType.sun;
-	private int strength = 10;
+	private int strength = 100;
 	private int color = 0;
 	
 	/**

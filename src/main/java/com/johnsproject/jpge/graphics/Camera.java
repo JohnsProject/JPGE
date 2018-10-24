@@ -1,25 +1,21 @@
 package com.johnsproject.jpge.graphics;
 
-import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
-import javax.swing.JPanel;
-
 import com.johnsproject.jpge.graphics.SceneRenderer.ProjectionType;
 import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
-import com.johnsproject.jpge.utils.VectorUtils;
+import com.johnsproject.jpge.utils.ColorUtils;
 
 /**
  * The Camera class is used to view a {@link Scene}.
  * The {@link SceneRenderer} will take all cameras of the {@link Scene} 
- * used by the {@link SceneFrame} and render what is in the camera view.
+ * used by the {@link SceneWindow} and render what is in the camera view.
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Camera extends JPanel{
+public class Camera{
 	
-	private static final long serialVersionUID = -6288232882538805324L;
 	private String name;
 	private int[] screenPosition;
 	private int width = 0;
@@ -43,8 +39,8 @@ public class Camera extends JPanel{
 	 * 
 	 * @param name name of this camera.
 	 * @param transform {@link Transform} of this camera.
-	 * @param screenPosition the position of this camera at the {@link SceneFrame}.
-	 * @param screenSize the size of this camera at the {@link SceneFrame}.
+	 * @param screenPosition the position of this camera at the {@link SceneWindow}.
+	 * @param screenSize the size of this camera at the {@link SceneWindow}.
 	 */
 	public Camera(String name, Transform transform, int x, int y, int width, int height) {
 		this.name = name;
@@ -55,30 +51,17 @@ public class Camera extends JPanel{
 		this.halfHeight = height >> 1;
 		this.scaleFactor = ((width + height) >> 7) + 1;
 		this.screenPosition = new int[] {x, y};
-		this.setSize(width, height);
-		this.setLocation(x, y);
 		this.viewBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
 		this.viewBufferData = ((DataBufferInt)viewBuffer.getRaster().getDataBuffer()).getData();
 		this.changed = true;
 		this.shader = new PixelShader();
-	}	
-	
-	public void drawBuffer() {
-		repaint();
-		//viewBuffer.getGraphics().clearRect(0, 0, screenSize[vx], screenSize[vy]);
 	}
 	
 	public void clearBuffer() {
-		//for (int i = 0; i < viewBufferData.length; i++) viewBufferData[i] = testC;
-		//viewBuffer.getGraphics().clearRect(0, 0, screenSize[vx], screenSize[vy]);
-		viewBuffer.getGraphics().fillRect(0, 0, width, height);
-	}
-	
-	@Override
-	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		g.drawImage(viewBuffer, 0, 0, null);
-		clearBuffer();
+		for (int i = 0; i < viewBufferData.length; i++) {
+			viewBufferData[i] = 0;
+		}
+//		viewBuffer.getGraphics().fillRect(0, 0, width, height);
 	}
 
 	/**
@@ -96,12 +79,12 @@ public class Camera extends JPanel{
 	}
 	
 	/**
-	 * Returns the {@link Graphics} of the view buffer of this camera.
+	 * Returns the {@link BufferedImage view buffer} of this camera.
 	 * 
-	 * @return {@link Graphics} of the view buffer of this camera.
+	 * @return {@link BufferedImage view buffer} of this camera.
 	 */
-	public Graphics getViewGraphics() {
-		return viewBuffer.getGraphics();
+	public BufferedImage getViewBuffer() {
+		return viewBuffer;
 	}
 
 	/**
@@ -145,9 +128,9 @@ public class Camera extends JPanel{
 	}
 	
 	/**
-	 * Returns the position of this camera at the {@link SceneFrame}.
+	 * Returns the position of this camera at the {@link SceneWindow}.
 	 * 
-	 * @return position of this camera at the {@link SceneFrame}.
+	 * @return position of this camera at the {@link SceneWindow}.
 	 */
 	public int[] getScreenPosition() {
 		return this.screenPosition;
@@ -210,7 +193,6 @@ public class Camera extends JPanel{
 		this.height = height;
 		this.halfWidth = width >> 1;
 		this.halfHeight = height >> 1;
-		setSize(width, height);
 		changed = true;
 	}
 

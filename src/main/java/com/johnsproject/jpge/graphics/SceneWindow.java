@@ -1,20 +1,20 @@
 package com.johnsproject.jpge.graphics;
 
+import java.awt.Graphics;
 import java.io.IOException;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import com.johnsproject.jpge.GameManager;
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
 import com.johnsproject.jpge.event.UpdateListener;
-import com.johnsproject.jpge.graphics.event.*;
 import com.johnsproject.jpge.io.FileIO;
 
 /**
- * The SceneFrame class is used to show a {@link Scene}, 
- * its like a window or portal that shows another world.
+ * The SceneWindow class is used to show a {@link Scene}.
  * It contains a {@link SceneRenderer} that is called to render the {@link Scene} when 
  * it receives an {@link UpdateEvent} from the {@link GameManager}.
  * It contains a {@link SceneAnimator} that is called to animate the {@link Scene} when 
@@ -22,35 +22,46 @@ import com.johnsproject.jpge.io.FileIO;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class SceneFrame extends JFrame implements CameraListener, UpdateListener{
+public class SceneWindow extends JPanel implements UpdateListener{
 
 	private static final long serialVersionUID = -841144266539311921L;
+	private int width = 0;
+	private int height = 0;
+	private JFrame frame;
 	private Scene scene;
 	private SceneRenderer renderer;
 	private SceneAnimator animator;
 	
 	/**
-	 * Creates a new instance of the SceneFrame class filled with the given values.
+	 * Creates a new instance of the SceneWindow class filled with the given values.
 	 * 
 	 * @param width scene frame width.
 	 * @param height scene frame height.
 	 */
-	public SceneFrame (int width, int height){
+	public SceneWindow (int width, int height){
+		this.width = width;
+		this.height = height;
 		this.scene = new Scene();
-		setSize(width, height);
+		frame = new JFrame();
+		frame.setSize(width, height);
+		this.setSize(width, height);
 		initializeFrame();
 	}
 	
 	/**
-	 * Creates a new instance of the SceneFrame class filled with the given values.
+	 * Creates a new instance of the SceneWindow class filled with the given values.
 	 * 
 	 * @param width scene frame width.
 	 * @param height scene frame height.
 	 * @param scene scene to be shown by this scene frame.
 	 */
-	public SceneFrame (int width, int height, Scene scene){
+	public SceneWindow (int width, int height, Scene scene){
+		this.width = width;
+		this.height = height;
 		this.scene = scene;
-		setSize(width, height);
+		frame = new JFrame();
+		frame.setSize(width, height);
+		this.setSize(width, height);
 		initializeFrame();
 	}
 	
@@ -58,19 +69,19 @@ public class SceneFrame extends JFrame implements CameraListener, UpdateListener
 	 * Initializes the components and values of this scene frame.
 	 */
 	void initializeFrame(){
-		renderer = new SceneRenderer(getWidth(), getHeight());
+		renderer = new SceneRenderer(width, height);
 		animator = new SceneAnimator();
 		try {
-			setIconImage(FileIO.loadImage(getClass().getResourceAsStream("/JohnsProjectLogo.png")));
+			frame.setIconImage(FileIO.loadImage(getClass().getResourceAsStream("/JohnsProjectLogo.png")));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		this.setResizable(false);
-		this.setVisible(true);
-		this.setTitle("JPGE");
-		this.setLayout(null);
-		this.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		GraphicsEventDispatcher.getInstance().addCameraListener(this);
+		frame.setResizable(false);
+		frame.setVisible(true);
+		frame.setTitle("JPGE");
+		frame.setLayout(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.add(this);
 		EventDispatcher.getInstance().addUpdateListener(this);
 	}
 	
@@ -114,6 +125,7 @@ public class SceneFrame extends JFrame implements CameraListener, UpdateListener
 	public void update(UpdateEvent event) {
 		if(event.getUpdateType() == UpdateType.graphics) {
 			renderer.render(getScene());
+			this.repaint();
 		}
 		if(event.getUpdateType() == animator.getUpdateType()) {
 			animator.animate(getScene());
@@ -121,17 +133,16 @@ public class SceneFrame extends JFrame implements CameraListener, UpdateListener
 	}
 	
 	@Override
-	public void add(CameraEvent event) {
-		this.add(event.getCamera());
-	}
-
-	@Override
-	public void remove(CameraEvent event) {
-		this.remove(event.getCamera());
-	}
-
-	@Override
-	public String toString() {
-		return "SceneFrame [scene=" + scene.toString() + ", renderer=" + renderer.toString() + ", animator=" + animator.toString() + "]";
+	protected void paintComponent(Graphics g) {
+		super.paintComponent(g);
+		g.fillRect(0, 0, width, height);
+		synchronized (scene.getCameras()) {
+			for (int i = 0; i < scene.getCameras().size(); i++) {
+				Camera camera = scene.getCameras().get(i);
+				int[] screenPos = camera.getScreenPosition();
+				g.drawImage(camera.getViewBuffer(), screenPos[0], screenPos[1], null);
+				camera.clearBuffer();
+			}
+		}
 	}
 }

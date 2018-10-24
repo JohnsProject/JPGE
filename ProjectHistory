@@ -205,4 +205,6 @@ v0.1 - 24/08/2018
 -Added some default models to the resources folder
 -Fixed some bugs
 -Improved precision of som exporter/importer
-
+-----------------------
+-Renamed SceneFrame to SceneWindow
+-Moved JPanel from each Camera to 1 JPanel in the SceneWindow (less ram usage, fixed flickering bug when more than 1 Camera is active)

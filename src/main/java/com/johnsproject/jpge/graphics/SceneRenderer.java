@@ -6,7 +6,7 @@ import com.johnsproject.jpge.Profiler;
 import com.johnsproject.jpge.utils.RenderUtils;
 
 /**
- * The SceneRenderer class renders the {@link Scene} assigned to the {@link SceneFrame}.
+ * The SceneRenderer class renders the {@link Scene} assigned to the {@link SceneWindow}.
  * It takes the {@link SceneObject SceneObjects} in the view of all {@link Camera Cameras} in the {@link Scene}, 
  * transforms, projects and draws them.
  *
@@ -68,8 +68,6 @@ public class SceneRenderer {
 					}
 				}
 				camera.changed(false);
-				// tell camera to draw the buffer that has been used
-				camera.drawBuffer();
 			}
 		}
 		synchronized (scene.getSceneObjects()) {
