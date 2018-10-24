@@ -3,10 +3,6 @@ package com.johnsproject.jpge.graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
-import com.johnsproject.jpge.graphics.SceneRenderer.ProjectionType;
-import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
-import com.johnsproject.jpge.utils.ColorUtils;
-
 /**
  * The Camera class is used to view a {@link Scene}.
  * The {@link SceneRenderer} will take all cameras of the {@link Scene} 
@@ -30,8 +26,6 @@ public class Camera{
 	private BufferedImage viewBuffer;
 	private int[] viewBufferData;
 	private boolean changed = false;
-	private ProjectionType projectionType = ProjectionType.perspective;
-	private RenderingType renderingType = RenderingType.wireframe;
 	private PixelShader shader;
 	
 	/**
@@ -57,11 +51,13 @@ public class Camera{
 		this.shader = new PixelShader();
 	}
 	
-	public void clearBuffer() {
+	/**
+	 * Tells this camera to clear its view buffer.
+	 */
+	public void clearViewBuffer() {
 		for (int i = 0; i < viewBufferData.length; i++) {
 			viewBufferData[i] = 0;
 		}
-//		viewBuffer.getGraphics().fillRect(0, 0, width, height);
 	}
 
 	/**
@@ -145,42 +141,6 @@ public class Camera{
 	 */
 	public int getScaleFactor() {
 		return this.scaleFactor;
-	}
-	
-	/**
-	 * Returns the projection type of this camera.
-	 * 
-	 * @return projection type of this camera.
-	 */
-	public ProjectionType getProjectionType() {
-		return projectionType;
-	}
-
-	/**
-	 * Sets the projection type of this camera.
-	 * 
-	 * @param projectionType projection type to set.
-	 */
-	public void setProjectionType(ProjectionType projectionType) {
-		this.projectionType = projectionType;
-	}
-	
-	/**
-	 * Returns the rendering type of this camera.
-	 * 
-	 * @return rendering type of this camera.
-	 */
-	public RenderingType getRenderingType() {
-		return renderingType;
-	}
-
-	/**
-	 * Sets the rendering type of this camera.
-	 * 
-	 * @param renderingType rendering type to set.
-	 */
-	public void setRenderingType(RenderingType renderingType) {
-		this.renderingType = renderingType;
 	}
 
 	/**

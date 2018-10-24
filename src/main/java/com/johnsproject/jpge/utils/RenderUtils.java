@@ -7,8 +7,6 @@ import com.johnsproject.jpge.graphics.Mesh;
 import com.johnsproject.jpge.graphics.Texture;
 import com.johnsproject.jpge.graphics.Transform;
 import com.johnsproject.jpge.graphics.Vertex;
-import com.johnsproject.jpge.graphics.SceneRenderer.ProjectionType;
-import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
 
 /**
  * The RenderUtils class provides methods needed at the rendering process.
@@ -21,33 +19,43 @@ public class RenderUtils {
 	private static final int SHIFT = 10;
 	
 	/**
-	 * Projects a vector to from world (3D) to screen (2D) coordinates based on the {@link ProjectionType}
-	 * of the given {@link Camera}.
+	 * Projects a vector to from world (3D) to screen (2D) coordinates
+	 *  using perspection projection technic wich takes depth into account.
 	 * 
 	 * @param vector vector to be projected. This vector should be in camera space.
 	 * @param camera {@link Camera} this vector will be projected to.
 	 * @return projected vector.
 	 */
-	public static int[] project(int[] vector, Camera camera) {
+	public static int[] perspectiveProject(int[] vector, Camera camera) {
 		int px = 0, py = 0, pz = 0;
 		int fov = camera.getFieldOfView();
 		int scalef = fov * camera.getScaleFactor();
-		switch (camera.getProjectionType()) {
-		case perspective: // this projectionType uses depth
-			pz = vector[vz] + fov;
-			if (pz != 0) {
-				px = (vector[vx] * scalef) / pz;
-				py = (vector[vy] * scalef) / pz;
-			}
-			break;
-		case orthographic: // this projectionType ignores depth
-			px = (vector[vx] * scalef);
-			py = (vector[vy] * scalef);
-			break;
+		pz = vector[vz] + fov;
+		if (pz != 0) {
+			px = (vector[vx] * scalef) / pz;
+			py = (vector[vy] * scalef) / pz;
 		}
 		vector[vx] = camera.getHalfWidth() + (px );
 		vector[vy] = camera.getHalfHeight() + (py );
 		vector[vz] = pz;
+		return vector;
+	}
+	
+	/**
+	 * Projects a vector to from world (3D) to screen (2D) coordinates
+	 *  using orthographic projection technic wich ignores depth.
+	 * 
+	 * @param vector vector to be projected. This vector should be in camera space.
+	 * @param camera {@link Camera} this vector will be projected to.
+	 * @return projected vector.
+	 */
+	public static int[] orthographicProject(int[] vector, Camera camera) {
+		int px = 0, py = 0;
+		int scalef = camera.getScaleFactor();
+		px = (vector[vx] * scalef) >> 8;
+		py = (vector[vy] * scalef) >> 8;
+		vector[vx] = camera.getHalfWidth() + px;
+		vector[vy] = camera.getHalfHeight() + py;
 		return vector;
 	}
 
@@ -127,16 +135,53 @@ public class RenderUtils {
 		return true;
 	}
 	
+	// line drawing with fixed point Brenseham's
+	public static void drawLine(int x1, int y1, int x2, int y2, int z, int color,
+						int[] zBuffer, Camera camera) {
+		int w = x2 - x1;
+		int h = y2 - y1;
+		// deltas
+		int dx1 = 0, dy1 = 0, dz1 = 0,
+			dx2 = 0, dy2 = 0, dz2 = 0;
+		if (w < 0) dx1 = -1; else if (w > 0) dx1 = 1;
+		if (h < 0) dy1 = -1; else if (h > 0) dy1 = 1;
+		if (w < 0) dx2 = -1; else if (w > 0) dx2 = 1;
+		int longest = Math.abs(w);
+		int shortest = Math.abs(h);
+		if (longest < shortest) {
+			longest = Math.abs(h);
+			shortest = Math.abs(w);
+			if (h < 0) dy2 = -1;
+			else if (h > 0) dy2 = 1;
+			dx2 = 0;
+		}
+		int numerator = longest >> 1;
+		for (int i = 0; i < longest; i++, numerator += shortest) {
+			// set pixel
+			camera.setPixel(x1, y1, z, color, zBuffer);
+			// increase deltas
+			if (numerator > longest) {
+				numerator -= longest;
+				x1 += dx1;
+				y1 += dy1;
+				z += dz1;
+			} else {
+				x1 += dx2;
+				y1 += dy2;
+				z += dz2;
+			}
+		}
+	}
+	
 	/**
-	 * Draws the given face to the given {@link Camera} based on the {@link RenderingType} of the given {@link Camera}.
+	 * Draw the given {@link Face} on the given {@link Camera} using the gouraud shading technic.
 	 * 
-	 * @param face face to draw.
-	 * @param mesh {@link Mesh} that contains the face.
-	 * @param zBuffer depth buffer.
-	 * @param camera {@link Camera} to draw.
+	 * @param face {@link Face} to draw.
+	 * @param mesh {@link Mesh} that contains the given {@link Face}.
+	 * @param zBuffer zBuffer to use.
+	 * @param camera {@link Camera} to draw on.
 	 */
-	public static void drawFace(Face face, Mesh mesh, int[] zBuffer, Camera camera) {
-		// get vertexes
+	public static void drawFaceGouraud(Face face, Mesh mesh, int[] zBuffer, Camera camera) {
 		Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
 		Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
 		Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
@@ -182,73 +227,11 @@ public class RenderUtils {
 		   				tmp = vc2; vc2 = vc1; vc1 = tmp;}
 		if (y1 == y2) y2++;
 		if (y2 == y3) y3++;
-	    // color used if rendering type is wireframe or vertex
-	    int shadedColor = ColorUtils.lerpRBG(color, vc1, -255);
-	    // draw based on the cameras rendering type
-	    switch (camera.getRenderingType()) {
-		case vertex:
-	    	camera.setPixel(x1, y1, z1, shadedColor, zBuffer);
-	    	camera.setPixel(x2, y2, z2, shadedColor, zBuffer);
-	    	camera.setPixel(x3, y3, z3, shadedColor, zBuffer);
-			break;
-			
-		case wireframe:
-			drawLine(x1, y1, x2, y2, z1, shadedColor, zBuffer, camera);
-			drawLine(x2, y2, x3, y3, z2, shadedColor, zBuffer, camera);
-			drawLine(x3, y3, x1, y1, z3, shadedColor, zBuffer, camera);
-			break;
-			
-		case solid:
-			drawFace(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, zBuffer, color, camera);
-			break;
-			
-		case textured:
-			Texture img = mesh.getMaterial(face.getMaterial()).getTexture();
-			drawFaceAffine(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, u1, v1, u2, v2, u3, v3, img, zBuffer, camera);
-			break;
-		}
-	}
-	
-	// line drawing with fixed point Brenseham's
-	static void drawLine(int x1, int y1, int x2, int y2, int z, int color,
-						int[] zBuffer, Camera camera) {
-		int w = x2 - x1;
-		int h = y2 - y1;
-		// deltas
-		int dx1 = 0, dy1 = 0, dz1 = 0,
-			dx2 = 0, dy2 = 0, dz2 = 0;
-		if (w < 0) dx1 = -1; else if (w > 0) dx1 = 1;
-		if (h < 0) dy1 = -1; else if (h > 0) dy1 = 1;
-		if (w < 0) dx2 = -1; else if (w > 0) dx2 = 1;
-		int longest = Math.abs(w);
-		int shortest = Math.abs(h);
-		if (longest < shortest) {
-			longest = Math.abs(h);
-			shortest = Math.abs(w);
-			if (h < 0) dy2 = -1;
-			else if (h > 0) dy2 = 1;
-			dx2 = 0;
-		}
-		int numerator = longest >> 1;
-		for (int i = 0; i < longest; i++, numerator += shortest) {
-			// set pixel
-			camera.setPixel(x1, y1, z, color, zBuffer);
-			// increase deltas
-			if (numerator > longest) {
-				numerator -= longest;
-				x1 += dx1;
-				y1 += dy1;
-				z += dz1;
-			} else {
-				x1 += dx2;
-				y1 += dy2;
-				z += dz2;
-			}
-		}
+		face(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, zBuffer, color, camera);
 	}
 	
 	// face drawing and filling with fixed point scanline algorithm that supports gouraud shading
-	static void drawFace(int x1, int y1, int z1, int vc1, int x2, int y2, int z2, int vc2, int x3, int y3, int z3, int vc3,
+	static void face(int x1, int y1, int z1, int vc1, int x2, int y2, int z2, int vc2, int x3, int y3, int z3, int vc3,
 							int[] zBuffer, int color, Camera cam) {
 		// get color values
 		int r1 = ColorUtils.getRed(vc1), g1 = ColorUtils.getGreen(vc1), b1 = ColorUtils.getBlue(vc1), a1 = ColorUtils.getAlpha(vc1);
@@ -398,8 +381,65 @@ public class RenderUtils {
 		}
 	}
 	
+	/**
+	 * Draw the given {@link Face} on the given {@link Camera} using the gouraud shading and affine texture mapping technic.
+	 * 
+	 * @param face {@link Face} to draw.
+	 * @param mesh {@link Mesh} that contains the given {@link Face}.
+	 * @param zBuffer zBuffer to use.
+	 * @param camera {@link Camera} to draw on.
+	 */
+	public static void drawFaceAffine(Face face, Mesh mesh, int[] zBuffer, Camera camera) {
+		Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
+		Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
+		Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
+		// get position of vertexes
+		int[] vp1 = vt1.getPosition();
+		int[] vp2 = vt2.getPosition();
+		int[] vp3 = vt3.getPosition();
+		// get uvs of face
+		int[] uv1 = face.getUV1();
+		int[] uv2 = face.getUV2();
+		int[] uv3 = face.getUV3();
+		// get colors of vertexes
+		int vc1 = vt1.getColor();
+		int vc2 = vt2.getColor();
+		int vc3 = vt3.getColor();
+		// get face texture
+		Texture img = mesh.getMaterial(face.getMaterial()).getTexture();
+		int tmp = 0;
+		int x1 = vp1[vx], y1 = vp1[vy], z1 = vp1[vz],
+			x2 = vp2[vx], y2 = vp2[vy], z2 = vp2[vz],
+			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
+		int u1 = uv1[vx], v1 = uv1[vy],
+			u2 = uv2[vx], v2 = uv2[vy],
+			u3 = uv3[vx], v3 = uv3[vy];
+		// y sorting
+		if (y1 > y2) { tmp = y2; y2 = y1; y1 = tmp; 
+		   				tmp = x2; x2 = x1; x1 = tmp;
+		   				tmp = z2; z2 = z1; z1 = tmp;
+		   				tmp = v2; v2 = v1; v1 = tmp; 
+		   				tmp = u2; u2 = u1; u1 = tmp;
+		   				tmp = vc2; vc2 = vc1; vc1 = tmp;}
+		if (y2 > y3) { tmp = y3; y3 = y2; y2 = tmp; 
+		   				tmp = x3; x3 = x2; x2 = tmp;
+		   				tmp = z3; z3 = z2; z2 = tmp;
+		   				tmp = v3; v3 = v2; v2 = tmp; 
+		   				tmp = u3; u3 = u2; u2 = tmp;
+		   				tmp = vc3; vc3 = vc2; vc2 = tmp;}
+		if (y1 > y2) { tmp = y2; y2 = y1; y1 = tmp; 
+		   				tmp = x2; x2 = x1; x1 = tmp;
+		   				tmp = z2; z2 = z1; z1 = tmp;
+		   				tmp = v2; v2 = v1; v1 = tmp; 
+		   				tmp = u2; u2 = u1; u1 = tmp;
+		   				tmp = vc2; vc2 = vc1; vc1 = tmp;}
+		if (y1 == y2) y2++;
+		if (y2 == y3) y3++;
+		faceAffine(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, u1, v1, u2, v2, u3, v3, img, zBuffer, camera);
+	}
+	
 	// face drawing and filling with fixed point scanline algorithm that supports gouraud shading
-	static void drawFaceAffine(int x1, int y1, int z1, int vc1, int x2, int y2, int z2, int vc2, int x3, int y3, int z3, int vc3,
+	static void faceAffine(int x1, int y1, int z1, int vc1, int x2, int y2, int z2, int vc2, int x3, int y3, int z3, int vc3,
 								int u1, int v1, int u2, int v2, int u3, int v3,
 								Texture img, int[] zBuffer, Camera cam) {
 		// interpolate uv coordinates

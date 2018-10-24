@@ -3,8 +3,6 @@ package com.johnsproject.jpge;
 import java.io.IOException;
 
 import com.johnsproject.jpge.graphics.*;
-import com.johnsproject.jpge.graphics.SceneRenderer.ProjectionType;
-import com.johnsproject.jpge.graphics.SceneRenderer.RenderingType;
 import com.johnsproject.jpge.io.*;
 import com.johnsproject.jpge.utils.VectorUtils;
 
@@ -30,8 +28,8 @@ public class Test implements JPGEKeyListener, JPGEMouseListener{
 		//Mesh mesh2 = new Mesh(FileIO.readFile("/media/john/HDD/Development/test.som"));
 		sceneObject = new SceneObject("test", new Transform(new int[] {-2000, 0, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh1);
 		sceneObject2 = new SceneObject("test2", new Transform(new int[] {2000, 0, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh2);
-		sceneObject.setShader(new TestShader());
-		sceneObject2.setShader(new TestShader());
+//		sceneObject.setShader(new TestShader());
+//		sceneObject2.setShader(new TestShader());
 		try {
 			Texture t = new Texture(getClass().getResourceAsStream("/JohnsProject.png"));
 			//Texture t = new Texture("/home/john/Development/Brick.jpg");
@@ -49,7 +47,7 @@ public class Test implements JPGEKeyListener, JPGEMouseListener{
 		}
 		//sceneObject2 = new SceneObject("test2", new Vector3(0, 0, 150}, new Vector3(0, 0, 0}, new Vector3(1, 1, 1}, mesh2);
 		camera = new Camera("testCam", new Transform(new int[] {0, 0, -8000}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), 0, 0, w, h);
-		camera.setShader(new TestPixelShader());
+//		camera.setShader(new TestPixelShader());
 		camera2 = new Camera("testCam2", new Transform(new int[] {0, -10000, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), w-(w/3), 0, w/3, h/3);	
 		light = new Light("testLight", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
 		//light2 = new Light("testLight2", new int[] {10, 0, 0});
@@ -115,22 +113,28 @@ public class Test implements JPGEKeyListener, JPGEMouseListener{
 			camera.getTransform().rotate(0, 0, -1);
 			break;
 		case '1':
-			camera.setRenderingType(RenderingType.vertex);
+			sceneObject.getShader().setDrawingType(Shader.DRAW_VERTEX);
+			sceneObject2.getShader().setDrawingType(Shader.DRAW_VERTEX);
 			break;
 		case '2':
-			camera.setRenderingType(RenderingType.wireframe);
+			sceneObject.getShader().setDrawingType(Shader.DRAW_WIREFRAME);
+			sceneObject2.getShader().setDrawingType(Shader.DRAW_WIREFRAME);
 			break;
 		case '3':
-			camera.setRenderingType(RenderingType.solid);
+			sceneObject.getShader().setDrawingType(Shader.DRAW_FLAT);
+			sceneObject2.getShader().setDrawingType(Shader.DRAW_FLAT);
 			break;
 		case '4':
-			camera.setRenderingType(RenderingType.textured);
+			sceneObject.getShader().setDrawingType(Shader.DRAW_TEXTURED);
+			sceneObject2.getShader().setDrawingType(Shader.DRAW_TEXTURED);
 			break;
 		case '6':
-			camera.setProjectionType(ProjectionType.orthographic);
+			sceneObject.getShader().setProjectionType(Shader.PROJECT_ORTHOGRAPHIC);
+			sceneObject2.getShader().setProjectionType(Shader.PROJECT_ORTHOGRAPHIC);
 			break;
 		case '7':
-			camera.setProjectionType(ProjectionType.perspective);
+			sceneObject.getShader().setProjectionType(Shader.PROJECT_PERSPECTIVE);
+			sceneObject2.getShader().setProjectionType(Shader.PROJECT_PERSPECTIVE);
 		case '8':
 			sceneObject.setActive(true);
 			sceneObject2.setActive(true);

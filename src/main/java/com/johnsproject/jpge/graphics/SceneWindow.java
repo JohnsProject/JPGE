@@ -141,7 +141,7 @@ public class SceneWindow extends JPanel implements UpdateListener{
 				Camera camera = scene.getCameras().get(i);
 				int[] screenPos = camera.getScreenPosition();
 				g.drawImage(camera.getViewBuffer(), screenPos[0], screenPos[1], null);
-				camera.clearBuffer();
+				camera.clearViewBuffer();
 			}
 		}
 	}

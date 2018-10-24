@@ -12,10 +12,24 @@ import com.johnsproject.jpge.graphics.Vertex;
 import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.RenderUtils;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
+import com.johnsproject.jpge.utils.VectorUtils;
 
 public class TestShader extends Shader{
 	
-	int[] vectorCache = new int[3];
+	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
+	private static final int PROJECT_ORTHOGRAPHIC = 0;
+	private static final int PROJECT_PERSPECTIVE = 1;
+	private static final int SHADE_FLAT = 0;
+	private static final int SHADE_GOURAUD = 1;
+	private static final int DRAW_VERTEX = 0;
+	private static final int DRAW_WIREFRAME = 1;
+	private static final int DRAW_FLAT = 2;
+	private static final int DRAW_TEXTURED = 3;
+	
+	private int projectionType = PROJECT_PERSPECTIVE;
+	private int shadingType = SHADE_GOURAUD;
+	private int drawingType = DRAW_TEXTURED;
+	private int[] vectorCache = new int[3];
 	
 	@Override
 	public Vertex shadeVertex(Vertex vertex, Mesh mesh, Camera camera, Transform objectTransform, List<Light> lights) {
@@ -31,12 +45,67 @@ public class TestShader extends Shader{
 		// transform vertex to camera space
 		pos = Vector3MathUtils.subtract(pos, camt.getPosition(), pos);
 		pos = Vector3MathUtils.movePointByAnglesXYZ(pos, camt.getRotation(), pos);
-		// project vertex into screen space
-		pos = RenderUtils.project(pos, camera);
-		// transform normal in object space
-		normal = Vector3MathUtils.movePointByAnglesXYZ(normal, objt.getRotation(), normal);
-		
-		// soft shading
+		// transform / project vertex to screen space
+		if(projectionType == PROJECT_ORTHOGRAPHIC) {
+			pos = RenderUtils.orthographicProject(pos, camera);
+		}
+		if(projectionType == PROJECT_PERSPECTIVE) {
+			pos = RenderUtils.perspectiveProject(pos, camera);
+		}
+		if(shadingType == SHADE_GOURAUD) {
+			// transform normal in object space
+			normal = Vector3MathUtils.movePointByAnglesXYZ(normal, objt.getRotation(), normal);
+			// calculate shaded color for every vertex
+			vertex.setColor(shade(lights, objt.getPosition(), normal));
+		}
+		return vertex;
+	}
+	
+	@Override
+	public Face shadeFace(Face face, Mesh mesh, Camera camera, int[] zBuffer, Transform objectTransform, List<Light> lights) {
+		// view frustum culling
+		if (!RenderUtils.isInsideViewFrustum(face, mesh, camera)) {
+			// get vertexes
+			Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
+			Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
+			Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
+			if (!RenderUtils.isBackface(face, mesh)) {
+				if(shadingType == SHADE_FLAT) {
+					// calculate shaded color for 1 vertex
+					int result = shade(lights, objectTransform.getPosition(), vt1.getNormal());
+					// and apply that color to all vertexes
+					vt1.setColor(result);
+					vt2.setColor(result);
+					vt3.setColor(result);
+				}
+				// draw face
+				int color = mesh.getMaterial(face.getMaterial()).getColor();
+			    // color used if rendering type is wireframe or vertex
+			    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
+			    // draw based on the cameras rendering type
+			    switch (drawingType) {
+				case DRAW_VERTEX:
+			    	drawVertex(vt1, vt2, vt3, shadedColor, zBuffer, camera);
+					break;
+					
+				case DRAW_WIREFRAME:
+					drawWireframe(vt1, vt2, vt3, shadedColor, zBuffer, camera);
+					break;
+					
+				case DRAW_FLAT:
+					RenderUtils.drawFaceGouraud(face, mesh, zBuffer, camera);
+					break;
+					
+				case DRAW_TEXTURED:
+					RenderUtils.drawFaceAffine(face, mesh, zBuffer, camera);
+					break;
+				}
+			}
+		}
+		return face;
+	}
+	
+	private int shade(List<Light> lights, int[] objectPos, int[] normal) {
 		int factor = 0;
 		int lightColor = 0;
 		for (int i = 0; i < lights.size(); i++) {
@@ -48,186 +117,46 @@ public class TestShader extends Shader{
 				factor /= light.getStrength();
 				break;
 			case point:
-				vectorCache = Vector3MathUtils.distance(objt.getPosition(), lightPosition, vectorCache);
+				vectorCache = Vector3MathUtils.distance(objectPos, lightPosition, vectorCache);
 				factor += Vector3MathUtils.dotProduct(vectorCache, normal);
 				factor /= light.getStrength();
 				break;
 			}
 			lightColor = ColorUtils.lerpRBG(light.getColor(), lightColor, -100);
 		}
-		// set color
-		vertex.setColor(ColorUtils.lerpRBG(lightColor, 0, -factor));
-		return vertex;
+		// return color
+		return ColorUtils.lerpRBG(lightColor, 0, -factor);
 	}
 	
-	@Override
-	public Face shadeFace(Face face, Mesh mesh, Camera camera, int[] zBuffer, Transform objectTransform, List<Light> lights) {
-		// view frustum culling
-		if (!RenderUtils.isInsideViewFrustum(face, mesh, camera)) {
-//			Vertex v1 = mesh.getBufferedVertex(face.getVertex1());
-//			Vertex v2 = mesh.getBufferedVertex(face.getVertex2());
-//			Vertex v3 = mesh.getBufferedVertex(face.getVertex3());
-			if (!RenderUtils.isBackface(face, mesh)) {
-//				int l = 0;
-//				// flat shading
-//				for (int i = 0; i < lights.size(); i++) {
-//					Light light = lights.get(i);
-//					int[] lightPosition = light.getDirection();
-//					l += Vector3MathUtils.dotProduct(lightPosition, cache3);
-//					l -= light.getLightStrength() << 3;
-//				}
-//				// set shade factor for each vertex
-//				v1.setShadeFactor(l);
-//				v2.setShadeFactor(l);
-//				v3.setShadeFactor(l);
-				// draw face
-				RenderUtils.drawFace(face, mesh, zBuffer, camera);
-			}
-		}
-		return face;
+	private void drawVertex(Vertex vt1, Vertex vt2, Vertex vt3, int color, int[] zBuffer, Camera camera) {
+		// get position of vertexes
+		int[] vp1 = vt1.getPosition();
+		int[] vp2 = vt2.getPosition();
+		int[] vp3 = vt3.getPosition();
+		int x1 = vp1[vx], y1 = vp1[vy], z1 = vp1[vz],
+			x2 = vp2[vx], y2 = vp2[vy], z2 = vp2[vz],
+			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
+	    // color used if rendering type is wireframe or vertex
+	    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
+		camera.setPixel(x1, y1, z1, shadedColor, zBuffer);
+    	camera.setPixel(x2, y2, z2, shadedColor, zBuffer);
+    	camera.setPixel(x3, y3, z3, shadedColor, zBuffer);
 	}
 	
-//	@Override
-//	public int[] shadeVertex(int[] vertex, Transform objectTransform) {
-////		Transform objt = objectTransform;
-////		// transform vertex in object space
-////		vertex = Vector3MathUtils.movePointByScale(vertex, objt.getScale(), vertex);
-////		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, objt.getRotation(), vertex);
-////		// transform vertex to world space
-////		vertex = Vector3MathUtils.add(vertex, objt.getPosition(), vertex);
-//		return vertex;
-//	}
-//
-//	int[] cache1 = new int[3];
-//	int[] cache2 = new int[3];
-//	int[] cache3 = new int[3];
-//	int[][] shadowVerts = null;
-//	@Override
-//	public int[] shadeFace(int[] face, Mesh mesh, Camera camera, List<Light> lights) {
-////		if (shadowVerts == null) shadowVerts = new int[mesh.getVertexes().length][Mesh.VERTEX_LENGTH];
-////		int[] v1 = mesh.getBufferedVertex(face[Mesh.VERTEX_1]);
-////		int[] v2 = mesh.getBufferedVertex(face[Mesh.VERTEX_2]);
-////		int[] v3 = mesh.getBufferedVertex(face[Mesh.VERTEX_3]);
-////		int[] sv1 = shadowVerts[face[Mesh.VERTEX_1]];
-////		int[] sv2 = shadowVerts[face[Mesh.VERTEX_2]];
-////		int[] sv3 = shadowVerts[face[Mesh.VERTEX_3]];
-////		int l = 0;
-////		Light light = lights.get(0);
-////		int[] lightPosition = light.getDirection();
-////		Vector3MathUtils.subtract(v1, v2, cache1);
-////		Vector3MathUtils.subtract(v1, v3, cache2);
-////		Vector3MathUtils.crossProduct(cache1, cache2, cache3);
-////		l += Vector3MathUtils.dotProduct(lightPosition, cache3);
-////		l -= light.getLightStrength() << 3;
-////		v1[Mesh.SHADE_FACTOR] = l;
-////		v2[Mesh.SHADE_FACTOR] = l;
-////		v3[Mesh.SHADE_FACTOR] = l;
-////		sv1 = VectorUtils.copy3(sv1, v1);
-////		sv2 = VectorUtils.copy3(sv2, v2);
-////		sv3 = VectorUtils.copy3(sv3, v3);
-////		Vector3MathUtils.add(sv1, lightPosition, sv1);
-////		Vector3MathUtils.add(sv2, lightPosition, sv2);
-////		Vector3MathUtils.add(sv3, lightPosition, sv3);
-////		sv1[1] = 200;
-////		sv2[1] = 200;
-////		sv3[1] = 200;
-//		return face;
-//	}
-//
-//	@Override
-//	public int[] shadeVertex(int[] vertex, Camera camera) {
-////		Transform camt = camera.getTransform();
-////		// transform vertex in camera space
-////		vertex = Vector3MathUtils.subtract(vertex, camt.getPosition(), vertex);
-////		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, camt.getRotation(), vertex);
-////		// project vertex into screen space
-////		vertex = RenderUtils.project(vertex, camera);
-//		return vertex;
-//	}
-//
-//	int[] vertCache = new int[3];
-//	int[] vertCache1 = new int[3];
-//	int[] vertCache2 = new int[3];
-//	int[] vertCache3 = new int[3];
-//	@Override
-//	public int[] shadeFace(int[] face, Mesh mesh, int[] zBuffer, Camera camera, Transform objectTransform) {
-////		Transform camt = camera.getTransform();
-////		int[] v1 = mesh.getBufferedVertex(face[Mesh.VERTEX_1]);
-////		int[] v2 = mesh.getBufferedVertex(face[Mesh.VERTEX_2]);
-////		int[] v3 = mesh.getBufferedVertex(face[Mesh.VERTEX_3]);
-////		int[] sv1 = shadowVerts[face[Mesh.VERTEX_1]];
-////		int[] sv2 = shadowVerts[face[Mesh.VERTEX_2]];
-////		int[] sv3 = shadowVerts[face[Mesh.VERTEX_3]];
-////		VectorUtils.copy3(vertCache, sv1);
-////		VectorUtils.copy3(vertCache1, v1);
-////		Vector3MathUtils.subtract(sv1, camt.getPosition(), sv1);
-////		Vector3MathUtils.movePointByAnglesXYZ(sv1, camt.getRotation(), sv1);
-////		VectorUtils.copy3(v1, RenderUtils.project(sv1, camera));
-////		VectorUtils.copy3(sv1, vertCache);
-////		VectorUtils.copy3(vertCache, sv2);
-////		VectorUtils.copy3(vertCache2, v2);
-////		Vector3MathUtils.subtract(sv2, camt.getPosition(), sv2);
-////		Vector3MathUtils.movePointByAnglesXYZ(sv2, camt.getRotation(), sv2);
-////		VectorUtils.copy3(v2, RenderUtils.project(sv2, camera));
-////		VectorUtils.copy3(sv2, vertCache);
-////		VectorUtils.copy3(vertCache, sv3);
-////		VectorUtils.copy3(vertCache3, v3);
-////		Vector3MathUtils.subtract(sv3, camt.getPosition(), sv3);
-////		Vector3MathUtils.movePointByAnglesXYZ(sv3, camt.getRotation(), sv3);
-////		VectorUtils.copy3(v3, RenderUtils.project(sv3, camera));
-////		VectorUtils.copy3(sv3, vertCache);
-////		RenderingType type = camera.getRenderingType();
-////		int color = mesh.getMaterial(face[Mesh.MATERIAL_INDEX]).getColor();
-////		camera.setRenderingType(RenderingType.solid);
-////		mesh.getMaterial(face[Mesh.MATERIAL_INDEX]).setColor(ColorUtils.convert(0, 0, 0, 150));
-////		if (!RenderUtils.isInsideViewFrustum(face, mesh, camera)) {
-////			if (!RenderUtils.isBackface(face, mesh)) {
-////				v1[2] = 10000000;
-////				v2[2] = 10000000;
-////				v3[2] = 10000000;
-////				RenderUtils.drawFace(face, mesh, zBuffer, camera);
-////			}
-////		}
-////		mesh.getMaterial(face[Mesh.MATERIAL_INDEX]).setColor(color);
-////		VectorUtils.copy3(v1, vertCache1);
-////		VectorUtils.copy3(v2, vertCache2);
-////		VectorUtils.copy3(v3, vertCache3);
-////		camera.setRenderingType(type);
-//		int[] v1 = mesh.getBufferedVertex(face[Mesh.VERTEX_1]);
-//		int[] v2 = mesh.getBufferedVertex(face[Mesh.VERTEX_2]);
-//		int[] v3 = mesh.getBufferedVertex(face[Mesh.VERTEX_3]);
-//		VectorUtils.copy3(vertCache1, v1);
-//		VectorUtils.copy3(vertCache2, v2);
-//		VectorUtils.copy3(vertCache3, v3);
-//		shadeVertexTest(v1, camera, objectTransform);
-//		shadeVertexTest(v2, camera, objectTransform);
-//		shadeVertexTest(v3, camera, objectTransform);
-//		if (!RenderUtils.isInsideViewFrustum(face, mesh, camera)) {
-//			if (!RenderUtils.isBackface(face, mesh)) {
-//				RenderUtils.drawFace(face, mesh, zBuffer, camera);
-//			}
-//		}
-//		VectorUtils.copy3(v1, vertCache1);
-//		VectorUtils.copy3(v2, vertCache2);
-//		VectorUtils.copy3(v3, vertCache3);
-//		return face;
-//	}
-//	
-//
-//	public int[] shadeVertexTest(int[] vertex, Camera camera, Transform objectTransform) {
-//		Transform objt = objectTransform;
-//		Transform camt = camera.getTransform();
-//		// transform vertex in object space
-//		vertex = Vector3MathUtils.movePointByScale(vertex, objt.getScale(), vertex);
-//		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, objt.getRotation(), vertex);
-//		// transform vertex to world space
-//		vertex = Vector3MathUtils.add(vertex, objt.getPosition(), vertex);
-//		// transform vertex in camera space
-//		vertex = Vector3MathUtils.subtract(vertex, camt.getPosition(), vertex);
-//		vertex = Vector3MathUtils.movePointByAnglesXYZ(vertex, camt.getRotation(), vertex);
-//		// project vertex into screen space
-//		vertex = RenderUtils.project(vertex, camera);
-//		return vertex;
-//	}
+	
+	private void drawWireframe(Vertex vt1, Vertex vt2, Vertex vt3, int color, int[] zBuffer, Camera camera) {
+		// get position of vertexes
+		int[] vp1 = vt1.getPosition();
+		int[] vp2 = vt2.getPosition();
+		int[] vp3 = vt3.getPosition();
+		int x1 = vp1[vx], y1 = vp1[vy], z1 = vp1[vz],
+			x2 = vp2[vx], y2 = vp2[vy], z2 = vp2[vz],
+			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
+	    // color used if rendering type is wireframe or vertex
+	    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
+	    RenderUtils.drawLine(x1, y1, x2, y2, z1, shadedColor, zBuffer, camera);
+		RenderUtils.drawLine(x2, y2, x3, y3, z2, shadedColor, zBuffer, camera);
+		RenderUtils.drawLine(x3, y3, x1, y1, z3, shadedColor, zBuffer, camera);
+	}
 	
 }

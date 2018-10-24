@@ -14,14 +14,6 @@ import com.johnsproject.jpge.utils.RenderUtils;
  */
 public class SceneRenderer {
 	
-	public enum ProjectionType {
-		orthographic, perspective
-	}	
-
-	public enum RenderingType {
-		vertex, wireframe, solid, textured
-	}
-	
 	private int[] zBuffer = null;
 	
 	/**
