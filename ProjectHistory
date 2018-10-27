@@ -211,3 +211,4 @@ v0.1 - 24/08/2018
 * Moved projection type, rendering type... from camera to shader class in form of constants
 27/10/2018
 * Fixed some bugs
+*
