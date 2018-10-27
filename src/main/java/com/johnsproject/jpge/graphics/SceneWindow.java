@@ -1,6 +1,7 @@
 package com.johnsproject.jpge.graphics;
 
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.io.IOException;
 
 import javax.swing.JFrame;
@@ -135,12 +136,11 @@ public class SceneWindow extends JPanel implements UpdateListener{
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.fillRect(0, 0, width, height);
+//		g.fillRect(0, 0, width, height);
 		synchronized (scene.getCameras()) {
 			for (int i = 0; i < scene.getCameras().size(); i++) {
 				Camera camera = scene.getCameras().get(i);
-				int[] screenPos = camera.getScreenPosition();
-				g.drawImage(camera.getViewBuffer(), screenPos[0], screenPos[1], null);
+				g.drawImage(camera.getViewBuffer(), camera.getPositionX(), camera.getPositionY(), null);
 				camera.clearViewBuffer();
 			}
 		}

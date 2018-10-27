@@ -60,9 +60,9 @@ public class Shader {
 		if(projectionType == PROJECT_PERSPECTIVE) {
 			pos = RenderUtils.perspectiveProject(pos, camera);
 		}
+		// transform normal in object space
+		normal = Vector3MathUtils.movePointByAnglesXYZ(normal, objt.getRotation(), normal);
 		if(shadingType == SHADE_GOURAUD) {
-			// transform normal in object space
-			normal = Vector3MathUtils.movePointByAnglesXYZ(normal, objt.getRotation(), normal);
 			// calculate shaded color for every vertex
 			vertex.setColor(shade(lights, objt.getPosition(), normal));
 		}
@@ -146,6 +146,36 @@ public class Shader {
 		return ColorUtils.lerpRBG(lightColor, 0, -factor);
 	}
 	
+	private void drawVertex(Vertex vt1, Vertex vt2, Vertex vt3, int color, int[] zBuffer, Camera camera) {
+		// get position of vertexes
+		int[] vp1 = vt1.getPosition();
+		int[] vp2 = vt2.getPosition();
+		int[] vp3 = vt3.getPosition();
+		int x1 = vp1[vx], y1 = vp1[vy], z1 = vp1[vz],
+			x2 = vp2[vx], y2 = vp2[vy], z2 = vp2[vz],
+			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
+	    // color used if rendering type is wireframe or vertex
+	    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
+		camera.setPixel(x1, y1, z1, shadedColor, zBuffer);
+    	camera.setPixel(x2, y2, z2, shadedColor, zBuffer);
+    	camera.setPixel(x3, y3, z3, shadedColor, zBuffer);
+	}
+	
+	private void drawWireframe(Vertex vt1, Vertex vt2, Vertex vt3, int color, int[] zBuffer, Camera camera) {
+		// get position of vertexes
+		int[] vp1 = vt1.getPosition();
+		int[] vp2 = vt2.getPosition();
+		int[] vp3 = vt3.getPosition();
+		int x1 = vp1[vx], y1 = vp1[vy], z1 = vp1[vz],
+			x2 = vp2[vx], y2 = vp2[vy], z2 = vp2[vz],
+			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
+	    // color used if rendering type is wireframe or vertex
+	    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
+	    RenderUtils.drawLine(x1, y1, x2, y2, z1, shadedColor, zBuffer, camera);
+		RenderUtils.drawLine(x2, y2, x3, y3, z2, shadedColor, zBuffer, camera);
+		RenderUtils.drawLine(x3, y3, x1, y1, z3, shadedColor, zBuffer, camera);
+	}
+	
 	/**
 	 * Returns the projection type use by this Shader.
 	 * 
@@ -198,36 +228,6 @@ public class Shader {
 	 */
 	public void setDrawingType(int drawingType) {
 		this.drawingType = drawingType;
-	}
-
-	private void drawVertex(Vertex vt1, Vertex vt2, Vertex vt3, int color, int[] zBuffer, Camera camera) {
-		// get position of vertexes
-		int[] vp1 = vt1.getPosition();
-		int[] vp2 = vt2.getPosition();
-		int[] vp3 = vt3.getPosition();
-		int x1 = vp1[vx], y1 = vp1[vy], z1 = vp1[vz],
-			x2 = vp2[vx], y2 = vp2[vy], z2 = vp2[vz],
-			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
-	    // color used if rendering type is wireframe or vertex
-	    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
-		camera.setPixel(x1, y1, z1, shadedColor, zBuffer);
-    	camera.setPixel(x2, y2, z2, shadedColor, zBuffer);
-    	camera.setPixel(x3, y3, z3, shadedColor, zBuffer);
-	}
-	
-	private void drawWireframe(Vertex vt1, Vertex vt2, Vertex vt3, int color, int[] zBuffer, Camera camera) {
-		// get position of vertexes
-		int[] vp1 = vt1.getPosition();
-		int[] vp2 = vt2.getPosition();
-		int[] vp3 = vt3.getPosition();
-		int x1 = vp1[vx], y1 = vp1[vy], z1 = vp1[vz],
-			x2 = vp2[vx], y2 = vp2[vy], z2 = vp2[vz],
-			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
-	    // color used if rendering type is wireframe or vertex
-	    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
-	    RenderUtils.drawLine(x1, y1, x2, y2, z1, shadedColor, zBuffer, camera);
-		RenderUtils.drawLine(x2, y2, x3, y3, z2, shadedColor, zBuffer, camera);
-		RenderUtils.drawLine(x3, y3, x1, y1, z3, shadedColor, zBuffer, camera);
 	}
 
 }

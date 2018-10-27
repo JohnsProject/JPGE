@@ -20,7 +20,8 @@ public class Test implements JPGEKeyListener, JPGEMouseListener{
 	int w = 1024, h = 720;
 	public Test() {		
 		try {
-			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/torus.som"));
+			mesh1 = SOMImporter.load("/home/john/Development/test.som");
+//			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/torus.som"));
 			mesh2 = SOMImporter.load(getClass().getResourceAsStream("/monkey.som"));
 		} catch (ImportExeption e) {
 			e.printStackTrace();
@@ -56,9 +57,10 @@ public class Test implements JPGEKeyListener, JPGEMouseListener{
 		//SceneWindow.getScene().addLight(light2);
 		SceneWindow.getScene().addSceneObject(sceneObject);
 		SceneWindow.getScene().addSceneObject(sceneObject2);
-		SceneWindow.getScene().addCamera(camera2);
 		//SceneWindow.setTitle("JPGE Test");
+		SceneWindow.getScene().addCamera(camera2);
 		SceneWindow.getScene().addCamera(camera);
+//		SceneWindow.getScene().addCamera(camera2);
 //		sceneObject.getMesh().playAnimation(1);
 		KeyInputManager.getInstance().addKeyListener(this);
 		MouseInputManager.getInstance().addMouseListener(this);
@@ -136,16 +138,12 @@ public class Test implements JPGEKeyListener, JPGEMouseListener{
 			sceneObject.getShader().setProjectionType(Shader.PROJECT_PERSPECTIVE);
 			sceneObject2.getShader().setProjectionType(Shader.PROJECT_PERSPECTIVE);
 		case '8':
-			sceneObject.setActive(true);
-			sceneObject2.setActive(true);
+			sceneObject.getShader().setShadingType(Shader.SHADE_FLAT);
+			sceneObject2.getShader().setShadingType(Shader.SHADE_FLAT);
 			break;
 		case '9':
-			sceneObject.setActive(true);
-			sceneObject2.setActive(false);
-			break;
-		case '0':
-			sceneObject.setActive(false);
-			sceneObject2.setActive(true);
+			sceneObject.getShader().setShadingType(Shader.SHADE_GOURAUD);
+			sceneObject2.getShader().setShadingType(Shader.SHADE_GOURAUD);
 			break;
 		case '+':
 			light.setStrength(light.getStrength()+1);

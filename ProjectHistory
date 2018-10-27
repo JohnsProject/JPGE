@@ -1,211 +1,213 @@
 Project Start - 28/04/2018 
 28/05/2018
--Added Perspective projection
+* Added Perspective projection
 29/05/2018
--Added BackfaceCulling
--Added drawing order of components
--Added Orthographic projection
+* Added BackfaceCulling
+* Added drawing order of components
+* Added Orthographic projection
 09/06/2018
--Added Blender Mesh importing
--Added BackfaceCulling with sholeance algorithm (tried to implement zBuffer without success)
--Added multiple Cameras Rendering
--Added FileIO class (possibility to read and write files)
--Performance improvements 
--Changed Position, Rotation and Scale classes to Vector3 class
--Added Vector2 class (for 2D graphics)
--Added Transform class (for translating, rotating objects)
--Added GameManager class (updates the engine)
+* Added Blender Mesh importing
+* Added BackfaceCulling with sholeance algorithm (tried to implement zBuffer without success)
+* Added multiple Cameras Rendering
+* Added FileIO class (possibility to read and write files)
+* Performance improvements 
+* Changed Position, Rotation and Scale classes to Vector3 class
+* Added Vector2 class (for 2D graphics)
+* Added Transform class (for translating, rotating objects)
+* Added GameManager class (updates the engine)
 13/06/2018
--Added material color importing
--Changed update method of GameManager from thread to swing timers
--Fixed awt drawing flickering bug by changing to swing timers
+* Added material color importing
+* Changed update method of GameManager from thread to swing timers
+* Fixed awt drawing flickering bug by changing to swing timers
 16/06/2018
--Added shading
--Optimized ram usage
+* Added shading
+* Optimized ram usage
 23/06/2018
--Changed SceneRenderer to draw on BufferedImage of camera instead of making a polygon buffer
--Optimized ram usage
--Changed camera from swing JPanel to awt Canvas (performance improved)
--Changed sceneFrame from swing JFrame to awt Frame (performance improved)
--Optimized mesh Exporter/Importer
--Changed KeyInputManager to work "Stand alone" instead of needing a JComponent to work
+* Changed SceneRenderer to draw on BufferedImage of camera instead of making a polygon buffer
+* Optimized ram usage
+* Changed camera from swing JPanel to awt Canvas (performance improved)
+* Changed sceneFrame from swing JFrame to awt Frame (performance improved)
+* Optimized mesh Exporter/Importer
+* Changed KeyInputManager to work "Stand alone" instead of needing a JComponent to work
 04/07/2018
--Changed Camera ScreenBuffer from Image to BufferedImage
--Added zBuffering!
--Changed from Vector3 class to int[][] for performance reasons
--Changed awt Graphics drawing on Camera to own drawing on BufferedImage
--Optimized sholeance algorithm
--Corrected negative Cosinus bug of Calc
+* Changed Camera ScreenBuffer from Image to BufferedImage
+* Added zBuffering!
+* Changed from Vector3 class to int[][] for performance reasons
+* Changed awt Graphics drawing on Camera to own drawing on BufferedImage
+* Optimized sholeance algorithm
+* Corrected negative Cosinus bug of Calc
 05/07/2018
--Added SOM_Importer (removed test importing method form Mesh class itself)
--Added color baking for shading (stoped generating new colors for each polygon)
--Added ImportExeption (for case of polygons with more than 3 vertexes)
+* Added SOM_Importer (removed test importing method form Mesh class itself)
+* Added color baking for shading (stoped generating new colors for each polygon)
+* Added ImportExeption (for case of polygons with more than 3 vertexes)
 07/07/2018
--Changed from Polygon class to int[][]
--Optimized ram usage a lot
--Fixed awt Canvas flickering bug by drawing to BufferStrategy.getDrawGraphics instead of calling repaint
--Added Vector class that makes basic vector operations (addition, multiplication...)
+* Changed from Polygon class to int[][]
+* Optimized ram usage a lot
+* Fixed awt Canvas flickering bug by drawing to BufferStrategy.getDrawGraphics instead of calling repaint
+* Added Vector class that makes basic vector operations (addition, multiplication...)
 14/07/2018
--Added Animation importing/exporting
--Added SceneAnimator class (animates the Scene)
--Added animations!!!
+* Added Animation importing/exporting
+* Added SceneAnimator class (animates the Scene)
+* Added animations!!!
 03/08/2018
--Fixed bug of bone position not changing vertex position
--Fixed triangle filling bug
--Added auto triangulation when exporting from Blender
--Added sample animation/bone creation when object has no animation/bone
+* Fixed bug of bone position not changing vertex position
+* Fixed triangle filling bug
+* Added auto triangulation when exporting from Blender
+* Added sample animation/bone creation when object has no animation/bone
 17/08/2018
--Changed triangle filling algorithm! (10x performance)
--Created utils package
--Moved Calc class to MathUtils
--Moved Vector class to VectorUtils
--Moved GraphicsCalc class to VectorMathUtils
--Created ColorUtils class for handling the int rgba color of awt
--Created Material class
--Fixed some small bugs
+* Changed triangle filling algorithm! (10x performance)
+* Created utils package
+* Moved Calc class to MathUtils
+* Moved Vector class to VectorUtils
+* Moved GraphicsCalc class to VectorMathUtils
+* Created ColorUtils class for handling the int rgba color of awt
+* Created Material class
+* Fixed some small bugs
 22/08/2018
--Added affine texture mapping!!!
--Writing pixel of Camera to DataBuffer instead of BufferdImage.setPixel (big performance improvement)
+* Added affine texture mapping!!!
+* Writing pixel of Camera to DataBuffer instead of BufferdImage.setPixel (big performance improvement)
 23/08/2018
--Fixed perspective projection bug!!!
--Fixed camera transformation bug
--Removed transformBuffer from SceneObject
--Fixed view frustum culling bug
+* Fixed perspective projection bug!!!
+* Fixed camera transformation bug
+* Removed transformBuffer from SceneObject
+* Fixed view frustum culling bug
 v0.1 - 24/08/2018
--Renamed VectorUtils to Vector3Util class
--Renamed VectorMathUtils to Vector3MathUtils class
+* Renamed VectorUtils to Vector3Util class
+* Renamed VectorMathUtils to Vector3MathUtils class
 25/08/2018
--Created VertexUtils class
--Created UVUtils class
--Changed vertex from int[] to long packed like rbg int value in java awt
--Changed uv from int[] to int packed like rbg int value in java awt
--Changed everything needed to work with the new vertex and uv
+* Created VertexUtils class
+* Created UVUtils class
+* Changed vertex from int[] to long packed like rbg int value in java awt
+* Changed uv from int[] to int packed like rbg int value in java awt
+* Changed everything needed to work with the new vertex and uv
 26/08/2018
--Added texture to the Material class
--Changed Image class pixel storage from BufferedImage to int[]
--Added default texture adding to SOMImporter
--Fixed affine texture mapping uv position swapping bug
--Changed affine texture mapper to work only with integers!
--Fixed some affine texture mapping bugs
--Moved zBuffer from Camera to SceneRenderer
--Changed Image class name to Texture
--Fixed affine texture mapping texture deformation bug!!
+* Added texture to the Material class
+* Changed Image class pixel storage from BufferedImage to int[]
+* Added default texture adding to SOMImporter
+* Fixed affine texture mapping uv position swapping bug
+* Changed affine texture mapper to work only with integers!
+* Fixed some affine texture mapping bugs
+* Moved zBuffer from Camera to SceneRenderer
+* Changed Image class name to Texture
+* Fixed affine texture mapping texture deformation bug!!
 27/08/2018
--Optimized zbuffer
--Added affine texture mapper texture to uv size interpolation
--Fixed zbuffer bug
+* Optimized zbuffer
+* Added affine texture mapper texture to uv size interpolation
+* Fixed zbuffer bug
 28/08/2018
--Renamed UVUtils to Vector2Utils
--Added MouseInputManager class (handles mouse events)
--Added MouseListener interface (sends mouse events)
--Added MouseEvent class (contains event data)
--Optimized KeyInputManager
+* Renamed UVUtils to Vector2Utils
+* Added MouseInputManager class (handles mouse events)
+* Added MouseListener interface (sends mouse events)
+* Added MouseEvent class (contains event data)
+* Optimized KeyInputManager
 01/09/2018
--Added JunitTests and commented MathUtils class
--Added JunitTests and commented VertexUtils class
--Added JunitTests and commented Vector3Utils class
--Added JunitTests and commented Vector3MathUtils class
--Added JunitTests and commented Vector2Utils class
--Renamed Vector3MathUtils to VectorMathUtils because it handles 3d and 2d vectors
--Changed Camera 2d vectors from int[] to int of Vector2Utils
+* Added JunitTests and commented MathUtils class
+* Added JunitTests and commented VertexUtils class
+* Added JunitTests and commented Vector3Utils class
+* Added JunitTests and commented Vector3MathUtils class
+* Added JunitTests and commented Vector2Utils class
+* Renamed Vector3MathUtils to VectorMathUtils because it handles 3d and 2d vectors
+* Changed Camera 2d vectors from int[] to int of Vector2Utils
 02/09/2018
--Fixed sine, cosine precision bug of MathUtils class
--Added surface subdivision to blender som exporter to fix affine texture mapping displacement (like ps1 did :D)
--Improved MathUtils sine, cosine, tangent performance
--Improved affine texture mapper performance (added bitshift to uv interpolation)
+* Fixed sine, cosine precision bug of MathUtils class
+* Added surface subdivision to blender som exporter to fix affine texture mapping displacement (like ps1 did :D)
+* Improved MathUtils sine, cosine, tangent performance
+* Improved affine texture mapper performance (added bitshift to uv interpolation)
 03/09/2018
--Added comments to the Animation class
--Added comments to the Mesh class
--Added comments to the Light class
--Added comments to the Scene class
--Added comments to the Camera class
--Added comments to the Texture class
--Added comments to the Material class
--Added comments to the Transform class
--Added comments to the SceneFrame class
--Added comments to the SceneObject class
--Added comments to the SceneAnimator class
--Added comments to the SceneRenderer class
--Added comments to the CameraEvent class
--Renamed EventDispatcher of graphics event package to GraphicsEventDispatcher
--Added comments to the CameraListener interface
--Added comments to the GraphicsEventDispatcher class
--Added comments to the EventDispatcher class
--Added comments to the UpdateListener interface
--Added comments to the UpdateEvent class
--Changed GameManager update from swing Timers to Threads
--Changed KeyInputManager thread synchronizing from semaphores to synchronized list
+* Added comments to the Animation class
+* Added comments to the Mesh class
+* Added comments to the Light class
+* Added comments to the Scene class
+* Added comments to the Camera class
+* Added comments to the Texture class
+* Added comments to the Material class
+* Added comments to the Transform class
+* Added comments to the SceneFrame class
+* Added comments to the SceneObject class
+* Added comments to the SceneAnimator class
+* Added comments to the SceneRenderer class
+* Added comments to the CameraEvent class
+* Renamed EventDispatcher of graphics event package to GraphicsEventDispatcher
+* Added comments to the CameraListener interface
+* Added comments to the GraphicsEventDispatcher class
+* Added comments to the EventDispatcher class
+* Added comments to the UpdateListener interface
+* Added comments to the UpdateEvent class
+* Changed GameManager update from swing Timers to Threads
+* Changed KeyInputManager thread synchronizing from semaphores to synchronized list
 04/09/2018
--Changed SceneRenderer to work with 2 threads, 1 for transformations, and other for drawing (needs to be refactored, its a mess now)
--Added SceneRasterizer class
--Changed graphics update type of UpdateEvent to render and rasterize update type
--Changed graphicsUpdate thread of GameManager to renderUpdate and rasterizeUpdate
--Now the SceneRenderer does the transformations and the SceneRasterizer draws the Scene
--Performance improved with this new graphics pipeline!!!
--Updated SceneRenderer comments and added comments to the SceneRasterizer class
+* Changed SceneRenderer to work with 2 threads, 1 for transformations, and other for drawing (needs to be refactored, its a mess now)
+* Added SceneRasterizer class
+* Changed graphics update type of UpdateEvent to render and rasterize update type
+* Changed graphicsUpdate thread of GameManager to renderUpdate and rasterizeUpdate
+* Now the SceneRenderer does the transformations and the SceneRasterizer draws the Scene
+* Performance improved with this new graphics pipeline!!!
+* Updated SceneRenderer comments and added comments to the SceneRasterizer class
 05/09/2018
--Added PixelShader class! (is called to shade when a pixel in the Camera is set)
--Added Shader class! (is called to shade the vertexes and polygons by the SceneRenderer)
+* Added PixelShader class! (is called to shade when a pixel in the Camera is set)
+* Added Shader class! (is called to shade the vertexes and polygons by the SceneRenderer)
 08/09/2018
--Updated some comments
--Added RenderUtils class (provides methods needed at the rendering process)
+* Updated some comments
+* Added RenderUtils class (provides methods needed at the rendering process)
 10/09/2018
--Deleted SceneRasterizer class
--Removed multithreaded rendering pipeline to fix multiple camera rendering bug
--Fixed some bugs
+* Deleted SceneRasterizer class
+* Removed multithreaded rendering pipeline to fix multiple camera rendering bug
+* Fixed some bugs
 11/09/2018
--Added Profiler class!! (shows informations about what the engine is currently doing)
+* Added Profiler class!! (shows informations about what the engine is currently doing)
 17/09/2018
--Added benchmarks and optimized some things
+* Added benchmarks and optimized some things
 19/09/2018
--Changed vertexes from long to int[] (performance reasons)
--Changed vectors from long to int[] (performance reasons)
--Changed everything to work with int[] again
--Renamed VectorMathUtils class to Vector3MathUtils because with int[] (to handle only 3D vectors/int arrays with length >= 3)
--Added Vector2MathUtils class (to handle only 2D vectors/int arrays with length >= 2)
--Added VectorUtils class (provides methods for swapping vectors and so on)
--Removed Vector2Utils class
--Removed Vector3Utils class
+* Changed vertexes from long to int[] (performance reasons)
+* Changed vectors from long to int[] (performance reasons)
+* Changed everything to work with int[] again
+* Renamed VectorMathUtils class to Vector3MathUtils because with int[] (to handle only 3D vectors/int arrays with length >= 3)
+* Added Vector2MathUtils class (to handle only 2D vectors/int arrays with length >= 2)
+* Added VectorUtils class (provides methods for swapping vectors and so on)
+* Removed Vector2Utils class
+* Removed Vector3Utils class
 22/09/2018
--Fixed flickering bug (changed from Canvas to JPanel)
--Performance improvement
--Improved Profiler (showing pressed key and mouse clicks now)
--Fixed some bugs
+* Fixed flickering bug (changed from Canvas to JPanel)
+* Performance improvement
+* Improved Profiler (showing pressed key and mouse clicks now)
+* Fixed some bugs
 26/09/2018
--Added flat shading!!
--Fixed some bugs
+* Added flat shading!!
+* Fixed some bugs
 27/09/2018
--Fixed projection bug
+* Fixed projection bug
 27/09/2018
--Fixed some bugs
--Added new methods to VectorUtils and MathUtils
+* Fixed some bugs
+* Added new methods to VectorUtils and MathUtils
 02/10/2018
--Added lerp method to the ColorUtils
--Optimized random algorithm and added ranged random method to MathUtils
--Optimized and improved the default Shader
--Fixed some bugs
+* Added lerp method to the ColorUtils
+* Optimized random algorithm and added ranged random method to MathUtils
+* Optimized and improved the default Shader
+* Fixed some bugs
 02/10/2018
--Added gouraud shading to the affine texture mapping algorithm in RenderUtils
+* Added gouraud shading to the affine texture mapping algorithm in RenderUtils
 03/10/2018
--Added vertex normal exporting/importing
--Fixed growing ram usage bug (it was the foreach light loop in the Shader class, wtf ???,
+* Added vertex normal exporting/importing
+* Fixed growing ram usage bug (it was the foreach light loop in the Shader class, wtf ???,
  it fixed when i changed to for loop, now changed all foreach to for loops)
 07/10/2018
--Fixed depth buffer bug!!! (added per pixel depth value interpolation)
--Added Vertex class
--Added Face class
--Changed things to work with Face and Vertex class
--Added per pixel depth value interpolation to the affine texture mapper
+* Fixed depth buffer bug!!! (added per pixel depth value interpolation)
+* Added Vertex class
+* Added Face class
+* Changed things to work with Face and Vertex class
+* Added per pixel depth value interpolation to the affine texture mapper
 13/10/2018
--Improved performance of Face drawing algorithms
--Fixed bugs and improved performace in ColorUtils class
--Fixed bugs
--Improved performance
+* Improved performance of Face drawing algorithms
+* Fixed bugs and improved performace in ColorUtils class
+* Fixed bugs
+* Improved performance
 22/10/2018
--Added some default models to the resources folder
--Fixed some bugs
--Improved precision of som exporter/importer
+* Added some default models to the resources folder
+* Fixed some bugs
+* Improved precision of som exporter/importer
 24/10/2018
--Renamed SceneFrame to SceneWindow
--Moved JPanel from each Camera to 1 JPanel in the SceneWindow (less ram usage, fixed flickering bug when more than 1 Camera is active)
--Moved projection type, rendering type... from camera to shader class in form of constants
+* Renamed SceneFrame to SceneWindow
+* Moved JPanel from each Camera to 1 JPanel in the SceneWindow (less ram usage, fixed flickering bug when more than 1 Camera is active)
+* Moved projection type, rendering type... from camera to shader class in form of constants
+27/10/2018
+* Fixed some bugs

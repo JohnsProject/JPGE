@@ -13,9 +13,11 @@ import java.awt.image.DataBufferInt;
 public class Camera{
 	
 	private String name;
-	private int[] screenPosition;
+	private int x = 0;
+	private int y = 0;
 	private int width = 0;
 	private int height = 0;
+	private int priority = 1;
 	private int halfWidth = 0;
 	private int halfHeight = 0;
 	private int FieldOfView = 60;
@@ -44,7 +46,8 @@ public class Camera{
 		this.halfWidth = width >> 1;
 		this.halfHeight = height >> 1;
 		this.scaleFactor = ((width + height) >> 7) + 1;
-		this.screenPosition = new int[] {x, y};
+		this.x = x;
+		this.y = y;
 		this.viewBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
 		this.viewBufferData = ((DataBufferInt)viewBuffer.getRaster().getDataBuffer()).getData();
 		this.changed = true;
@@ -124,14 +127,59 @@ public class Camera{
 	}
 	
 	/**
-	 * Returns the position of this camera at the {@link SceneWindow}.
+	 * Returns the x position of this camera in screen.
 	 * 
-	 * @return position of this camera at the {@link SceneWindow}.
+	 * @return x position of this camera in screen.
 	 */
-	public int[] getScreenPosition() {
-		return this.screenPosition;
+	public int getPositionX() {
+		return x;
 	}
+
+	/**
+	 * Returns the y position of this camera in screen.
+	 * 
+	 * @return y position of this camera in screen.
+	 */
+	public int getPositionY() {
+		return y;
+	}
+
+	/**
+	 * Sets the postition of this camera in screen.
+	 * 
+	 * @param x position in the x axis.
+	 * @param y position in the y axis.
+	 */
+	public void setPosition(int x, int y) {
+		this.x = x;
+		this.y = y;
+	}
+
+	/**
+	 * Returns the priority of this camera in the drawing order.
+	 * The priority means the order in wich cameras will be drawn, 
+	 * if the priority of one camera is 1 and the other is 2 then 
+	 * 2 will be drawn over 1.
+	 * 
+	 * @return priority of this camera in the drawing order.
+	 */
+	public int getPriority() {
+		return priority;
+	}
+
 	
+	/**
+	 * Returns the priority of this camera in the drawing order.
+	 * The priority means the order in wich cameras will be drawn, 
+	 * if the priority of one camera is 1 and the other is 2 then 
+	 * 2 will be drawn over 1.
+	 * 
+	 * @param priority priority of this camera in the drawing order.
+	 */
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
 	/**
 	 * Returns the scale factor of this camera.
 	 * This is used by the {@link SceneRenderer} at the rendering process 

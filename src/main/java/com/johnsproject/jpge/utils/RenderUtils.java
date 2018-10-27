@@ -136,6 +136,19 @@ public class RenderUtils {
 	}
 	
 	// line drawing with fixed point Brenseham's
+	
+	/**
+	 * Draws a line on the given {@link Camera} using Brenseham's line algorithm.
+	 * 
+	 * @param x1 start x position.
+	 * @param y1 start y position.
+	 * @param x2 end x position.
+	 * @param y2 end y position.
+	 * @param z z position used by the zBuffer.
+	 * @param color color of the line.
+	 * @param zBuffer zBuffer to use.
+	 * @param camera {@link Camera} to draw on.
+	 */
 	public static void drawLine(int x1, int y1, int x2, int y2, int z, int color,
 						int[] zBuffer, Camera camera) {
 		int w = x2 - x1;
@@ -174,7 +187,7 @@ public class RenderUtils {
 	}
 	
 	/**
-	 * Draw the given {@link Face} on the given {@link Camera} using the gouraud shading technic.
+	 * Draws the given {@link Face} on the given {@link Camera} using the gouraud shading technic.
 	 * 
 	 * @param face {@link Face} to draw.
 	 * @param mesh {@link Mesh} that contains the given {@link Face}.
@@ -369,7 +382,7 @@ public class RenderUtils {
 	
 	static void drawHLine(int sx, int ex, int sz, int dz, int sr, int dr, int sg, int dg, int sb, int db, int sa, int da, int sy, int color,
 							int[] zBuffer, Camera camera) {
-		for (; sx < ex; sx++) {
+		for (; sx <= ex; sx++) {
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
 			// no need to shift sz as the z test is just check if its a higher value
 			camera.setPixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 255), zBuffer);
@@ -382,7 +395,7 @@ public class RenderUtils {
 	}
 	
 	/**
-	 * Draw the given {@link Face} on the given {@link Camera} using the gouraud shading and affine texture mapping technic.
+	 * Draws the given {@link Face} on the given {@link Camera} using the gouraud shading and affine texture mapping technic.
 	 * 
 	 * @param face {@link Face} to draw.
 	 * @param mesh {@link Mesh} that contains the given {@link Face}.
@@ -612,7 +625,7 @@ public class RenderUtils {
 	static void drawHLineAffine(int sx, int ex, int sz, int dz, int su, int du, int sv, int dv, int sr,
 								int dr, int sg, int dg, int sb, int db, int sa, int da, int sy,
 								Texture img, int[] zBuffer, Camera camera) {
-		for (; sx < ex; sx++) {
+		for (; sx <= ex; sx++) {
 			// get texture pixel / texel color
 			int color = img.getPixel(su >> SHIFT, sv >> SHIFT);
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
