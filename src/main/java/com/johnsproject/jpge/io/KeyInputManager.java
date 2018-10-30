@@ -14,7 +14,6 @@ import com.johnsproject.jpge.Profiler;
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 import com.johnsproject.jpge.event.UpdateListener;
-import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
 
 public class KeyInputManager implements UpdateListener {
 
@@ -68,7 +67,7 @@ public class KeyInputManager implements UpdateListener {
 
 	@Override
 	public void update(UpdateEvent event) {
-		if (event.getUpdateType() == UpdateType.input) {
+		if (event.getUpdateType() == GameManager.UPDATE_INPUT) {
 			synchronized (keyListeners) {
 				synchronized (pressedKeys) {
 					String data = "";

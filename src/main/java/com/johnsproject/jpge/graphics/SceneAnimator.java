@@ -3,8 +3,11 @@
  */
 package com.johnsproject.jpge.graphics;
 
+import com.johnsproject.jpge.Animation;
+import com.johnsproject.jpge.GameManager;
+import com.johnsproject.jpge.Scene;
+import com.johnsproject.jpge.SceneObject;
 import com.johnsproject.jpge.event.UpdateEvent;
-import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
 
 /**
  * The SceneAnimator class updates the frame of the current {@link Animation} 
@@ -15,7 +18,7 @@ import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
 public class SceneAnimator {
 	
 	private int speed = 1;
-	private UpdateType updateType = UpdateType.physics;
+	private int updateType = GameManager.UPDATE_PHYSICS;
 	
 	/**
 	 * Creates a new instance of the SceneAnimator class.
@@ -62,7 +65,7 @@ public class SceneAnimator {
 	 * 
 	 * @return wich {@link UpdateEvent} type this scene animator will respond to by animating the scene.
 	 */
-	public UpdateType getUpdateType() {
+	public int getUpdateType() {
 		return updateType;
 	}
 
@@ -71,7 +74,7 @@ public class SceneAnimator {
 	 * 
 	 * @param updateType {@link UpdateEvent} type. 
 	 */
-	public void setUpdateType(UpdateType updateType) {
+	public void setUpdateType(int updateType) {
 		this.updateType = updateType;
 	}
 	

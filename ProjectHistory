@@ -211,4 +211,10 @@ v0.1 - 24/08/2018
 * Moved projection type, rendering type... from camera to shader class in form of constants
 27/10/2018
 * Fixed some bugs
-*
+30/10/2018
+* Fixed multiple cameras overlapping bug
+* Changed enum from Light to int (Use constats in Shader class for light types)
+* Moved zBuffer from SceneRenderer to SceneWindow
+* Moved all value objects from graphics to the jpge package
+* Deleted PixelShader class and moved shadePixel method to Shader
+* Added physics package

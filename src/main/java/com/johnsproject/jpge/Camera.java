@@ -1,7 +1,10 @@
-package com.johnsproject.jpge.graphics;
+package com.johnsproject.jpge;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+
+import com.johnsproject.jpge.graphics.SceneRenderer;
+import com.johnsproject.jpge.graphics.SceneWindow;
 
 /**
  * The Camera class is used to view a {@link Scene}.
@@ -17,7 +20,6 @@ public class Camera{
 	private int y = 0;
 	private int width = 0;
 	private int height = 0;
-	private int priority = 1;
 	private int halfWidth = 0;
 	private int halfHeight = 0;
 	private int FieldOfView = 60;
@@ -28,7 +30,6 @@ public class Camera{
 	private BufferedImage viewBuffer;
 	private int[] viewBufferData;
 	private boolean changed = false;
-	private PixelShader shader;
 	
 	/**
 	 * Creates a new instance of the Camera class filled with the given values.
@@ -51,7 +52,6 @@ public class Camera{
 		this.viewBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
 		this.viewBufferData = ((DataBufferInt)viewBuffer.getRaster().getDataBuffer()).getData();
 		this.changed = true;
-		this.shader = new PixelShader();
 	}
 	
 	/**
@@ -62,20 +62,6 @@ public class Camera{
 			viewBufferData[i] = 0;
 		}
 	}
-
-	/**
-	 * Sets the pixel of the view buffer of this camera at the given position with given colors.
-	 * This method tells the camera to call the shadePixel method of this cameras shader.
-	 * 
-	 * @param x position of pixel at the x axis.
-	 * @param y position of pixel at the y axis.
-	 * @param z position of pixel at the z axis.
-	 * @param color color of pixel to set.
-	 * @param zBuffer buffer containing depth of pixels of this camera.
-	 */
-	public void setPixel(int x, int y, int z, int color, int[] zBuffer){
-		shader.shadePixel(x, y, z, color,  width, height, viewBufferData, zBuffer);
-	}
 	
 	/**
 	 * Returns the {@link BufferedImage view buffer} of this camera.
@@ -84,6 +70,16 @@ public class Camera{
 	 */
 	public BufferedImage getViewBuffer() {
 		return viewBuffer;
+	}
+	
+	/**
+	 * Returns the data of the {@link BufferedImage view buffer} of this camera.
+	 * The data is an int[] containing color data of all pixels of the view buffer.
+	 * 
+	 * @return data of the {@link BufferedImage view buffer} of this camera.
+	 */
+	public int[] getViewBufferData() {
+		return viewBufferData;
 	}
 
 	/**
@@ -153,31 +149,6 @@ public class Camera{
 	public void setPosition(int x, int y) {
 		this.x = x;
 		this.y = y;
-	}
-
-	/**
-	 * Returns the priority of this camera in the drawing order.
-	 * The priority means the order in wich cameras will be drawn, 
-	 * if the priority of one camera is 1 and the other is 2 then 
-	 * 2 will be drawn over 1.
-	 * 
-	 * @return priority of this camera in the drawing order.
-	 */
-	public int getPriority() {
-		return priority;
-	}
-
-	
-	/**
-	 * Returns the priority of this camera in the drawing order.
-	 * The priority means the order in wich cameras will be drawn, 
-	 * if the priority of one camera is 1 and the other is 2 then 
-	 * 2 will be drawn over 1.
-	 * 
-	 * @param priority priority of this camera in the drawing order.
-	 */
-	public void setPriority(int priority) {
-		this.priority = priority;
 	}
 
 	/**
@@ -285,7 +256,7 @@ public class Camera{
 	 * 
 	 * @return if this camera has changed since last frame.
 	 */
-	boolean changed() {
+	public boolean changed() {
 		return changed;
 	}
 	
@@ -294,25 +265,7 @@ public class Camera{
 	 * 
 	 * @param changed if this camera has changed since last frame.
 	 */
-	void changed(boolean changed) {
+	public void changed(boolean changed) {
 		this.changed = changed;
-	}
-	
-	/**
-	 * Returns the {@link PixelShader} used by this camera.
-	 * 
-	 * @return {@link PixelShader} used by this camera.
-	 */
-	public PixelShader getShader() {
-		return shader;
-	}
-
-	/**
-	 * Sets the {@link PixelShader} of this camera.
-	 * 
-	 * @param shader {@link PixelShader} to set.
-	 */
-	public void setShader(PixelShader shader) {
-		this.shader = shader;
 	}
 }

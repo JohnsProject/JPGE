@@ -13,7 +13,7 @@ import com.johnsproject.jpge.io.FileIO;
 import com.sun.management.OperatingSystemMXBean;
 
 /**
- * The Profiler class profiles the engine it shows informations about what the engine is currently doing.
+ * The Profiler class shows informations about what the engine is currently doing.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */

@@ -2,7 +2,7 @@ package com.johnsproject.jpge.utils;
 
 import org.junit.Test;
 
-import com.johnsproject.jpge.graphics.Camera;
+import com.johnsproject.jpge.Camera;
 
 /**
  * Test class for {@link MathUtils}.

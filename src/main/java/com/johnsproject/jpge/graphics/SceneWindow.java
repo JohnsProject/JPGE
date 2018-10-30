@@ -1,16 +1,17 @@
 package com.johnsproject.jpge.graphics;
 
 import java.awt.Graphics;
-import java.awt.Graphics2D;
 import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.johnsproject.jpge.Camera;
 import com.johnsproject.jpge.GameManager;
+import com.johnsproject.jpge.Profiler;
+import com.johnsproject.jpge.Scene;
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
-import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
 import com.johnsproject.jpge.event.UpdateListener;
 import com.johnsproject.jpge.io.FileIO;
 
@@ -32,6 +33,7 @@ public class SceneWindow extends JPanel implements UpdateListener{
 	private Scene scene;
 	private SceneRenderer renderer;
 	private SceneAnimator animator;
+	private int[] zBuffer = null;
 	
 	/**
 	 * Creates a new instance of the SceneWindow class filled with the given values.
@@ -70,7 +72,10 @@ public class SceneWindow extends JPanel implements UpdateListener{
 	 * Initializes the components and values of this scene frame.
 	 */
 	void initializeFrame(){
-		renderer = new SceneRenderer(width, height);
+		zBuffer = new int[width * height];
+		Profiler.getInstance().getData().setWidth(width);
+		Profiler.getInstance().getData().setHeight(height);
+		renderer = new SceneRenderer();
 		animator = new SceneAnimator();
 		try {
 			frame.setIconImage(FileIO.loadImage(getClass().getResourceAsStream("/JohnsProjectLogo.png")));
@@ -123,9 +128,17 @@ public class SceneWindow extends JPanel implements UpdateListener{
 	}
 	
 	@Override
+	public void setSize(int width, int height) {
+		super.setSize(width, height);
+		zBuffer = new int[width * height];
+		Profiler.getInstance().getData().setWidth(width);
+		Profiler.getInstance().getData().setHeight(height);
+	}
+
+	@Override
 	public void update(UpdateEvent event) {
-		if(event.getUpdateType() == UpdateType.graphics) {
-			renderer.render(getScene());
+		if(event.getUpdateType() == GameManager.UPDATE_GRAPHICS) {
+			renderer.render(getScene(), zBuffer);
 			this.repaint();
 		}
 		if(event.getUpdateType() == animator.getUpdateType()) {
@@ -136,7 +149,6 @@ public class SceneWindow extends JPanel implements UpdateListener{
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-//		g.fillRect(0, 0, width, height);
 		synchronized (scene.getCameras()) {
 			for (int i = 0; i < scene.getCameras().size(); i++) {
 				Camera camera = scene.getCameras().get(i);

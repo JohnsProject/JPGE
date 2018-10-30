@@ -2,6 +2,14 @@ package com.johnsproject.jpge.graphics;
 
 import java.util.List;
 
+import com.johnsproject.jpge.Camera;
+import com.johnsproject.jpge.Face;
+import com.johnsproject.jpge.Light;
+import com.johnsproject.jpge.Mesh;
+import com.johnsproject.jpge.Scene;
+import com.johnsproject.jpge.SceneObject;
+import com.johnsproject.jpge.Transform;
+import com.johnsproject.jpge.Vertex;
 import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.RenderUtils;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
@@ -16,6 +24,7 @@ import com.johnsproject.jpge.utils.VectorUtils;
 public class Shader {
 
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
+	public static final int LIGHT_DIRECTIONAL = 0;
 	public static final int PROJECT_ORTHOGRAPHIC = 0;
 	public static final int PROJECT_PERSPECTIVE = 1;
 	public static final int SHADE_FLAT = 0;
@@ -28,7 +37,6 @@ public class Shader {
 	private int projectionType = PROJECT_PERSPECTIVE;
 	private int shadingType = SHADE_GOURAUD;
 	private int drawingType = DRAW_TEXTURED;
-	private int[] vectorCache = new int[3];
 	
 	/**
 	 * This method is called by the {@link SceneRenderer} at the rendering process.
@@ -43,28 +51,28 @@ public class Shader {
 	public Vertex shadeVertex(Vertex vertex, Mesh mesh, Camera camera, Transform objectTransform, List<Light> lights) {
 		Transform objt = objectTransform;
 		Transform camt = camera.getTransform();
-		int[] pos = vertex.getPosition();
+		int[] vector = vertex.getPosition();
 		int[] normal = vertex.getNormal();
 		// transform vertex in object space
-		pos = Vector3MathUtils.movePointByScale(pos, objt.getScale(), pos);
-		pos = Vector3MathUtils.movePointByAnglesXYZ(pos, objt.getRotation(), pos);
-		// transform vertex to world space
-		pos = Vector3MathUtils.add(pos, objt.getPosition(), pos);
-		// transform vertex to camera space
-		pos = Vector3MathUtils.subtract(pos, camt.getPosition(), pos);
-		pos = Vector3MathUtils.movePointByAnglesXYZ(pos, camt.getRotation(), pos);
-		// transform / project vertex to screen space
-		if(projectionType == PROJECT_ORTHOGRAPHIC) {
-			pos = RenderUtils.orthographicProject(pos, camera);
-		}
-		if(projectionType == PROJECT_PERSPECTIVE) {
-			pos = RenderUtils.perspectiveProject(pos, camera);
-		}
+		vector = Vector3MathUtils.movePointByScale(vector, objt.getScale(), vector);
+		vector = Vector3MathUtils.movePointByAnglesXYZ(vector, objt.getRotation(), vector);
 		// transform normal in object space
 		normal = Vector3MathUtils.movePointByAnglesXYZ(normal, objt.getRotation(), normal);
 		if(shadingType == SHADE_GOURAUD) {
 			// calculate shaded color for every vertex
-			vertex.setColor(shade(lights, objt.getPosition(), normal));
+			vertex.setColor(shade(lights, vector, normal));
+		}
+		// transform vertex to world space
+		vector = Vector3MathUtils.add(vector, objt.getPosition(), vector);
+		// transform vertex to camera space
+		vector = Vector3MathUtils.subtract(vector, camt.getPosition(), vector);
+		vector = Vector3MathUtils.movePointByAnglesXYZ(vector, camt.getRotation(), vector);
+		// transform / project vertex to screen space
+		if(projectionType == PROJECT_ORTHOGRAPHIC) {
+			vector = RenderUtils.orthographicProject(vector, camera);
+		}
+		if(projectionType == PROJECT_PERSPECTIVE) {
+			vector = RenderUtils.perspectiveProject(vector, camera);
 		}
 		return vertex;
 	}
@@ -99,7 +107,7 @@ public class Shader {
 				// draw face
 				int color = mesh.getMaterial(face.getMaterial()).getColor();
 				// color used if rendering type is wireframe or vertex
-				int shadedColor = ColorUtils.lerpRBG(color, vt1.getColor(), -255);
+				int shadedColor = ColorUtils.lerpRBG(vt1.getColor(), color, 500);
 				// draw based on the cameras rendering type
 				switch (drawingType) {
 				case DRAW_VERTEX:
@@ -111,11 +119,11 @@ public class Shader {
 					break;
 
 				case DRAW_FLAT:
-					RenderUtils.drawFaceGouraud(face, mesh, zBuffer, camera);
+					RenderUtils.drawFaceGouraud(face, mesh, zBuffer, this, camera);
 					break;
 
 				case DRAW_TEXTURED:
-					RenderUtils.drawFaceAffine(face, mesh, zBuffer, camera);
+					RenderUtils.drawFaceAffine(face, mesh, zBuffer, this, camera);
 					break;
 				}
 			}
@@ -123,27 +131,45 @@ public class Shader {
 		return face;
 	}
 	
-	private int shade(List<Light> lights, int[] objectPos, int[] normal) {
+	/**
+	 * This method is called by the {@link SceneRenderer} at the rendering process.
+	 * 
+	 * @param x position of pixel in the x axis.
+	 * @param y position of pixel in the y axis.
+	 * @param z position of pixel in the z axis.
+	 * @param color color of pixel.
+	 * @param camera {@link Camera} to set pixel.
+	 * @param zBuffer buffer containing depth of the pixels of the {@link Camera}.
+	 */
+	public void shadePixel (int x, int y, int z, int color, int[] zBuffer, Camera camera) {
+		// check if pixel is inside camera
+		if (x > 0 && x < camera.getWidth() && y > 0 && y < camera.getHeight()) {
+			// calculate 1D array position of 2D xy position
+			int pos = x + (y * camera.getWidth());
+			// z test
+			if (zBuffer[pos] > z) {
+				zBuffer[pos] = z;
+				camera.getViewBufferData()[pos] = color;
+			}
+		}
+	}
+	
+	private int shade(List<Light> lights, int[] vector, int[] normal) {
 		int factor = 0;
 		int lightColor = 0;
 		for (int i = 0; i < lights.size(); i++) {
 			Light light = lights.get(i);
 			int[] lightPosition = light.getTransform().getPosition();
 			switch (light.getType()) {
-			case sun:
+			case LIGHT_DIRECTIONAL:
 				factor += Vector3MathUtils.dotProduct(lightPosition, normal);
 				factor /= light.getStrength();
 				break;
-			case point:
-				vectorCache = Vector3MathUtils.distance(objectPos, lightPosition, vectorCache);
-				factor += Vector3MathUtils.dotProduct(vectorCache, normal);
-				factor /= light.getStrength();
-				break;
 			}
-			lightColor = ColorUtils.lerpRBG(light.getColor(), lightColor, -100);
+			lightColor = ColorUtils.lerpRBG(light.getColor(), lightColor, 100);
 		}
 		// return color
-		return ColorUtils.lerpRBG(lightColor, 0, -factor);
+		return ColorUtils.lerpRBG(ColorUtils.convert(255, 255, 255), 0, -factor-50);
 	}
 	
 	private void drawVertex(Vertex vt1, Vertex vt2, Vertex vt3, int color, int[] zBuffer, Camera camera) {
@@ -156,9 +182,9 @@ public class Shader {
 			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
 	    // color used if rendering type is wireframe or vertex
 	    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
-		camera.setPixel(x1, y1, z1, shadedColor, zBuffer);
-    	camera.setPixel(x2, y2, z2, shadedColor, zBuffer);
-    	camera.setPixel(x3, y3, z3, shadedColor, zBuffer);
+	    shadePixel(x1, y1, z1, shadedColor, zBuffer, camera);
+	    shadePixel(x2, y2, z2, shadedColor, zBuffer, camera);
+	    shadePixel(x3, y3, z3, shadedColor, zBuffer, camera);
 	}
 	
 	private void drawWireframe(Vertex vt1, Vertex vt2, Vertex vt3, int color, int[] zBuffer, Camera camera) {
@@ -171,9 +197,9 @@ public class Shader {
 			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
 	    // color used if rendering type is wireframe or vertex
 	    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
-	    RenderUtils.drawLine(x1, y1, x2, y2, z1, shadedColor, zBuffer, camera);
-		RenderUtils.drawLine(x2, y2, x3, y3, z2, shadedColor, zBuffer, camera);
-		RenderUtils.drawLine(x3, y3, x1, y1, z3, shadedColor, zBuffer, camera);
+	    RenderUtils.drawLine(x1, y1, x2, y2, z1, shadedColor, zBuffer, this, camera);
+		RenderUtils.drawLine(x2, y2, x3, y3, z2, shadedColor, zBuffer, this, camera);
+		RenderUtils.drawLine(x3, y3, x1, y1, z3, shadedColor, zBuffer, this, camera);
 	}
 	
 	/**

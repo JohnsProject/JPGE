@@ -2,7 +2,15 @@ package com.johnsproject.jpge.graphics;
 
 import java.util.List;
 
+import com.johnsproject.jpge.Animation;
+import com.johnsproject.jpge.Camera;
+import com.johnsproject.jpge.Face;
+import com.johnsproject.jpge.Light;
+import com.johnsproject.jpge.Mesh;
 import com.johnsproject.jpge.Profiler;
+import com.johnsproject.jpge.Scene;
+import com.johnsproject.jpge.SceneObject;
+import com.johnsproject.jpge.Vertex;
 import com.johnsproject.jpge.utils.RenderUtils;
 
 /**
@@ -14,49 +22,26 @@ import com.johnsproject.jpge.utils.RenderUtils;
  */
 public class SceneRenderer {
 	
-	private int[] zBuffer = null;
-	
-	/**
-	 * Creates a new instance of the SceneRenderer class filled with the given values.
-	 * 
-	 * @param width window width.
-	 * @param height window height.
-	 */
-	public SceneRenderer(int width, int height) {
-		setZBufferSize(width, height);
-	}
-	
-	/**
-	 * Sets the size of the depth buffer of this scene renderer.
-	 * 
-	 * @param width depth buffer width.
-	 * @param height depth buffer height.
-	 */
-	public void setZBufferSize(int width, int height) {
-		zBuffer = new int[width*height];
-		Profiler.getInstance().getData().setWidth(width);
-		Profiler.getInstance().getData().setHeight(height);
-	}
-	
 	/**
 	 * Tells this scene renderer to render the given {@link Scene}.
 	 * 
 	 * @param scene {@link Scene} to render.
+	 * @param zBuffer depth buffer to use.
 	 */
-	public void render(Scene scene) {
-		// reset z buffer
-		resetZBuffer();
+	public void render(Scene scene, int[] zBuffer) {
 		// reseting profiler data
 		Profiler.getInstance().getData().setMaxFaces(0);
 		Profiler.getInstance().getData().setRenderedFaces(0);
 		synchronized (scene.getCameras()) {
 			for (int i = 0; i < scene.getCameras().size(); i++) {
+				// reset z buffer
+				resetZBuffer(zBuffer);
 				Camera camera = scene.getCameras().get(i);
 				for (int j = 0; j < scene.getSceneObjects().size(); j++) {
 					SceneObject sceneObject = scene.getSceneObjects().get(j);
 					// check if object is active or has changed (no need to render if its the same)
 					if (sceneObject.isActive() && (sceneObject.changed() || camera.changed())) {
-						render(sceneObject, camera, scene.getLights());
+						render(sceneObject, camera, scene.getLights(), zBuffer);
 					}
 				}
 				camera.changed(false);
@@ -71,13 +56,15 @@ public class SceneRenderer {
 	}
 	
 	/**
-	 * Renders the given {@link SceneObject} to the given {@link Camera} taking in account the given {@link Light Lights}.
+	 * Tells this scene renderer to render the given {@link SceneObject} 
+	 * to the given {@link Camera} taking in account the given {@link Light Lights}.
 	 * 
 	 * @param sceneObject {@link SceneObject} to render.
 	 * @param camera {@link Camera} that the {@link SceneObject} will be rendered to.
 	 * @param lights {@link Light Lights} influencing the {@link SceneObject}.
+	 * @param zBuffer depth buffer to use.
 	 */
-	void render(SceneObject sceneObject, Camera camera, List<Light> lights) {
+	void render(SceneObject sceneObject, Camera camera, List<Light> lights, int[] zBuffer) {
 		Mesh mesh = sceneObject.getMesh();
 		Animation animation = mesh.getCurrentAnimation();
 		Shader shader = sceneObject.getShader();
@@ -106,8 +93,10 @@ public class SceneRenderer {
 	
 	/**
 	 * Resets the depth buffer of this scene renderer.
+	 * 
+	 * @param zBuffer depth buffer to use.
 	 */
-	public void resetZBuffer() {
+	public void resetZBuffer(int[] zBuffer) {
 		for (int i = 0; i < zBuffer.length; i++) {
 			zBuffer[i] = Integer.MAX_VALUE;
 		}

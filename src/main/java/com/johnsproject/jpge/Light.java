@@ -1,4 +1,4 @@
-package com.johnsproject.jpge.graphics;
+package com.johnsproject.jpge;
 
 import com.johnsproject.jpge.utils.ColorUtils;
 
@@ -9,13 +9,9 @@ import com.johnsproject.jpge.utils.ColorUtils;
  */
 public class Light {
 	
-	public enum LightType{
-		sun, point
-	}
-	
 	private String name;
 	private Transform transform;
-	private LightType type = LightType.sun;
+	private int type = 0;
 	private int strength = 100;
 	private int color = 0;
 	
@@ -54,7 +50,7 @@ public class Light {
 	 * 
 	 * @return type of this light.
 	 */
-	public LightType getType() {
+	public int getType() {
 		return type;
 	}
 
@@ -63,7 +59,7 @@ public class Light {
 	 * 
 	 * @param type light type to set.
 	 */
-	public void setType(LightType type) {
+	public void setType(int type) {
 		this.type = type;
 	}
 
@@ -101,11 +97,5 @@ public class Light {
 	 */
 	public void setColor(int color) {
 		this.color = color;
-	}
-
-	@Override
-	public String toString() {
-		return "Light [name=" + name + ", transform=" + transform.toString() + ", type=" + type + ", strength="
-				+ strength + "]";
 	}
 }

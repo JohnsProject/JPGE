@@ -11,11 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.johnsproject.jpge.GameManager;
 import com.johnsproject.jpge.Profiler;
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 import com.johnsproject.jpge.event.UpdateListener;
-import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
 import com.johnsproject.jpge.utils.VectorUtils;
 
 public class MouseInputManager implements UpdateListener {
@@ -56,7 +56,7 @@ public class MouseInputManager implements UpdateListener {
 
 	@Override
 	public void update(UpdateEvent event) {
-		if (event.getUpdateType() == UpdateType.input) {
+		if (event.getUpdateType() == GameManager.UPDATE_INPUT) {
 			synchronized (mouseListeners) {
 				synchronized (pressedKeys) {
 					String data = "";

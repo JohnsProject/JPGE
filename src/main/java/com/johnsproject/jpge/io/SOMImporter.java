@@ -3,13 +3,13 @@ package com.johnsproject.jpge.io;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.johnsproject.jpge.graphics.Material;
-import com.johnsproject.jpge.graphics.Mesh;
-import com.johnsproject.jpge.graphics.Transform;
-import com.johnsproject.jpge.graphics.Vertex;
-import com.johnsproject.jpge.graphics.Animation;
-import com.johnsproject.jpge.graphics.Face;
-import com.johnsproject.jpge.graphics.Texture;
+import com.johnsproject.jpge.Animation;
+import com.johnsproject.jpge.Face;
+import com.johnsproject.jpge.Material;
+import com.johnsproject.jpge.Mesh;
+import com.johnsproject.jpge.Texture;
+import com.johnsproject.jpge.Transform;
+import com.johnsproject.jpge.Vertex;
 import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 

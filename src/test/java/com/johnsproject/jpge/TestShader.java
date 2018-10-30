@@ -2,13 +2,7 @@ package com.johnsproject.jpge;
 
 import java.util.List;
 
-import com.johnsproject.jpge.graphics.Camera;
-import com.johnsproject.jpge.graphics.Face;
-import com.johnsproject.jpge.graphics.Light;
-import com.johnsproject.jpge.graphics.Mesh;
 import com.johnsproject.jpge.graphics.Shader;
-import com.johnsproject.jpge.graphics.Transform;
-import com.johnsproject.jpge.graphics.Vertex;
 import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.RenderUtils;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
@@ -29,7 +23,6 @@ public class TestShader extends Shader{
 	private int projectionType = PROJECT_PERSPECTIVE;
 	private int shadingType = SHADE_GOURAUD;
 	private int drawingType = DRAW_TEXTURED;
-	private int[] vectorCache = new int[3];
 	
 	@Override
 	public Vertex shadeVertex(Vertex vertex, Mesh mesh, Camera camera, Transform objectTransform, List<Light> lights) {
@@ -93,11 +86,11 @@ public class TestShader extends Shader{
 					break;
 					
 				case DRAW_FLAT:
-					RenderUtils.drawFaceGouraud(face, mesh, zBuffer, camera);
+					RenderUtils.drawFaceGouraud(face, mesh, zBuffer, this, camera);
 					break;
 					
 				case DRAW_TEXTURED:
-					RenderUtils.drawFaceAffine(face, mesh, zBuffer, camera);
+					RenderUtils.drawFaceAffine(face, mesh, zBuffer, this, camera);
 					break;
 				}
 			}
@@ -112,13 +105,8 @@ public class TestShader extends Shader{
 			Light light = lights.get(i);
 			int[] lightPosition = light.getTransform().getPosition();
 			switch (light.getType()) {
-			case sun:
+			case LIGHT_DIRECTIONAL:
 				factor += Vector3MathUtils.dotProduct(lightPosition, normal);
-				factor /= light.getStrength();
-				break;
-			case point:
-				vectorCache = Vector3MathUtils.distance(objectPos, lightPosition, vectorCache);
-				factor += Vector3MathUtils.dotProduct(vectorCache, normal);
 				factor /= light.getStrength();
 				break;
 			}
@@ -138,9 +126,9 @@ public class TestShader extends Shader{
 			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
 	    // color used if rendering type is wireframe or vertex
 	    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
-		camera.setPixel(x1, y1, z1, shadedColor, zBuffer);
-    	camera.setPixel(x2, y2, z2, shadedColor, zBuffer);
-    	camera.setPixel(x3, y3, z3, shadedColor, zBuffer);
+	    shadePixel(x1, y1, z1, shadedColor, zBuffer, camera);
+	    shadePixel(x2, y2, z2, shadedColor, zBuffer, camera);
+	    shadePixel(x3, y3, z3, shadedColor, zBuffer, camera);
 	}
 	
 	
@@ -154,9 +142,9 @@ public class TestShader extends Shader{
 			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
 	    // color used if rendering type is wireframe or vertex
 	    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
-	    RenderUtils.drawLine(x1, y1, x2, y2, z1, shadedColor, zBuffer, camera);
-		RenderUtils.drawLine(x2, y2, x3, y3, z2, shadedColor, zBuffer, camera);
-		RenderUtils.drawLine(x3, y3, x1, y1, z3, shadedColor, zBuffer, camera);
+	    RenderUtils.drawLine(x1, y1, x2, y2, z1, shadedColor, zBuffer, this, camera);
+		RenderUtils.drawLine(x2, y2, x3, y3, z2, shadedColor, zBuffer, this, camera);
+		RenderUtils.drawLine(x3, y3, x1, y1, z3, shadedColor, zBuffer, this, camera);
 	}
 	
 }

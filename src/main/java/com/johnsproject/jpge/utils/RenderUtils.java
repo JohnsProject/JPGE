@@ -1,12 +1,13 @@
 package com.johnsproject.jpge.utils;
 
-import com.johnsproject.jpge.graphics.Animation;
-import com.johnsproject.jpge.graphics.Camera;
-import com.johnsproject.jpge.graphics.Face;
-import com.johnsproject.jpge.graphics.Mesh;
-import com.johnsproject.jpge.graphics.Texture;
-import com.johnsproject.jpge.graphics.Transform;
-import com.johnsproject.jpge.graphics.Vertex;
+import com.johnsproject.jpge.Animation;
+import com.johnsproject.jpge.Camera;
+import com.johnsproject.jpge.Face;
+import com.johnsproject.jpge.Mesh;
+import com.johnsproject.jpge.Texture;
+import com.johnsproject.jpge.Transform;
+import com.johnsproject.jpge.Vertex;
+import com.johnsproject.jpge.graphics.Shader;
 
 /**
  * The RenderUtils class provides methods needed at the rendering process.
@@ -147,10 +148,11 @@ public class RenderUtils {
 	 * @param z z position used by the zBuffer.
 	 * @param color color of the line.
 	 * @param zBuffer zBuffer to use.
+	 * @param shader {@link Shader} to use.
 	 * @param camera {@link Camera} to draw on.
 	 */
 	public static void drawLine(int x1, int y1, int x2, int y2, int z, int color,
-						int[] zBuffer, Camera camera) {
+						int[] zBuffer, Shader shader, Camera camera) {
 		int w = x2 - x1;
 		int h = y2 - y1;
 		// deltas
@@ -171,7 +173,7 @@ public class RenderUtils {
 		int numerator = longest >> 1;
 		for (int i = 0; i < longest; i++, numerator += shortest) {
 			// set pixel
-			camera.setPixel(x1, y1, z, color, zBuffer);
+			shader.shadePixel(x1, y1, z, color, zBuffer, camera);
 			// increase deltas
 			if (numerator > longest) {
 				numerator -= longest;
@@ -192,9 +194,10 @@ public class RenderUtils {
 	 * @param face {@link Face} to draw.
 	 * @param mesh {@link Mesh} that contains the given {@link Face}.
 	 * @param zBuffer zBuffer to use.
+	 * @param shader {@link Shader} to use.
 	 * @param camera {@link Camera} to draw on.
 	 */
-	public static void drawFaceGouraud(Face face, Mesh mesh, int[] zBuffer, Camera camera) {
+	public static void drawFaceGouraud(Face face, Mesh mesh, int[] zBuffer, Shader shader, Camera camera) {
 		Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
 		Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
 		Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
@@ -240,12 +243,12 @@ public class RenderUtils {
 		   				tmp = vc2; vc2 = vc1; vc1 = tmp;}
 		if (y1 == y2) y2++;
 		if (y2 == y3) y3++;
-		face(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, zBuffer, color, camera);
+		face(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, zBuffer, color, shader, camera);
 	}
 	
 	// face drawing and filling with fixed point scanline algorithm that supports gouraud shading
 	static void face(int x1, int y1, int z1, int vc1, int x2, int y2, int z2, int vc2, int x3, int y3, int z3, int vc3,
-							int[] zBuffer, int color, Camera cam) {
+							int[] zBuffer, int color, Shader shader, Camera cam) {
 		// get color values
 		int r1 = ColorUtils.getRed(vc1), g1 = ColorUtils.getGreen(vc1), b1 = ColorUtils.getBlue(vc1), a1 = ColorUtils.getAlpha(vc1);
 		int r2 = ColorUtils.getRed(vc2), g2 = ColorUtils.getGreen(vc2), b2 = ColorUtils.getBlue(vc2), a2 = ColorUtils.getAlpha(vc2);
@@ -313,7 +316,7 @@ public class RenderUtils {
 			}
 		    for (; sy < y2; sy++) {
 		    	// bitshift right to get right values
-		    	drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, zBuffer, cam);
+		    	drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, zBuffer, shader, cam);
 		    	// increase left and right values by the calculated delta
 		    	sx += dx2; ex += dx1;
 		    	sz += dz2;
@@ -333,7 +336,7 @@ public class RenderUtils {
 				da = ((da3 - da2) << SHIFT) / (dxdx);
 			}
 			for (; sy < y3; sy++) {
-				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, zBuffer, cam);
+				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, zBuffer, shader, cam);
 				sx += dx2; ex += dx3;
 				sz += dz2;
 				sr += dr2;
@@ -351,7 +354,7 @@ public class RenderUtils {
 				da = ((da2 - da1) << SHIFT) / (dxdx);
 			}
 	    	for (; sy < y2; sy++) {
-	    		drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, zBuffer, cam);
+	    		drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, zBuffer, shader, cam);
 	    		sx += dx1; ex += dx2;
 	    		sz += dz1;
 	    		sr += dr1;
@@ -369,7 +372,7 @@ public class RenderUtils {
 				da = ((da2 - da3) << SHIFT) / (dxdx);
 			}
 			for (; sy < y3; sy++) {
-				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, zBuffer, cam);
+				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, zBuffer, shader, cam);
 				sx += dx3; ex += dx2;
 				sz += dz3;
 				sr += dr3;
@@ -380,12 +383,12 @@ public class RenderUtils {
 	    }
 	}
 	
-	static void drawHLine(int sx, int ex, int sz, int dz, int sr, int dr, int sg, int dg, int sb, int db, int sa, int da, int sy, int color,
-							int[] zBuffer, Camera camera) {
+	static void drawHLine(int sx, int ex, int sz, int dz, int sr, int dr, int sg, int dg, int sb, int db, int sa, int da,
+			int sy, int color, int[] zBuffer, Shader shader, Camera camera) {
 		for (; sx <= ex; sx++) {
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
 			// no need to shift sz as the z test is just check if its a higher value
-			camera.setPixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 255), zBuffer);
+			shader.shadePixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 500), zBuffer, camera);
 			sz += dz;
 			sr += dr;
 			sg += dg;
@@ -395,14 +398,16 @@ public class RenderUtils {
 	}
 	
 	/**
-	 * Draws the given {@link Face} on the given {@link Camera} using the gouraud shading and affine texture mapping technic.
+	 * Draws the given {@link Face} on the given {@link Camera} using the 
+	 * gouraud shading and affine texture mapping technic.
 	 * 
 	 * @param face {@link Face} to draw.
 	 * @param mesh {@link Mesh} that contains the given {@link Face}.
 	 * @param zBuffer zBuffer to use.
+	 * @param shader {@link Shader} to use.
 	 * @param camera {@link Camera} to draw on.
 	 */
-	public static void drawFaceAffine(Face face, Mesh mesh, int[] zBuffer, Camera camera) {
+	public static void drawFaceAffine(Face face, Mesh mesh, int[] zBuffer, Shader shader, Camera camera) {
 		Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
 		Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
 		Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
@@ -448,13 +453,13 @@ public class RenderUtils {
 		   				tmp = vc2; vc2 = vc1; vc1 = tmp;}
 		if (y1 == y2) y2++;
 		if (y2 == y3) y3++;
-		faceAffine(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, u1, v1, u2, v2, u3, v3, img, zBuffer, camera);
+		faceAffine(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, u1, v1, u2, v2, u3, v3, img, zBuffer, shader, camera);
 	}
 	
 	// face drawing and filling with fixed point scanline algorithm that supports gouraud shading
 	static void faceAffine(int x1, int y1, int z1, int vc1, int x2, int y2, int z2, int vc2, int x3, int y3, int z3, int vc3,
 								int u1, int v1, int u2, int v2, int u3, int v3,
-								Texture img, int[] zBuffer, Camera cam) {
+								Texture img, int[] zBuffer, Shader shader, Camera cam) {
 		// interpolate uv coordinates
 		int w = img.getWidth() - 1, h = img.getHeight() - 1;
 		int sh = 7;
@@ -541,7 +546,7 @@ public class RenderUtils {
 			}
 		    for (; sy < y2; sy++) {
 		    	// bitshift right to get right values
-		    	drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, zBuffer, cam);
+		    	drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, zBuffer, shader, cam);
 		    	// increase left and right values by the calculated delta
 				sx += dx2; ex += dx1;
 				sz += dz2;
@@ -565,7 +570,7 @@ public class RenderUtils {
 				da = ((da3 - da2) << SHIFT) / (dxdx);
 			}
 			for (; sy < y3; sy++) {
-				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, zBuffer, cam);
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, zBuffer, shader, cam);
 				sx += dx2; ex += dx3;
 				sz += dz2;
 				su += du2;
@@ -587,7 +592,7 @@ public class RenderUtils {
 				da = ((da2 - da1) << SHIFT) / (dxdx);
 			}
 			for (; sy < y2; sy++) {
-				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, zBuffer, cam);
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, zBuffer, shader, cam);
 				sx += dx1; ex += dx2;
 				sz += dz1;
 				su += du1;
@@ -609,7 +614,7 @@ public class RenderUtils {
 				da = ((da2 - da3) << SHIFT) / (dxdx);
 			}
 			for (; sy < y3; sy++) {
-				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, zBuffer, cam);
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, zBuffer, shader, cam);
 				sx += dx3; ex += dx2;
 				sz += dz3;
 				su += du3;
@@ -624,13 +629,13 @@ public class RenderUtils {
 	
 	static void drawHLineAffine(int sx, int ex, int sz, int dz, int su, int du, int sv, int dv, int sr,
 								int dr, int sg, int dg, int sb, int db, int sa, int da, int sy,
-								Texture img, int[] zBuffer, Camera camera) {
+								Texture img, int[] zBuffer, Shader shader, Camera camera) {
 		for (; sx <= ex; sx++) {
 			// get texture pixel / texel color
 			int color = img.getPixel(su >> SHIFT, sv >> SHIFT);
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
 			// no need to shift sz as the z test is just check if its a higher value
-			camera.setPixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 255), zBuffer);
+			shader.shadePixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 500), zBuffer, camera);
 			sz += dz;
 			su += du;
 			sv += dv;

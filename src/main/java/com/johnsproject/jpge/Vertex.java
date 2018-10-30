@@ -1,4 +1,4 @@
-package com.johnsproject.jpge.graphics;
+package com.johnsproject.jpge;
 
 /**
  * The Vertex class contains data of a vertex point.

@@ -1,4 +1,4 @@
-package com.johnsproject.jpge.graphics;
+package com.johnsproject.jpge;
 
 import java.util.ArrayList;
 import java.util.Collections;

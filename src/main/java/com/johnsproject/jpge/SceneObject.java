@@ -1,4 +1,6 @@
-package com.johnsproject.jpge.graphics;
+package com.johnsproject.jpge;
+
+import com.johnsproject.jpge.graphics.Shader;
 
 /**
  *The SceneObject class contains data of a object in the {@link Scene}.
@@ -74,7 +76,7 @@ public class SceneObject {
 	 * 
 	 * @return if this scene object has changed since last frame.
 	 */
-	boolean changed() {
+	public boolean changed() {
 		return changed;
 	}
 	
@@ -83,7 +85,7 @@ public class SceneObject {
 	 * 
 	 * @param changed if this scene object has changed since last frame.
 	 */
-	void changed(boolean changed) {
+	public void changed(boolean changed) {
 		this.changed = changed;
 	}
 	

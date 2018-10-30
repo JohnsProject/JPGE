@@ -9,13 +9,7 @@ package com.johnsproject.jpge.event;
 public class UpdateEvent {
 	
 	private int time = 0;
-	private UpdateType type;
-	
-	public enum UpdateType{
-		graphics,
-		input,
-		physics
-	}
+	private int type = 0;
 	
 	/**
 	 *  Creates a new instance of the UpdateEvent class filled with the given values.
@@ -23,7 +17,7 @@ public class UpdateEvent {
 	 * @param elapsedTime last elapsed update time.
 	 * @param eventType type of this event.
 	 */
-	public UpdateEvent(int elapsedTime, UpdateType eventType) {
+	public UpdateEvent(int elapsedTime, int eventType) {
 		this.time = elapsedTime;
 		this.type = eventType;
 	}
@@ -42,7 +36,7 @@ public class UpdateEvent {
 	 * 
 	 * @return type of this event.
 	 */
-	public UpdateType getUpdateType() {
+	public int getUpdateType() {
 		return type;
 	}
 }

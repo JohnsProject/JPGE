@@ -6,7 +6,6 @@ import org.openjdk.jmh.annotations.Fork;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.State;
 
-import com.johnsproject.jpge.graphics.Vertex;
 import com.johnsproject.jpge.utils.MathUtils;
 
 public class Benchmarks {

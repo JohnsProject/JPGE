@@ -2,8 +2,12 @@ package com.johnsproject.jpge;
 
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
-import com.johnsproject.jpge.event.UpdateEvent.UpdateType;
 
+/**
+ * The GameManager class manages the game runtime.
+ * 
+ * @author John´s Project - John Konrad Ferraz Salomon
+ */
 public class GameManager {
 	
 	private static GameManager instance;
@@ -14,6 +18,10 @@ public class GameManager {
 		return instance;
 	}
 	
+	public static final int UPDATE_GRAPHICS = 0;
+	public static final int UPDATE_INPUT = 1;
+	public static final int UPDATE_PHYSICS = 2;
+	
 	private int graphicsUpdateRate = 30;
 	private int inputUpdateRate = 30;
 	private int physicsUpdateRate = 30;
@@ -22,14 +30,19 @@ public class GameManager {
 	private Thread inputThread;
 	private Thread physicsThread;
 	
+	private long startTime = 0;
 	private boolean playing = true;
 	
 	public GameManager() {
+		startTime = System.nanoTime();
 		updateGraphics();
 		updatePhysics();
 		updateInput();
 	}
 	
+	/**
+	 * Starts the engine.
+	 */
 	public void play() {
 		if (!isPlaying()) {
 			playing = true;
@@ -38,14 +51,41 @@ public class GameManager {
 		}
 	}
 	
+	/**
+	 * Pauses the engine.
+	 */
 	public void pause() {
 		if (isPlaying()) {
 			playing = false;
 		}
 	}
 	
+	/**
+	 * Returns if the engine is currently playing.
+	 * 
+	 * @return if the engine is currently playing.
+	 */
 	public boolean isPlaying() {
 		return playing;
+	}
+	
+	/**
+	 * Returns the time since the engine started in nanoseconds.
+	 * 
+	 * @return time since the engine started in nanoseconds.
+	 */
+	public long getPlayTime() {
+		return System.nanoTime() - startTime;
+	}
+	
+	
+	/**
+	 * Returns the first time got when the engine started in nanoseconds.
+	 * 
+	 * @return first time got when the engine started in nanoseconds.
+	 */
+	public long getStartTime() {
+		return startTime;
 	}
 	
 	void updateGraphics() {
@@ -55,7 +95,7 @@ public class GameManager {
 				int lastElapsed = 0, before = 0;
 				while (isPlaying()) {
 					before = (int)System.nanoTime();
-					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.graphics));
+					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UPDATE_GRAPHICS));
 					lastElapsed = (int)System.nanoTime() - before;
 					Profiler.getInstance().getData().setGraphicsTime(lastElapsed);
 					try {
@@ -76,7 +116,7 @@ public class GameManager {
 				int lastElapsed = 0, before = 0;
 				while (true) {
 					before = (int)System.nanoTime();
-					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.input));
+					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UPDATE_INPUT));
 					lastElapsed = (int)System.nanoTime() - before;
 					Profiler.getInstance().getData().setInputTime(lastElapsed);
 					try {
@@ -97,7 +137,7 @@ public class GameManager {
 				int lastElapsed = 0, before = 0;
 				while (isPlaying()) {
 					before = (int)System.nanoTime();
-					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UpdateType.physics));
+					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UPDATE_PHYSICS));
 					lastElapsed = (int)System.nanoTime() - before;
 					Profiler.getInstance().getData().setPhysicsTime(lastElapsed);
 					try {
