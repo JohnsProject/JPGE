@@ -7,7 +7,6 @@ public class SceneWindowTest {
 	@Test
 	public void SceneWindowInitialzingTest() throws Exception {
 		SceneWindow frame = new SceneWindow(640, 480);
-		assert(frame.getScene() != null);
-		assert(frame.getSceneRenderer() != null);
+		assert(frame.getRenderer() != null);
 	}
 }

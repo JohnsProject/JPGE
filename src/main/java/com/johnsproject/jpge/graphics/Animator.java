@@ -3,27 +3,27 @@
  */
 package com.johnsproject.jpge.graphics;
 
-import com.johnsproject.jpge.Animation;
 import com.johnsproject.jpge.GameManager;
-import com.johnsproject.jpge.Scene;
-import com.johnsproject.jpge.SceneObject;
+import com.johnsproject.jpge.dto.Animation;
+import com.johnsproject.jpge.dto.Scene;
+import com.johnsproject.jpge.dto.SceneObject;
 import com.johnsproject.jpge.event.UpdateEvent;
 
 /**
- * The SceneAnimator class updates the frame of the current {@link Animation} 
+ * The Animator class updates the frame of the current {@link Animation} 
  * of each {@link SceneObject} in a {@link Scene}.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class SceneAnimator {
+public class Animator {
 	
 	private int speed = 1;
 	private int updateType = GameManager.UPDATE_PHYSICS;
 	
 	/**
-	 * Creates a new instance of the SceneAnimator class.
+	 * Creates a new instance of the Animator class.
 	 */
-	public SceneAnimator() {
+	public Animator() {
 		
 	}
 	

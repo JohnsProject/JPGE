@@ -1,12 +1,12 @@
 package com.johnsproject.jpge.utils;
 
-import com.johnsproject.jpge.Animation;
-import com.johnsproject.jpge.Camera;
-import com.johnsproject.jpge.Face;
-import com.johnsproject.jpge.Mesh;
-import com.johnsproject.jpge.Texture;
-import com.johnsproject.jpge.Transform;
-import com.johnsproject.jpge.Vertex;
+import com.johnsproject.jpge.dto.Animation;
+import com.johnsproject.jpge.dto.Camera;
+import com.johnsproject.jpge.dto.Face;
+import com.johnsproject.jpge.dto.Mesh;
+import com.johnsproject.jpge.dto.Texture;
+import com.johnsproject.jpge.dto.Transform;
+import com.johnsproject.jpge.dto.Vertex;
 import com.johnsproject.jpge.graphics.Shader;
 
 /**

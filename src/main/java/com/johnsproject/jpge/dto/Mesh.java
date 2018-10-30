@@ -1,8 +1,8 @@
-package com.johnsproject.jpge;
+package com.johnsproject.jpge.dto;
 
 import java.util.Arrays;
 
-import com.johnsproject.jpge.graphics.SceneRenderer;
+import com.johnsproject.jpge.graphics.Renderer;
 import com.johnsproject.jpge.io.SOMImporter;
 import com.johnsproject.jpge.utils.VectorUtils;
 
@@ -77,7 +77,7 @@ public class Mesh {
 	
 	/**
 	 * Returns all buffered vertexes of this mesh.
-	 * The buffered vertexes are used by the {@link SceneRenderer} at the rendering process.
+	 * The buffered vertexes are used by the {@link Renderer} at the rendering process.
 	 * This vertexes are transformed, rotated and projected. 
 	 * the vertex buffer is a buffer used to prevent loosing original position of vertexes.
 	 * 
@@ -89,7 +89,7 @@ public class Mesh {
 	
 	/**
 	 * Returns the buffered vertex at the given index.
-	 * The buffered vertexes are used by the {@link SceneRenderer} at the rendering process.
+	 * The buffered vertexes are used by the {@link Renderer} at the rendering process.
 	 * This vertexes are transformed, rotated and projected. 
 	 * the vertex buffer is a buffer used to prevent loosing original position of vertexes.
 	 * 

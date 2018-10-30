@@ -1,5 +1,6 @@
 package com.johnsproject.jpge;
 
+import com.johnsproject.jpge.dto.Scene;
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 
@@ -32,12 +33,14 @@ public class GameManager {
 	
 	private long startTime = 0;
 	private boolean playing = true;
+	private Scene scene;
 	
 	public GameManager() {
 		startTime = System.nanoTime();
-		updateGraphics();
-		updatePhysics();
-		updateInput();
+		scene = new Scene();
+		startGraphicsThread();
+		startPhysicsThread();
+		startInputThread();
 	}
 	
 	/**
@@ -46,8 +49,8 @@ public class GameManager {
 	public void play() {
 		if (!isPlaying()) {
 			playing = true;
-			updateGraphics();
-			updatePhysics();
+			startGraphicsThread();
+			startPhysicsThread();
 		}
 	}
 	
@@ -88,66 +91,99 @@ public class GameManager {
 		return startTime;
 	}
 	
-	void updateGraphics() {
+	/**
+	 * Returns the currently used {@link Scene}.
+	 * 
+	 * @return currently used {@link Scene}.
+	 */
+	public Scene getScene() {
+		return scene;
+	}
+
+	/**
+	 * Sets the {@link Scene} to use.
+	 * 
+	 * @param scene {@link Scene} to set.
+	 */
+	public void setScene(Scene scene) {
+		this.scene = scene;
+	}
+	
+	private void startGraphicsThread() {
 		graphicsThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				int lastElapsed = 0, before = 0;
+				int lastElapsed = 0;
 				while (isPlaying()) {
-					before = (int)System.nanoTime();
-					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UPDATE_GRAPHICS));
-					lastElapsed = (int)System.nanoTime() - before;
-					Profiler.getInstance().getData().setGraphicsTime(lastElapsed);
-					try {
-						Thread.sleep(1000/graphicsUpdateRate);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+					lastElapsed = updateGraphics(lastElapsed);
 				}
 			}
 		});
 		graphicsThread.start();
 	}
 	
-	void updateInput() {
+	private void startInputThread() {
 		inputThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				int lastElapsed = 0, before = 0;
+				int lastElapsed = 0;
 				while (true) {
-					before = (int)System.nanoTime();
-					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UPDATE_INPUT));
-					lastElapsed = (int)System.nanoTime() - before;
-					Profiler.getInstance().getData().setInputTime(lastElapsed);
-					try {
-						Thread.sleep(1000/inputUpdateRate);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+					lastElapsed = updateInput(lastElapsed);
 				}
 			}
 		});
 		inputThread.start();
 	}
 	
-	void updatePhysics() {
+	private void startPhysicsThread() {
 		physicsThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				int lastElapsed = 0, before = 0;
+				int lastElapsed = 0;
 				while (isPlaying()) {
-					before = (int)System.nanoTime();
-					EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, UPDATE_PHYSICS));
-					lastElapsed = (int)System.nanoTime() - before;
-					Profiler.getInstance().getData().setPhysicsTime(lastElapsed);
-					try {
-						Thread.sleep(1000/physicsUpdateRate);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+					lastElapsed = updatePhysics(lastElapsed);
 				}
 			}
 		});
 		physicsThread.start();
+	}
+	
+	private int updateGraphics(int lastElapsed) {
+		long before = System.nanoTime();
+		EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, scene, UPDATE_GRAPHICS));
+		int elapsed = (int)(System.nanoTime() - before);
+		Profiler.getInstance().getData().setGraphicsTime(elapsed);
+		try {
+			Thread.sleep(1000/graphicsUpdateRate);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return elapsed;
+	}
+	
+	private int updateInput(int lastElapsed) {
+		long before = System.nanoTime();
+		EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, scene, UPDATE_INPUT));
+		int elapsed = (int)(System.nanoTime() - before);
+		Profiler.getInstance().getData().setInputTime(elapsed);
+		try {
+			Thread.sleep(1000/inputUpdateRate);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return elapsed;
+	}
+	
+	private int updatePhysics(int lastElapsed) {
+		long before = System.nanoTime();
+		EventDispatcher.getInstance().dispatchUpdateEvent(new UpdateEvent(lastElapsed, scene, UPDATE_PHYSICS));
+		int elapsed = (int)(System.nanoTime() - before);
+		Profiler.getInstance().getData().setPhysicsTime(elapsed);
+		try {
+			Thread.sleep(1000/physicsUpdateRate);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return elapsed;
 	}
 }

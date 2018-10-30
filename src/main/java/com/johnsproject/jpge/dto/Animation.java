@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.johnsproject.jpge;
+package com.johnsproject.jpge.dto;
 
 import java.util.Arrays;
 

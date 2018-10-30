@@ -1,4 +1,4 @@
-package com.johnsproject.jpge;
+package com.johnsproject.jpge.dto;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;

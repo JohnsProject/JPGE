@@ -2,14 +2,14 @@ package com.johnsproject.jpge.graphics;
 
 import java.util.List;
 
-import com.johnsproject.jpge.Camera;
-import com.johnsproject.jpge.Face;
-import com.johnsproject.jpge.Light;
-import com.johnsproject.jpge.Mesh;
-import com.johnsproject.jpge.Scene;
-import com.johnsproject.jpge.SceneObject;
-import com.johnsproject.jpge.Transform;
-import com.johnsproject.jpge.Vertex;
+import com.johnsproject.jpge.dto.Camera;
+import com.johnsproject.jpge.dto.Face;
+import com.johnsproject.jpge.dto.Light;
+import com.johnsproject.jpge.dto.Mesh;
+import com.johnsproject.jpge.dto.Scene;
+import com.johnsproject.jpge.dto.SceneObject;
+import com.johnsproject.jpge.dto.Transform;
+import com.johnsproject.jpge.dto.Vertex;
 import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.RenderUtils;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
@@ -17,7 +17,7 @@ import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * The Shader class is used to used shade the vertexes and the polygons that are
- * being rendered by the {@link SceneRenderer}.
+ * being rendered by the {@link Renderer}.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
@@ -39,7 +39,7 @@ public class Shader {
 	private int drawingType = DRAW_TEXTURED;
 	
 	/**
-	 * This method is called by the {@link SceneRenderer} at the rendering process.
+	 * This method is called by the {@link Renderer} at the rendering process.
 	 * 
 	 * @param vertex          	{@link Vertex} to shade.
 	 * @param mesh   			{@link Mesh} this face belongs to.
@@ -78,7 +78,7 @@ public class Shader {
 	}
 
 	/**
-	 * This method is called by the {@link SceneRenderer} at the rendering process.
+	 * This method is called by the {@link Renderer} at the rendering process.
 	 * 
 	 * @param face   			face to shade.
 	 * @param mesh   			{@link Mesh} this face belongs to.
@@ -132,7 +132,7 @@ public class Shader {
 	}
 	
 	/**
-	 * This method is called by the {@link SceneRenderer} at the rendering process.
+	 * This method is called by the {@link Renderer} at the rendering process.
 	 * 
 	 * @param x position of pixel in the x axis.
 	 * @param y position of pixel in the y axis.

@@ -1,10 +1,8 @@
 package com.johnsproject.jpge.graphics;
 
-import java.awt.Graphics;
-
 import org.junit.Test;
 
-public class SceneRendererTest {
+public class RendererTest {
 	
 	@Test
 	public void ySortTest() throws Exception {

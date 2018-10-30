@@ -2,6 +2,12 @@ package com.johnsproject.jpge;
 
 import java.util.List;
 
+import com.johnsproject.jpge.dto.Camera;
+import com.johnsproject.jpge.dto.Face;
+import com.johnsproject.jpge.dto.Light;
+import com.johnsproject.jpge.dto.Mesh;
+import com.johnsproject.jpge.dto.Transform;
+import com.johnsproject.jpge.dto.Vertex;
 import com.johnsproject.jpge.graphics.Shader;
 import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.RenderUtils;

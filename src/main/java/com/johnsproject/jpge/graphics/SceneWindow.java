@@ -6,10 +6,10 @@ import java.io.IOException;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.johnsproject.jpge.Camera;
 import com.johnsproject.jpge.GameManager;
 import com.johnsproject.jpge.Profiler;
-import com.johnsproject.jpge.Scene;
+import com.johnsproject.jpge.dto.Camera;
+import com.johnsproject.jpge.dto.Scene;
 import com.johnsproject.jpge.event.EventDispatcher;
 import com.johnsproject.jpge.event.UpdateEvent;
 import com.johnsproject.jpge.event.UpdateListener;
@@ -17,9 +17,9 @@ import com.johnsproject.jpge.io.FileIO;
 
 /**
  * The SceneWindow class is used to show a {@link Scene}.
- * It contains a {@link SceneRenderer} that is called to render the {@link Scene} when 
+ * It contains a {@link Renderer} that is called to render the {@link Scene} when 
  * it receives an {@link UpdateEvent} from the {@link GameManager}.
- * It contains a {@link SceneAnimator} that is called to animate the {@link Scene} when 
+ * It contains a {@link Animator} that is called to animate the {@link Scene} when 
  * it receives an {@link UpdateEvent} from the {@link GameManager}.
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
@@ -30,9 +30,8 @@ public class SceneWindow extends JPanel implements UpdateListener{
 	private int width = 0;
 	private int height = 0;
 	private JFrame frame;
-	private Scene scene;
-	private SceneRenderer renderer;
-	private SceneAnimator animator;
+	private Renderer renderer;
+	private Animator animator;
 	private int[] zBuffer = null;
 	
 	/**
@@ -44,24 +43,6 @@ public class SceneWindow extends JPanel implements UpdateListener{
 	public SceneWindow (int width, int height){
 		this.width = width;
 		this.height = height;
-		this.scene = new Scene();
-		frame = new JFrame();
-		frame.setSize(width, height);
-		this.setSize(width, height);
-		initializeFrame();
-	}
-	
-	/**
-	 * Creates a new instance of the SceneWindow class filled with the given values.
-	 * 
-	 * @param width scene frame width.
-	 * @param height scene frame height.
-	 * @param scene scene to be shown by this scene frame.
-	 */
-	public SceneWindow (int width, int height, Scene scene){
-		this.width = width;
-		this.height = height;
-		this.scene = scene;
 		frame = new JFrame();
 		frame.setSize(width, height);
 		this.setSize(width, height);
@@ -75,8 +56,8 @@ public class SceneWindow extends JPanel implements UpdateListener{
 		zBuffer = new int[width * height];
 		Profiler.getInstance().getData().setWidth(width);
 		Profiler.getInstance().getData().setHeight(height);
-		renderer = new SceneRenderer();
-		animator = new SceneAnimator();
+		renderer = new Renderer();
+		animator = new Animator();
 		try {
 			frame.setIconImage(FileIO.loadImage(getClass().getResourceAsStream("/JohnsProjectLogo.png")));
 		} catch (IOException e) {
@@ -92,38 +73,20 @@ public class SceneWindow extends JPanel implements UpdateListener{
 	}
 	
 	/**
-	 * Returns the {@link Scene} of this scene frame.
+	 * Returns the {@link Renderer} of this scene frame.
 	 * 
-	 * @return {@link Scene} of this scene frame.
+	 * @return {@link Renderer} of this scene frame.
 	 */
-	public Scene getScene() {
-		return scene;
-	}
-
-	/**
-	 * Sets the {@link Scene} of this scene frame equals to the given {@link Scene}.
-	 * 
-	 * @param scene {@link Scene} to set.
-	 */
-	public void setScene(Scene scene) {
-		this.scene = scene;
-	}
-	
-	/**
-	 * Returns the {@link SceneRenderer} of this scene frame.
-	 * 
-	 * @return {@link SceneRenderer} of this scene frame.
-	 */
-	public SceneRenderer getSceneRenderer() {
+	public Renderer getRenderer() {
 		return renderer;
 	}
 	
 	/**
-	 * Returns the {@link SceneAnimator} of this scene frame.
+	 * Returns the {@link Animator} of this scene frame.
 	 * 
-	 * @return {@link SceneAnimator} of this scene frame.
+	 * @return {@link Animator} of this scene frame.
 	 */
-	public SceneAnimator getSceneAnimator() {
+	public Animator getAnimator() {
 		return animator;
 	}
 	
@@ -138,17 +101,18 @@ public class SceneWindow extends JPanel implements UpdateListener{
 	@Override
 	public void update(UpdateEvent event) {
 		if(event.getUpdateType() == GameManager.UPDATE_GRAPHICS) {
-			renderer.render(getScene(), zBuffer);
+			renderer.render(event.getScene(), zBuffer);
 			this.repaint();
 		}
 		if(event.getUpdateType() == animator.getUpdateType()) {
-			animator.animate(getScene());
+			animator.animate(event.getScene());
 		}
 	}
 	
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
+		Scene scene = GameManager.getInstance().getScene();
 		synchronized (scene.getCameras()) {
 			for (int i = 0; i < scene.getCameras().size(); i++) {
 				Camera camera = scene.getCameras().get(i);

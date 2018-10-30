@@ -1,14 +1,14 @@
-package com.johnsproject.jpge;
+package com.johnsproject.jpge.dto;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 
-import com.johnsproject.jpge.graphics.SceneRenderer;
+import com.johnsproject.jpge.graphics.Renderer;
 import com.johnsproject.jpge.graphics.SceneWindow;
 
 /**
  * The Camera class is used to view a {@link Scene}.
- * The {@link SceneRenderer} will take all cameras of the {@link Scene} 
+ * The {@link Renderer} will take all cameras of the {@link Scene} 
  * used by the {@link SceneWindow} and render what is in the camera view.
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
@@ -102,7 +102,7 @@ public class Camera{
 	
 	/**
 	 * Returns the half width of this camera in screen.
-	 * This is used by the {@link SceneRenderer} at the rendering process 
+	 * This is used by the {@link Renderer} at the rendering process 
 	 * and is precalculated here for performance reasons.
 	 * 
 	 * @return half width of this camera in screen.
@@ -113,7 +113,7 @@ public class Camera{
 	
 	/**
 	 * Returns the half height of this camera in screen.
-	 * This is used by the {@link SceneRenderer} at the rendering process 
+	 * This is used by the {@link Renderer} at the rendering process 
 	 * and is precalculated here for performance reasons.
 	 * 
 	 * @return half height of this camera in screen.
@@ -153,7 +153,7 @@ public class Camera{
 
 	/**
 	 * Returns the scale factor of this camera.
-	 * This is used by the {@link SceneRenderer} at the rendering process 
+	 * This is used by the {@link Renderer} at the rendering process 
 	 * and is precalculated here for performance reasons.
 	 * 
 	 * @return scale factor of this camera.

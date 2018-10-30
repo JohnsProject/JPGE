@@ -1,4 +1,4 @@
-package com.johnsproject.jpge;
+package com.johnsproject.jpge.dto;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 

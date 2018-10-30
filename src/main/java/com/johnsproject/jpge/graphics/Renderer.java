@@ -2,25 +2,25 @@ package com.johnsproject.jpge.graphics;
 
 import java.util.List;
 
-import com.johnsproject.jpge.Animation;
-import com.johnsproject.jpge.Camera;
-import com.johnsproject.jpge.Face;
-import com.johnsproject.jpge.Light;
-import com.johnsproject.jpge.Mesh;
 import com.johnsproject.jpge.Profiler;
-import com.johnsproject.jpge.Scene;
-import com.johnsproject.jpge.SceneObject;
-import com.johnsproject.jpge.Vertex;
+import com.johnsproject.jpge.dto.Animation;
+import com.johnsproject.jpge.dto.Camera;
+import com.johnsproject.jpge.dto.Face;
+import com.johnsproject.jpge.dto.Light;
+import com.johnsproject.jpge.dto.Mesh;
+import com.johnsproject.jpge.dto.Scene;
+import com.johnsproject.jpge.dto.SceneObject;
+import com.johnsproject.jpge.dto.Vertex;
 import com.johnsproject.jpge.utils.RenderUtils;
 
 /**
- * The SceneRenderer class renders the {@link Scene} assigned to the {@link SceneWindow}.
+ * The Renderer class renders the {@link Scene} assigned to the {@link SceneWindow}.
  * It takes the {@link SceneObject SceneObjects} in the view of all {@link Camera Cameras} in the {@link Scene}, 
  * transforms, projects and draws them.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class SceneRenderer {
+public class Renderer {
 	
 	/**
 	 * Tells this scene renderer to render the given {@link Scene}.

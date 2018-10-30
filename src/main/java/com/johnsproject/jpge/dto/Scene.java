@@ -1,4 +1,4 @@
-package com.johnsproject.jpge;
+package com.johnsproject.jpge.dto;
 
 import java.util.ArrayList;
 import java.util.Collections;

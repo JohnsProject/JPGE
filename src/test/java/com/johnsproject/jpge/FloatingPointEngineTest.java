@@ -7,6 +7,7 @@ import java.awt.image.DataBufferInt;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.johnsproject.jpge.dto.Mesh;
 import com.johnsproject.jpge.io.ImportExeption;
 import com.johnsproject.jpge.io.SOMImporter;
 import com.johnsproject.jpge.utils.ColorUtils;
