@@ -17,14 +17,6 @@ public class JPGEKeyEvent {
 	public int getKeyCode() {
 		return keyCode;
 	}
-	
-	void setKey(char key) {
-		this.key = key;
-	}
-
-	void setKeyCode(int keyCode) {
-		this.keyCode = keyCode;
-	}
 
 	@Override
 	public String toString() {

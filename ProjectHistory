@@ -224,6 +224,12 @@ v0.1 - 24/08/2018
 * Moved Scene from SceneWindow to GameManager that sends current scene in the UpdateEvent
 * Refactored GameManager
 * Added PhysicsAnimator class
+31/10/2018
+* Renamed GameManager to Engine
+* Added EngineSettings class
+* Moved Scene from SceneWindow to Engine
+* Moved Renderer from SceneWindow to Engine
+* Moved Animator from SceneWindow to Engine
 
 
 

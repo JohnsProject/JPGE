@@ -9,30 +9,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.johnsproject.jpge.GameManager;
 import com.johnsproject.jpge.Profiler;
-import com.johnsproject.jpge.event.EventDispatcher;
-import com.johnsproject.jpge.event.UpdateEvent;
-import com.johnsproject.jpge.event.UpdateListener;
 
-public class KeyInputManager implements UpdateListener {
-
-	private static KeyInputManager instance;
-
-	public static KeyInputManager getInstance() {
-		if (instance == null) {
-			instance = new KeyInputManager();
-		}
-		return instance;
-	}
-
-	JPGEKeyEvent keyEvent = new JPGEKeyEvent(' ', 0);
+public class KeyInputManager {
 	
 	private List<JPGEKeyListener> keyListeners = Collections.synchronizedList(new ArrayList<JPGEKeyListener>());
 	private Map<Integer, Character> pressedKeys = Collections.synchronizedMap(new HashMap<Integer, Character>());
 	
 	public KeyInputManager() {
-		EventDispatcher.getInstance().addUpdateListener(this);
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 
 			@Override
@@ -51,9 +35,7 @@ public class KeyInputManager implements UpdateListener {
 						synchronized (pressedKeys) {
 							for (int i = 0; i < keyListeners.size(); i++) {
 								JPGEKeyListener keyListener = keyListeners.get(i);
-								keyEvent.setKey(e.getKeyChar());
-								keyEvent.setKeyCode(e.getKeyCode());
-								keyListener.keyReleased(keyEvent);
+								keyListener.keyReleased(new JPGEKeyEvent(e.getKeyChar(), e.getKeyCode()));
 							}
 							pressedKeys.remove(e.getKeyCode());
 						}
@@ -65,37 +47,36 @@ public class KeyInputManager implements UpdateListener {
 		});
 	}
 
-	@Override
-	public void update(UpdateEvent event) {
-		if (event.getUpdateType() == GameManager.UPDATE_INPUT) {
-			synchronized (keyListeners) {
-				synchronized (pressedKeys) {
-					String data = "";
-					for (int key : pressedKeys.keySet()) {
-						char keyChar = pressedKeys.get(key).charValue();
-						keyEvent.setKey(keyChar);
-						keyEvent.setKeyCode(key);
-						data += "(" + keyChar + ", " + key + "), ";
-						for (int i = 0; i < keyListeners.size(); i++) {
-							JPGEKeyListener keyListener = keyListeners.get(i);
-							keyListener.keyPressed(keyEvent);
-						}
+	/**
+	 * Tells this key input manager to send an event containing 
+	 * the pressed keys to all registered listeners.
+	 */
+	public void update() {
+		synchronized (keyListeners) {
+			synchronized (pressedKeys) {
+				String data = "";
+				for (int key : pressedKeys.keySet()) {
+					char keyChar = pressedKeys.get(key).charValue();
+					data += "(" + keyChar + ", " + key + "), ";
+					for (int i = 0; i < keyListeners.size(); i++) {
+						JPGEKeyListener keyListener = keyListeners.get(i);
+						keyListener.keyPressed(new JPGEKeyEvent(keyChar, key));
 					}
-					if (data.equals("")) data = "no keys pressed";
-					Profiler.getInstance().getData().setKeyData(data);
 				}
+				if (data.equals("")) data = "no keys pressed";
+				Profiler.getInstance().getData().setKeyData(data);
 			}
 		}
 	}
 
+	/**
+	 * Adds the given {@link JPGEKeyListener} to this key input manager.
+	 * 
+	 * @param listener {@link JPGEKeyListener} to add.
+	 */
 	public void addKeyListener(JPGEKeyListener listener) {
 		synchronized (keyListeners) {
 			keyListeners.add(listener);
 		}
-	}
-
-	@Override
-	public String toString() {
-		return "KeyInputManager [keyListeners=" + keyListeners + ", pressedKeys=" + pressedKeys + "]";
 	}
 }

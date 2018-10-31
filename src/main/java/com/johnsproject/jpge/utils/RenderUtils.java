@@ -385,7 +385,7 @@ public class RenderUtils {
 	
 	static void drawHLine(int sx, int ex, int sz, int dz, int sr, int dr, int sg, int dg, int sb, int db, int sa, int da,
 			int sy, int color, int[] zBuffer, Shader shader, Camera camera) {
-		for (; sx <= ex; sx++) {
+		for (; sx < ex; sx++) {
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
 			// no need to shift sz as the z test is just check if its a higher value
 			shader.shadePixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 500), zBuffer, camera);
@@ -630,7 +630,7 @@ public class RenderUtils {
 	static void drawHLineAffine(int sx, int ex, int sz, int dz, int su, int du, int sv, int dv, int sr,
 								int dr, int sg, int dg, int sb, int db, int sa, int da, int sy,
 								Texture img, int[] zBuffer, Shader shader, Camera camera) {
-		for (; sx <= ex; sx++) {
+		for (; sx < ex; sx++) {
 			// get texture pixel / texel color
 			int color = img.getPixel(su >> SHIFT, sv >> SHIFT);
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);

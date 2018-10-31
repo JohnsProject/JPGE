@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.johnsproject.jpge.physics.PhysicsSettings;
+
 /**
  * The Scene class contains {@link SceneObject sceneobjects}, 
- * {@link Camera cameras} and {@link Light lights}, its like a world or map.
+ * {@link Camera cameras} and {@link Light lights}.
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
@@ -15,6 +17,7 @@ public class Scene {
 	private final List<SceneObject> sceneObjects = Collections.synchronizedList(new ArrayList<SceneObject>());
 	private final List<Camera> cameras = Collections.synchronizedList(new ArrayList<Camera>());
 	private final List<Light> lights = Collections.synchronizedList(new ArrayList<Light>());
+	private PhysicsSettings physicsSettings = new PhysicsSettings();
 	
 	/**
 	 * Adds the given {@link SceneObject} to this scene.
@@ -115,28 +118,12 @@ public class Scene {
 		}
 	}
 
-	@Override
-	public String toString() {
-		return "Scene [sceneObjects=" + sceneObjects + ", cameras=" + cameras + ", lights=" + lights + "]";
+	/**
+	 * Returns the {@link PhysicsSettings} of this scene.
+	 * 
+	 * @return {@link PhysicsSettings} of this scene.
+	 */
+	public PhysicsSettings getPhysicsSettings() {
+		return physicsSettings;
 	}
-	
-//	public void addGuiComponent(GuiComponent component){
-//		synchronized (guiComponents) {
-//			guiComponents.add(component);
-//		}
-//	}
-//	
-//	public void removeGuiComponent(GuiComponent component){
-//		synchronized (guiComponents) {
-//			guiComponents.remove(component);
-//		}
-//	}
-//	
-//	public List<GuiComponent> getGuiComponents(){
-//		synchronized (guiComponents) {
-//			return guiComponents;
-//		}
-//	}
-
-		
 }

@@ -5,7 +5,6 @@ import java.io.IOException;
 import com.johnsproject.jpge.dto.Camera;
 import com.johnsproject.jpge.dto.Light;
 import com.johnsproject.jpge.dto.Mesh;
-import com.johnsproject.jpge.dto.Scene;
 import com.johnsproject.jpge.dto.SceneObject;
 import com.johnsproject.jpge.dto.Texture;
 import com.johnsproject.jpge.dto.Transform;
@@ -27,8 +26,8 @@ public class ExampleScene implements JPGEKeyListener, JPGEMouseListener{
 	int w = 1024, h = 720;
 	public ExampleScene() {		
 		try {
-//			mesh1 = SOMImporter.load("/home/john/Development/test.som");
-			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/cube.som"));
+			mesh1 = SOMImporter.load("/home/john/Development/test.som");
+//			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/cube.som"));
 			mesh2 = SOMImporter.load(getClass().getResourceAsStream("/monkey.som"));
 		} catch (ImportExeption e) {
 			e.printStackTrace();
@@ -46,19 +45,18 @@ public class ExampleScene implements JPGEKeyListener, JPGEMouseListener{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		camera = new Camera("testCam", new Transform(new int[] {10000, -6000, -10000}, new int[] {25, -45, 25}, new int[] {1, 1, 1}), 0, 0, w, h);
+		camera = new Camera("testCam", new Transform(new int[] {0, 0, -10000}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), 0, 0, w, h);
 		camera2 = new Camera("testCam2", new Transform(new int[] {0, -10000, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), w-(w/3), 0, w/3, h/3);	
 		light = new Light("testLight", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
 		sceneWindow = new SceneWindow(w, h);
-		Scene scene = new Scene();
-		scene.addLight(light);
-		scene.addSceneObject(sceneObject);
-		scene.addSceneObject(sceneObject2);
-		scene.addCamera(camera);
-		scene.addCamera(camera2);
-		GameManager.getInstance().setScene(scene);
-		KeyInputManager.getInstance().addKeyListener(this);
-		MouseInputManager.getInstance().addMouseListener(this);
+		Engine.getInstance().getScene().addLight(light);
+		Engine.getInstance().getScene().addSceneObject(sceneObject);
+		Engine.getInstance().getScene().addSceneObject(sceneObject2);
+		Engine.getInstance().getScene().addCamera(camera);
+		Engine.getInstance().getScene().addCamera(camera2);
+		Engine.getInstance().setSceneWindow(sceneWindow);
+		Engine.getInstance().getKeyInputManager().addKeyListener(this);
+		Engine.getInstance().getMouseInputManager().addMouseListener(this);
 	}
 	
 	public void keyPressed(JPGEKeyEvent event) {
@@ -158,10 +156,10 @@ public class ExampleScene implements JPGEKeyListener, JPGEMouseListener{
 			Profiler.getInstance().stopLogging();
 		}
 		if (event.getKeyCode() == 116) { 
-			GameManager.getInstance().play();
+			Engine.getInstance().play();
 		}
 		if (event.getKeyCode() == 117) { 
-			GameManager.getInstance().pause();
+			Engine.getInstance().pause();
 		}
 		if (event.getKeyCode() == 38) { 
 			light.getTransform().translate(0, 0, 1);
@@ -175,7 +173,6 @@ public class ExampleScene implements JPGEKeyListener, JPGEMouseListener{
 		if (event.getKeyCode() == 39) { 
 			light.getTransform().translate(-1, 0, 0);
 		}
-		//System.out.println(event.getKeyCode());
 	}
 
 	public void keyReleased(JPGEKeyEvent event) {

@@ -11,25 +11,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.johnsproject.jpge.GameManager;
 import com.johnsproject.jpge.Profiler;
-import com.johnsproject.jpge.event.EventDispatcher;
-import com.johnsproject.jpge.event.UpdateEvent;
-import com.johnsproject.jpge.event.UpdateListener;
 import com.johnsproject.jpge.utils.VectorUtils;
 
-public class MouseInputManager implements UpdateListener {
+public class MouseInputManager {
 	
-	private static MouseInputManager instance;
-
-	public static MouseInputManager getInstance() {
-		if (instance == null) {
-			instance = new MouseInputManager();
-		}
-		return instance;
-	}
-	
-	private JPGEMouseEvent mouseEvent = new JPGEMouseEvent(null);
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y;
 	private static final byte LEFT = 0, MIDDLE = 1, RIGHT = 2;
 	private List<JPGEMouseListener> mouseListeners = Collections.synchronizedList(new ArrayList<JPGEMouseListener>());
@@ -37,7 +23,6 @@ public class MouseInputManager implements UpdateListener {
 
 	private int[] cache = new int[2];
 	public MouseInputManager() {
-		EventDispatcher.getInstance().addUpdateListener(this);
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
             public void eventDispatched(AWTEvent event) {
                 if(event instanceof MouseEvent){
@@ -54,40 +39,44 @@ public class MouseInputManager implements UpdateListener {
         }, AWTEvent.MOUSE_EVENT_MASK);
 	}
 
-	@Override
-	public void update(UpdateEvent event) {
-		if (event.getUpdateType() == GameManager.UPDATE_INPUT) {
-			synchronized (mouseListeners) {
-				synchronized (pressedKeys) {
-					String data = "";
-					for (int key : pressedKeys.keySet()) {
-						mouseEvent.setPosition(pressedKeys.get(key));
-						data += key + ", ";
-						for (int i = 0; i < mouseListeners.size(); i++) {
-							JPGEMouseListener mouseListener = mouseListeners.get(i);
-							if (key == LEFT)
-								mouseListener.leftClick(mouseEvent);
-							if (key == MIDDLE)
-								mouseListener.middleClick(mouseEvent);
-							if (key == RIGHT)
-								mouseListener.rightClick(mouseEvent);
-						}
-					}
+	/**
+	 * Tells this mouse input manager to send an event containing 
+	 * the pressed keys to all registered listeners.
+	 */
+	public void update() {
+		synchronized (mouseListeners) {
+			synchronized (pressedKeys) {
+				String data = "";
+				for (int key : pressedKeys.keySet()) {
+					data += key + ", ";
 					for (int i = 0; i < mouseListeners.size(); i++) {
 						JPGEMouseListener mouseListener = mouseListeners.get(i);
-						cache[vx] = (int) MouseInfo.getPointerInfo().getLocation().getX();
-						cache[vy] = (int) MouseInfo.getPointerInfo().getLocation().getY();
-						mouseEvent.setPosition(cache);
-						mouseListener.positionUpdate(mouseEvent);
+						if (key == LEFT)
+							mouseListener.leftClick(new JPGEMouseEvent(cache));
+						if (key == MIDDLE)
+							mouseListener.middleClick(new JPGEMouseEvent(cache));
+						if (key == RIGHT)
+							mouseListener.rightClick(new JPGEMouseEvent(cache));
 					}
-					pressedKeys.clear();
-					if (data.equals("")) data = "no mouse clicks";
-					Profiler.getInstance().getData().setMouseData(data);
 				}
+				for (int i = 0; i < mouseListeners.size(); i++) {
+					JPGEMouseListener mouseListener = mouseListeners.get(i);
+					cache[vx] = (int) MouseInfo.getPointerInfo().getLocation().getX();
+					cache[vy] = (int) MouseInfo.getPointerInfo().getLocation().getY();
+					mouseListener.positionUpdate(new JPGEMouseEvent(cache));
+				}
+				pressedKeys.clear();
+				if (data.equals("")) data = "no mouse clicks";
+				Profiler.getInstance().getData().setMouseData(data);
 			}
 		}
 	}
 	
+	/**
+	 * Adds the given {@link JPGEMouseListener} to this mouse input manager.
+	 * 
+	 * @param listener {@link JPGEMouseListener} to add.
+	 */
 	public void addMouseListener(JPGEMouseListener listener) {
 		synchronized (mouseListeners) {
 			mouseListeners.add(listener);

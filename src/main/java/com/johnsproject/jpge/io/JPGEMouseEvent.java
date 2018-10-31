@@ -12,10 +12,6 @@ public class JPGEMouseEvent {
 		return position;
 	}
 
-	void setPosition(int[] position) {
-		this.position = position;
-	}
-
 	@Override
 	public String toString() {
 		return "JPGEMouseEvent [position=" + position + "]";
