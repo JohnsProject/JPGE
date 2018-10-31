@@ -230,7 +230,7 @@ v0.1 - 24/08/2018
 * Moved Scene from SceneWindow to Engine
 * Moved Renderer from SceneWindow to Engine
 * Moved Animator from SceneWindow to Engine
-
+* Moved SceneWindow back to src/main/java (moved to src/test/java accidently in last commit)
 
 
 
