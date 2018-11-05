@@ -231,6 +231,12 @@ v0.1 - 24/08/2018
 * Moved Renderer from SceneWindow to Engine
 * Moved Animator from SceneWindow to Engine
 * Moved SceneWindow back to src/main/java (moved to src/test/java accidently in last commit)
+05/11/2018
+* Added DisplayBuffer class
+* Removed viewBuffer from the Camera class drawing directly to DisplayBuffer now
+* Added PhysicsSettings class (contains physics settings of scenes)
+* Added object fall physics
+* Deleted ProfilerData class (Profiler gets data from engine)
 
 
 

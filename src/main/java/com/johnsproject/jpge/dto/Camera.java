@@ -1,8 +1,5 @@
 package com.johnsproject.jpge.dto;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferInt;
-
 import com.johnsproject.jpge.graphics.Renderer;
 import com.johnsproject.jpge.graphics.SceneWindow;
 
@@ -24,11 +21,9 @@ public class Camera{
 	private int halfHeight = 0;
 	private int FieldOfView = 60;
 	private int nearClippingPlane = 300;
-	private int farClippingPlane = 50000;
+	private int farClippingPlane = 100000;
 	private int scaleFactor;
 	private Transform transform;
-	private BufferedImage viewBuffer;
-	private int[] viewBufferData;
 	private boolean changed = false;
 	
 	/**
@@ -49,37 +44,7 @@ public class Camera{
 		this.scaleFactor = ((width + height) >> 7) + 1;
 		this.x = x;
 		this.y = y;
-		this.viewBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
-		this.viewBufferData = ((DataBufferInt)viewBuffer.getRaster().getDataBuffer()).getData();
 		this.changed = true;
-	}
-	
-	/**
-	 * Tells this camera to clear its view buffer.
-	 */
-	public void clearViewBuffer() {
-		for (int i = 0; i < viewBufferData.length; i++) {
-			viewBufferData[i] = 0;
-		}
-	}
-	
-	/**
-	 * Returns the {@link BufferedImage view buffer} of this camera.
-	 * 
-	 * @return {@link BufferedImage view buffer} of this camera.
-	 */
-	public BufferedImage getViewBuffer() {
-		return viewBuffer;
-	}
-	
-	/**
-	 * Returns the data of the {@link BufferedImage view buffer} of this camera.
-	 * The data is an int[] containing color data of all pixels of the view buffer.
-	 * 
-	 * @return data of the {@link BufferedImage view buffer} of this camera.
-	 */
-	public int[] getViewBufferData() {
-		return viewBufferData;
 	}
 
 	/**

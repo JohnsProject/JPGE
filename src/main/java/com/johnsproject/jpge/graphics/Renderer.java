@@ -2,9 +2,9 @@ package com.johnsproject.jpge.graphics;
 
 import java.util.List;
 
-import com.johnsproject.jpge.Profiler;
 import com.johnsproject.jpge.dto.Animation;
 import com.johnsproject.jpge.dto.Camera;
+import com.johnsproject.jpge.dto.DisplayBuffer;
 import com.johnsproject.jpge.dto.Face;
 import com.johnsproject.jpge.dto.Light;
 import com.johnsproject.jpge.dto.Mesh;
@@ -26,32 +26,31 @@ public class Renderer {
 	 * Tells this scene renderer to render the given {@link Scene}.
 	 * 
 	 * @param scene {@link Scene} to render.
-	 * @param zBuffer depth buffer to use.
+	 * @param displayBuffer {@link DisplayBuffer} to use.
+	 * 
+	 * @return rendered {@link Face faces}. (faces that are not culled)
 	 */
-	public void render(Scene scene, int[] zBuffer) {
-		// reseting profiler data
-		Profiler.getInstance().getData().setMaxFaces(0);
-		Profiler.getInstance().getData().setRenderedFaces(0);
-		synchronized (scene.getCameras()) {
+	public int render(Scene scene, DisplayBuffer displayBuffer) {
+		synchronized (scene) {
+			int rendFaces = 0;
+			displayBuffer.clearFrameBuffer();
 			for (int i = 0; i < scene.getCameras().size(); i++) {
-				// reset z buffer
-				resetZBuffer(zBuffer);
+				displayBuffer.clearDepthBuffer();
 				Camera camera = scene.getCameras().get(i);
 				for (int j = 0; j < scene.getSceneObjects().size(); j++) {
 					SceneObject sceneObject = scene.getSceneObjects().get(j);
 					// check if object is active or has changed (no need to render if its the same)
 					if (sceneObject.isActive() && (sceneObject.changed() || camera.changed())) {
-						render(sceneObject, camera, scene.getLights(), zBuffer);
+						rendFaces = render(sceneObject, camera, scene.getLights(), displayBuffer);
 					}
 				}
 				camera.changed(false);
 			}
-		}
-		synchronized (scene.getSceneObjects()) {
 			for (int i = 0; i < scene.getSceneObjects().size(); i++) {
 				SceneObject sceneObject = scene.getSceneObjects().get(i);
 				sceneObject.changed(false);
 			}
+			return rendFaces;
 		}
 	}
 	
@@ -62,9 +61,11 @@ public class Renderer {
 	 * @param sceneObject {@link SceneObject} to render.
 	 * @param camera {@link Camera} that the {@link SceneObject} will be rendered to.
 	 * @param lights {@link Light Lights} influencing the {@link SceneObject}.
-	 * @param zBuffer depth buffer to use.
+	 * @param displayBuffer {@link DisplayBuffer} to use.
+	 * 
+	 * @return rendered {@link Face faces}. (faces that are not culled)
 	 */
-	void render(SceneObject sceneObject, Camera camera, List<Light> lights, int[] zBuffer) {
+	int render(SceneObject sceneObject, Camera camera, List<Light> lights, DisplayBuffer displayBuffer) {
 		Mesh mesh = sceneObject.getMesh();
 		Animation animation = mesh.getCurrentAnimation();
 		Shader shader = sceneObject.getShader();
@@ -74,31 +75,15 @@ public class Renderer {
 		for (int i = 0; i < mesh.getBufferedVertexes().length; i++) {
 			Vertex vertex = mesh.getBufferedVertex(i);
 			vertex = RenderUtils.animate(vertex, animation);
-			vertex = shader.shadeVertex(vertex, mesh, camera, sceneObject.getTransform(), lights);
+			vertex = shader.shadeVertex(vertex, mesh, sceneObject.getTransform(), lights, camera);
 		}
-		// get profiler values to update
-		int maxFaces = Profiler.getInstance().getData().getMaxFaces();
-		int rendFaces = Profiler.getInstance().getData().getRenderedFaces();
+		int rendFaces = 0;
 		// shade faces
 		for (int i = 0; i < mesh.getFaces().length; i++) {
 			Face face = mesh.getFace(i);
-			face = shader.shadeFace(face, mesh, camera, zBuffer, sceneObject.getTransform(), lights);
-			maxFaces++;
+			face = shader.shadeFace(face, mesh, sceneObject.getTransform(), lights, camera, displayBuffer);
 			if (!face.isCulled()) rendFaces++;
 		}
-		// update profiler values
-		Profiler.getInstance().getData().setMaxFaces(maxFaces);
-		Profiler.getInstance().getData().setRenderedFaces(rendFaces);
-	}
-	
-	/**
-	 * Resets the depth buffer of this scene renderer.
-	 * 
-	 * @param zBuffer depth buffer to use.
-	 */
-	public void resetZBuffer(int[] zBuffer) {
-		for (int i = 0; i < zBuffer.length; i++) {
-			zBuffer[i] = Integer.MAX_VALUE;
-		}
+		return rendFaces;
 	}
 }

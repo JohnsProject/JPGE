@@ -18,16 +18,16 @@ public class ExampleScene implements JPGEKeyListener, JPGEMouseListener{
 		new ExampleScene();
 	}
 	
-	SceneWindow sceneWindow;
 	SceneObject sceneObject, sceneObject2;
 	Camera camera, camera2;
 	Light light, light2;
 	Mesh mesh1, mesh2;
-	int w = 1024, h = 720;
+	int renderWidth = 213, renderHeight = 160;
+	int windowWidth = 640, windowHeight = 480;
 	public ExampleScene() {		
 		try {
-			mesh1 = SOMImporter.load("/home/john/Development/test.som");
-//			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/cube.som"));
+//			mesh1 = SOMImporter.load("/home/john/Development/test.som");
+			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/cube.som"));
 			mesh2 = SOMImporter.load(getClass().getResourceAsStream("/monkey.som"));
 		} catch (ImportExeption e) {
 			e.printStackTrace();
@@ -45,18 +45,20 @@ public class ExampleScene implements JPGEKeyListener, JPGEMouseListener{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		camera = new Camera("testCam", new Transform(new int[] {0, 0, -10000}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), 0, 0, w, h);
-		camera2 = new Camera("testCam2", new Transform(new int[] {0, -10000, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), w-(w/3), 0, w/3, h/3);	
+		camera = new Camera("testCam", new Transform(new int[] {0, 0, -10000}, new int[] {0, 0, 0}, new int[] {1, 1, 1}), 0, 0, renderWidth, renderHeight);
+		camera2 = new Camera("testCam2", new Transform(new int[] {0, -10000, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), renderWidth-(renderWidth/3), 0, renderWidth/3, renderHeight/3);	
 		light = new Light("testLight", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
-		sceneWindow = new SceneWindow(w, h);
+		Engine.getInstance().setSceneWindow(new SceneWindow(windowWidth, windowHeight));
+		Engine.getInstance().getDisplayBuffer().setSize(renderWidth, renderHeight);
+		Engine.getInstance().getScene().getPhysicsSettings().setGravity(new int[3]);
 		Engine.getInstance().getScene().addLight(light);
 		Engine.getInstance().getScene().addSceneObject(sceneObject);
 		Engine.getInstance().getScene().addSceneObject(sceneObject2);
 		Engine.getInstance().getScene().addCamera(camera);
 		Engine.getInstance().getScene().addCamera(camera2);
-		Engine.getInstance().setSceneWindow(sceneWindow);
 		Engine.getInstance().getKeyInputManager().addKeyListener(this);
 		Engine.getInstance().getMouseInputManager().addMouseListener(this);
+		Profiler.getInstance().start();
 	}
 	
 	public void keyPressed(JPGEKeyEvent event) {
@@ -173,6 +175,7 @@ public class ExampleScene implements JPGEKeyListener, JPGEMouseListener{
 		if (event.getKeyCode() == 39) { 
 			light.getTransform().translate(-1, 0, 0);
 		}
+//		System.out.println(event.getKeyCode());
 	}
 
 	public void keyReleased(JPGEKeyEvent event) {
@@ -199,13 +202,13 @@ public class ExampleScene implements JPGEKeyListener, JPGEMouseListener{
 	@Override
 	public void positionUpdate(JPGEMouseEvent event) {
 		if (dragged) {
-			int fx = (int)sceneWindow.getLocationOnScreen().getX();
-			int fy = (int)sceneWindow.getLocationOnScreen().getY();
-			int x = (event.getPosition()[VectorUtils.X]-fx) - (w/2);
-			int y = (event.getPosition()[VectorUtils.Y]-fy) - (h/2);
+			int fx = (int)Engine.getInstance().getSceneWindow().getPositionX();
+			int fy = (int)Engine.getInstance().getSceneWindow().getPositionY();
+			int x = (event.getPosition()[VectorUtils.X]-fx) - (windowWidth/2);
+			int y = (event.getPosition()[VectorUtils.Y]-fy) - (windowHeight/2);
 //			int z = camera.getTransform().getRotation()[VectorUtils.Z];
 			//System.out.println("x " + x + ", y " + y + ", z " + z);
-			camera.getTransform().rotate(y/(h>>3), x/(w>>3), 0);
+			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);
 		}
 	}
 }

@@ -5,10 +5,12 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import com.johnsproject.jpge.dto.SceneObject;
 import com.johnsproject.jpge.io.FileIO;
 import com.sun.management.OperatingSystemMXBean;
 
@@ -17,9 +19,8 @@ import com.sun.management.OperatingSystemMXBean;
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Profiler extends JPanel{
-
-	private static final long serialVersionUID = -6448985233395265490L;
+public class Profiler{
+	
 	private static Profiler instance;
 
 	/**
@@ -34,21 +35,29 @@ public class Profiler extends JPanel{
 		return instance;
 	}
 	
-	private static final int WIDTH = 330, HEIGHT = 330;
+	private static final int WIDTH = 330;
+	private static final int HEIGHT = 330;
+	private static final int POS_X = 2;
+	private static final int POS_X2 = 120;
+	private static final int START_Y = 12;
+	private static final int STEP = 17;
+	
+	
 	private boolean profile = false;
 	private boolean log = false;
-	private ProfilerData data;
 	private Thread profileThread;
 	private OperatingSystemMXBean osxb = null;
 	private JFrame frame;
+	private ProfilerPanel panel;
+	private BufferedImage backroundImage = null;
 	
 	/**
 	 * Creates a new instance of the profiler class.
 	 */
 	public Profiler () {
-		data = new ProfilerData();
 		osxb = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
 		frame = new JFrame();
+		panel = new ProfilerPanel();
 	}
 	
 	
@@ -66,13 +75,12 @@ public class Profiler extends JPanel{
 			}
 			frame.setResizable(false);
 			frame.setSize(WIDTH, HEIGHT);
-			this.setSize(WIDTH, HEIGHT);
-			this.setLocation(0, 0);
+			panel.setSize(WIDTH, HEIGHT);
 			frame.setLayout(null);
 			frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			frame.add(this);
+			frame.add(panel);
 			try {
-				img = FileIO.loadImage(getClass().getResourceAsStream("/JohnsProject.png"), WIDTH, HEIGHT);
+				backroundImage = FileIO.loadImage(getClass().getResourceAsStream("/JohnsProject.png"), WIDTH, HEIGHT);
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -102,25 +110,7 @@ public class Profiler extends JPanel{
 	}
 	
 	private void print() {
-		this.repaint();
-	}
-	
-	private BufferedImage img = null;
-	private static final int POS_X = 2, POS_X2 = 120, START_Y = 15, STEP = 17;
-	@Override
-	public void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		g.drawImage(img, 0, 0, null);
-		g.setColor(Color.WHITE);
-		int y = START_Y;
-		y = logCommom(g, y);
-		y += STEP + 10;
-		y = logGraphics(g, y);
-		y += STEP + 10;
-		y = logInput(g, y);
-		y += STEP + 10;
-		y = logPhysics(g, y);
-		if (isLogging()) System.out.println("-------------------------------------------------");
+		panel.repaint();
 	}
 	
 	private int logCommom(Graphics g, int y) {
@@ -151,11 +141,22 @@ public class Profiler extends JPanel{
 	}
 	
 	private int logGraphics(Graphics g, int y) {
-		int renderedPolys = getData().getRenderedFaces();
-		int maxPolys = getData().getMaxFaces();
-		String fps =	"" + 1000/(((getData().getGraphicsTime()) / 1000000)+1);
-		String rTime = 	"" + (getData().getGraphicsTime() / 1000000) + " ms";
-		String rRes =	"" + getData().getWidth() + " x " + getData().getHeight();
+		Engine engine = Engine.getInstance();
+		int renderedPolys = engine.getLastRenderedFaces();
+		int maxPolys = 0;
+		synchronized (engine.getScene()) {
+			List<SceneObject> sceneObjects = engine.getScene().getSceneObjects();
+			for (int i = 0; i < sceneObjects.size(); i++) {
+				maxPolys += sceneObjects.get(i).getMesh().getFaces().length;
+			}
+		}
+		String fps =	"" + 1000/(engine.getLastGraphicsTime()+1);
+		String rTime = 	"" + engine.getLastGraphicsTime() + " ms";
+		String rRes =	"" + engine.getDisplayBuffer().getWidth() + " x " + engine.getDisplayBuffer().getHeight();
+		String wRes =	"";
+		if (engine.getSceneWindow() != null)
+			wRes += engine.getSceneWindow().getWidth() + " x " + engine.getSceneWindow().getHeight();
+		else wRes += "no SceneWindow";
 		String rTris =	"" + getBar(renderedPolys, maxPolys) + renderedPolys + " / " + maxPolys;
 		g.drawString("GRAPHICS DATA", POS_X, y);
 		y += STEP;
@@ -168,6 +169,9 @@ public class Profiler extends JPanel{
 		g.drawString("- Rendering res. : ", POS_X, y);
 		g.drawString(rRes, POS_X2, y);
 		y += STEP;
+		g.drawString("- Window size : ", POS_X, y);
+		g.drawString(wRes, POS_X2, y);
+		y += STEP;
 		g.drawString("- Rendered Faces : ", POS_X, y);
 		g.drawString(rTris, POS_X2, y);
 		if (isLogging()) {
@@ -175,15 +179,17 @@ public class Profiler extends JPanel{
 			System.out.println("- FPS :\t\t\t" + fps);
 			System.out.println("- Render time :\t\t" + rTime);
 			System.out.println("- Rendering res. :\t" + rRes);
+			System.out.println("- Window size : \t" + wRes);
 			System.out.println("- Rendered Faces :\t" + rTris);
 		}
 		return y;
 	}
 	
 	private int logInput(Graphics g, int y) {
-		String iTime =	"" + (getData().getInputTime() / 1000000) + " ms";
-		String key =	"" + getData().getKeyData();
-		String mouse ="" + getData().getMouseData();
+		Engine engine = Engine.getInstance();
+		String iTime =	"" + engine.getLastInputTime() + " ms";
+		String key =	"";
+		String mouse =	"";
 		g.drawString("INPUT DATA", POS_X, y);
 		y += STEP;
 		g.drawString("- Input time : ", POS_X, y);
@@ -204,7 +210,8 @@ public class Profiler extends JPanel{
 	}
 	
 	private int logPhysics(Graphics g, int y) {
-		String pTime =	"" + (getData().getPhysicsTime() / 1000000) + " ms";
+		Engine engine = Engine.getInstance();
+		String pTime =	"" + engine.getLastPhysicsTime() + " ms";
 		g.drawString("PHYSICS DATA", POS_X, y);
 		y += STEP;
 		g.drawString("- Physics time : ", POS_X, y);
@@ -280,13 +287,26 @@ public class Profiler extends JPanel{
 		log = false;
 	}
 	
-	/**
-	 * Returns the data of this profiler.
-	 * This is used by the engine to update the profiler value so its not recommended to change the values of it.
-	 * 
-	 * @return data of this profiler.
-	 */
-	public ProfilerData getData() {
-		return data;
+	
+	private class ProfilerPanel extends JPanel{
+		
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			g.drawImage(backroundImage, 0, 0, null);
+			g.setColor(Color.WHITE);
+			int y = START_Y;
+			y = logCommom(g, y);
+			y += STEP + 5;
+			y = logGraphics(g, y);
+			y += STEP + 5;
+			y = logInput(g, y);
+			y += STEP + 5;
+			y = logPhysics(g, y);
+			if (isLogging()) System.out.println("-------------------------------------------------");
+		}
 	}
+	
 }

@@ -7,8 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.johnsproject.jpge.Engine;
-import com.johnsproject.jpge.Profiler;
-import com.johnsproject.jpge.dto.Camera;
+import com.johnsproject.jpge.dto.DisplayBuffer;
 import com.johnsproject.jpge.dto.Scene;
 import com.johnsproject.jpge.io.FileIO;
 
@@ -17,76 +16,80 @@ import com.johnsproject.jpge.io.FileIO;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class SceneWindow extends JPanel{
+public class SceneWindow extends JFrame{
 
-	private static final long serialVersionUID = -841144266539311921L;
+	private static final long serialVersionUID = 1L;
+	
 	private int width = 0;
 	private int height = 0;
-	private JFrame frame;
-	private int[] zBuffer = null;
+	private ScenePanel panel;
+	private DisplayBuffer displayBuffer;
 	
 	/**
 	 * Creates a new instance of the SceneWindow class filled with the given values.
 	 * 
-	 * @param width scene frame width.
-	 * @param height scene frame height.
+	 * @param width scene this width.
+	 * @param height scene this height.
 	 */
 	public SceneWindow (int width, int height){
 		this.width = width;
 		this.height = height;
-		frame = new JFrame();
-		frame.setSize(width, height);
-		this.setSize(width, height);
-		initializeFrame();
-	}
-	
-	/**
-	 * Initializes the components and values of this scene frame.
-	 */
-	void initializeFrame(){
-		zBuffer = new int[width * height];
-		Profiler.getInstance().getData().setWidth(width);
-		Profiler.getInstance().getData().setHeight(height);
+		panel = new ScenePanel();
+		panel.setSize(width, height);
+		displayBuffer = Engine.getInstance().getDisplayBuffer();
+		setSize(width, height);
 		try {
-			frame.setIconImage(FileIO.loadImage(getClass().getResourceAsStream("/JohnsProjectLogo.png")));
+			this.setIconImage(FileIO.loadImage(getClass().getResourceAsStream("/JohnsProjectLogo.png")));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		frame.setResizable(false);
-		frame.setVisible(true);
-		frame.setTitle("JPGE");
-		frame.setLayout(null);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.add(this);
+		this.setResizable(false);
+		this.setVisible(true);
+		this.setTitle("JPGE");
+		this.setLayout(null);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.add(panel);
 	}
 	
 	/**
-	 * Returns the depth buffer of this scene frame.
-	 * 
-	 * @return depth buffer of this scene frame.
+	 * Tells this SceneWindow to draw the scene being used by the {@link Engine}.
 	 */
-	public int[] getDepthBuffer() {
-		return zBuffer;
-	}
-	
-	@Override
-	public void setSize(int width, int height) {
-		super.setSize(width, height);
-		zBuffer = new int[width * height];
-		Profiler.getInstance().getData().setWidth(width);
-		Profiler.getInstance().getData().setHeight(height);
-	}
-	
-	@Override
-	protected void paintComponent(Graphics g) {
-		super.paintComponent(g);
-		Scene scene = Engine.getInstance().getScene();
-		synchronized (scene.getCameras()) {
-			for (int i = 0; i < scene.getCameras().size(); i++) {
-				Camera camera = scene.getCameras().get(i);
-				g.drawImage(camera.getViewBuffer(), camera.getPositionX(), camera.getPositionY(), null);
-				camera.clearViewBuffer();
-			}
+	public void draw() {
+		panel.repaint();
+		if (this.getWidth() != width || this.getHeight() != height) {
+			width = this.getWidth();
+			height = this.getHeight();
+			panel.setSize(width, height);
 		}
 	}
+	
+	/**
+	 * Returns the screen position of this scene window in the x axis.
+	 * 
+	 * @return screen position of this scene window in the x axis.
+	 */
+	public int getPositionX() {
+		return (int)this.getLocationOnScreen().getX();
+	}
+	
+	/**
+	 * Returns the screen position of this scene window in the y axis.
+	 * 
+	 * @return screen position of this scene window in the y axis.
+	 */
+	public int getPositionY() {
+		return (int)this.getLocationOnScreen().getY();
+	}
+	
+	private class ScenePanel extends JPanel{
+		
+		private static final long serialVersionUID = 1L;
+		
+		@Override
+		protected void paintComponent(Graphics g) {
+			super.paintComponent(g);
+			g.drawImage(displayBuffer.getFrameBuffer(), 0, 0, width, height, null);
+		}
+	}
+
 }

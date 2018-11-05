@@ -46,9 +46,7 @@ public class MouseInputManager {
 	public void update() {
 		synchronized (mouseListeners) {
 			synchronized (pressedKeys) {
-				String data = "";
 				for (int key : pressedKeys.keySet()) {
-					data += key + ", ";
 					for (int i = 0; i < mouseListeners.size(); i++) {
 						JPGEMouseListener mouseListener = mouseListeners.get(i);
 						if (key == LEFT)
@@ -66,8 +64,6 @@ public class MouseInputManager {
 					mouseListener.positionUpdate(new JPGEMouseEvent(cache));
 				}
 				pressedKeys.clear();
-				if (data.equals("")) data = "no mouse clicks";
-				Profiler.getInstance().getData().setMouseData(data);
 			}
 		}
 	}

@@ -54,17 +54,13 @@ public class KeyInputManager {
 	public void update() {
 		synchronized (keyListeners) {
 			synchronized (pressedKeys) {
-				String data = "";
 				for (int key : pressedKeys.keySet()) {
 					char keyChar = pressedKeys.get(key).charValue();
-					data += "(" + keyChar + ", " + key + "), ";
 					for (int i = 0; i < keyListeners.size(); i++) {
 						JPGEKeyListener keyListener = keyListeners.get(i);
 						keyListener.keyPressed(new JPGEKeyEvent(keyChar, key));
 					}
 				}
-				if (data.equals("")) data = "no keys pressed";
-				Profiler.getInstance().getData().setKeyData(data);
 			}
 		}
 	}

@@ -13,6 +13,7 @@ public class SceneObject {
 	private Transform transform;
 	private Mesh mesh;
 	private Shader shader;
+	private Rigidbody rigidbody;
 	private boolean changed = false;
 	private boolean active = true;
 
@@ -29,6 +30,7 @@ public class SceneObject {
 		this.mesh = mesh;
 		this.changed = true;
 		this.shader = new Shader();
+		this.rigidbody = new Rigidbody();
 	}
 
 	/**
@@ -108,6 +110,15 @@ public class SceneObject {
 	}
 
 	/**
+	 * Returns the {@link Rigidbody} used by this scene object.
+	 * 
+	 * @return {@link Rigidbody} used by this scene object.
+	 */
+	public Rigidbody getRigidbody() {
+		return rigidbody;
+	}
+
+	/**
 	 * Returns if this object is active or not.
 	 * 
 	 * @return if this object is active or not.
@@ -124,10 +135,5 @@ public class SceneObject {
 	 */
 	public void setActive(boolean active) {
 		this.active = active;
-	}
-
-	@Override	
-	public String toString() {
-		return "SceneObject [name=" + name + ", transform=" + transform.toString() + ", mesh=" + mesh.toString() + "]";
 	}	
 }

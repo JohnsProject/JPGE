@@ -18,11 +18,14 @@ public class Animator {
 	 * @param scene {@link Scene} to update.
 	 */
 	public void animate(Scene scene) {
-		for (SceneObject sceneObject : scene.getSceneObjects()) {
-			Animation animation = sceneObject.getMesh().getCurrentAnimation();
-			animation.setCurrentFrame(animation.getCurrentFrame());
-			if (animation.getCurrentFrame() >= animation.getFramesCount()) {
-				animation.setCurrentFrame(0);
+		synchronized (scene.getSceneObjects()) {
+			for (int i = 0; i < scene.getSceneObjects().size(); i++) {
+				SceneObject sceneObject = scene.getSceneObjects().get(i);
+				Animation animation = sceneObject.getMesh().getCurrentAnimation();
+				animation.setCurrentFrame(animation.getCurrentFrame());
+				if (animation.getCurrentFrame() >= animation.getFramesCount()) {
+					animation.setCurrentFrame(0);
+				}
 			}
 		}
 	}

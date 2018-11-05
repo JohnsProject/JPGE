@@ -1,5 +1,6 @@
 package com.johnsproject.jpge;
 
+import com.johnsproject.jpge.dto.DisplayBuffer;
 import com.johnsproject.jpge.dto.Scene;
 import com.johnsproject.jpge.graphics.Animator;
 import com.johnsproject.jpge.graphics.Renderer;
@@ -27,13 +28,25 @@ public class Engine {
 	private Thread inputThread;
 	private Thread physicsThread;
 	
-	private EngineSettings settings = new EngineSettings();
+	private int graphicsUpdateRate = 30;
+	private int inputUpdateRate = 30;
+	private int physicsUpdateRate = 30;
+	
+	private long startTime = System.currentTimeMillis();
+	private boolean playing = true;
+	
+	private int lastGraphicsTime = 0;
+	private int lastInputTime = 0;
+	private int lastPhysicsTime = 0;
+	private int lastRendereredFaces = 0;
+	
 	private Scene scene = new Scene();
 	private Renderer renderer = new Renderer();
 	private Animator animator = new Animator();
 	private KeyInputManager keyManager = new KeyInputManager();
 	private MouseInputManager mouseManager = new MouseInputManager();
 	private PhysicsAnimator physicsAnimator = new PhysicsAnimator();
+	private DisplayBuffer displayBuffer = new DisplayBuffer(320, 240);
 	private SceneWindow sceneWindow = null;
 	
 	public Engine() {
@@ -46,8 +59,8 @@ public class Engine {
 	 * Starts the engine.
 	 */
 	public void play() {
-		if (!settings.isPlaying()) {
-			settings.setPlaying(true);
+		if (!isPlaying()) {
+			setPlaying(true);
 			startGraphicsThread();
 			startPhysicsThread();
 		}
@@ -57,18 +70,31 @@ public class Engine {
 	 * Pauses the engine.
 	 */
 	public void pause() {
-		if (settings.isPlaying()) {
-			settings.setPlaying(false);
+		if (isPlaying()) {
+			setPlaying(false);
 		}
 	}
 	
+	private void setPlaying(boolean value) {
+		playing = value;
+	}
+	
 	/**
-	 * Returns the {@link EngineSettings settings} of this engine.
+	 * Returns the time since the engine started in miliseconds.
 	 * 
-	 * @return {@link EngineSettings settings} of this engine.
+	 * @return time since the engine started in miliseconds.
 	 */
-	public EngineSettings getSettings() {
-		return settings;
+	public long getPlayTime() {
+		return System.currentTimeMillis() - startTime;
+	}
+
+	/**
+	 * Returns if the engine is running.
+	 * 
+	 * @return if the engine is running.
+	 */
+	public boolean isPlaying() {
+		return playing;
 	}
 	
 	/**
@@ -135,6 +161,15 @@ public class Engine {
 	}
 	
 	/**
+	 * Returns the {@link DisplayBuffer} used by the engine.
+	 * 
+	 * @return {@link DisplayBuffer} used by the engine.
+	 */
+	public DisplayBuffer getDisplayBuffer() {
+		return displayBuffer;
+	}
+	
+	/**
 	 * Returns the {@link SceneWindow} used by the engine.
 	 * 
 	 * @return {@link SceneWindow} used by the engine.
@@ -152,13 +187,108 @@ public class Engine {
 		this.sceneWindow = sceneWindow;
 	}
 	
+	/**
+	 * Returns how often graphics should be updated in a second.
+	 * Default is 30.
+	 * 
+	 * @return how often graphics should be updated in a second.
+	 */
+	public int getGraphicsUpdateRate() {
+		return graphicsUpdateRate;
+	}
+
+	/**
+	 * Sets how often graphics should be updated in a second.
+	 * Default is 30.
+	 * 
+	 * @param graphicsUpdateRate value to set.
+	 */
+	public void setGraphicsUpdateRate(int graphicsUpdateRate) {
+		this.graphicsUpdateRate = graphicsUpdateRate;
+	}
+
+	/**
+	 * Returns how often input should be updated in a second.
+	 * Default is 30.
+	 * 
+	 * @return how often input should be updated in a second.
+	 */
+	public int getInputUpdateRate() {
+		return inputUpdateRate;
+	}
+	
+	/**
+	 * Sets how often input should be updated in a second.
+	 * Default is 30.
+	 * 
+	 * @param inputUpdateRate value to set.
+	 */
+	public void setInputUpdateRate(int inputUpdateRate) {
+		this.inputUpdateRate = inputUpdateRate;
+	}
+
+	/**
+	 * Returns how often physics should be updated in a second.
+	 * Default is 30.
+	 * 
+	 * @return how often physics should be updated in a second.
+	 */
+	public int getPhysicsUpdateRate() {
+		return physicsUpdateRate;
+	}
+
+	/**
+	 * Sets how often physics should be updated in a second.
+	 * Default is 30.
+	 * 
+	 * @param physicsUpdateRate value to set.
+	 */
+	public void setPhysicsUpdateRate(int physicsUpdateRate) {
+		this.physicsUpdateRate = physicsUpdateRate;
+	}
+	
+	/**
+	 * Returns how long the graphics thread took in the last update.
+	 * 
+	 * @return how long the graphics thread took in the last update.
+	 */
+	public int getLastGraphicsTime() {
+		return lastGraphicsTime;
+	}
+	
+	/**
+	 * Returns how long the input thread took in the last update.
+	 * 
+	 * @return how long the input thread took in the last update.
+	 */
+	public int getLastInputTime() {
+		return lastInputTime;
+	}
+	
+	/**
+	 * Returns how long the physics thread took in the last update.
+	 * 
+	 * @return how long the physics thread took in the last update.
+	 */
+	public int getLastPhysicsTime() {
+		return lastPhysicsTime;
+	}
+	
+	/**
+	 * Returns the count of faces rendered in the last graphics update.
+	 * 
+	 * @return count of faces rendered in the last graphics update.
+	 */
+	public int getLastRenderedFaces() {
+		return lastRendereredFaces;
+	}
+	
 	private void startGraphicsThread() {
 		graphicsThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				int lastElapsed = 0;
-				while (settings.isPlaying()) {
-					lastElapsed = updateGraphics(lastElapsed);
+				while (isPlaying()) {
+					lastGraphicsTime = updateGraphics(lastGraphicsTime);
 				}
 			}
 		});
@@ -169,9 +299,8 @@ public class Engine {
 		inputThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				int lastElapsed = 0;
 				while (true) {
-					lastElapsed = updateInput(lastElapsed);
+					lastInputTime = updateInput(lastInputTime);
 				}
 			}
 		});
@@ -182,9 +311,8 @@ public class Engine {
 		physicsThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				int lastElapsed = 0;
-				while (settings.isPlaying()) {
-					lastElapsed = updatePhysics(lastElapsed);
+				while (isPlaying()) {
+					lastPhysicsTime = updatePhysics(lastPhysicsTime);
 				}
 			}
 		});
@@ -192,16 +320,15 @@ public class Engine {
 	}
 	
 	private int updateGraphics(int lastElapsed) {
-		long before = System.nanoTime();
+		long before = System.currentTimeMillis();
+		animator.animate(scene);
+		lastRendereredFaces = renderer.render(scene, displayBuffer);
 		if (sceneWindow != null) {
-			animator.animate(scene);
-			renderer.render(scene, sceneWindow.getDepthBuffer());
-			sceneWindow.repaint();
+			sceneWindow.draw();
 		}
-		int elapsed = (int)(System.nanoTime() - before);
-		Profiler.getInstance().getData().setGraphicsTime(elapsed);
+		int elapsed = (int)(System.currentTimeMillis() - before);
 		try {
-			Thread.sleep(1000/settings.getGraphicsUpdateRate());
+			Thread.sleep(1000/getGraphicsUpdateRate());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -209,13 +336,12 @@ public class Engine {
 	}
 	
 	private int updateInput(int lastElapsed) {
-		long before = System.nanoTime();
+		long before = System.currentTimeMillis();
 		keyManager.update();
 		mouseManager.update();
-		int elapsed = (int)(System.nanoTime() - before);
-		Profiler.getInstance().getData().setInputTime(elapsed);
+		int elapsed = (int)(System.currentTimeMillis() - before);
 		try {
-			Thread.sleep(1000/settings.getInputUpdateRate());
+			Thread.sleep(1000/getInputUpdateRate());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -223,12 +349,11 @@ public class Engine {
 	}
 	
 	private int updatePhysics(int lastElapsed) {
-		long before = System.nanoTime();
-		
-		int elapsed = (int)(System.nanoTime() - before);
-		Profiler.getInstance().getData().setPhysicsTime(elapsed);
+		long before = System.currentTimeMillis();
+		physicsAnimator.animate(scene);
+		int elapsed = (int)(System.currentTimeMillis() - before);
 		try {
-			Thread.sleep(1000/settings.getPhysicsUpdateRate());
+			Thread.sleep(1000/getPhysicsUpdateRate());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
