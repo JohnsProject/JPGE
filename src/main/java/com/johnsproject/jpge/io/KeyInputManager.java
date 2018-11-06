@@ -3,41 +3,35 @@ package com.johnsproject.jpge.io;
 import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.johnsproject.jpge.Profiler;
 
 public class KeyInputManager {
 	
-	private List<JPGEKeyListener> keyListeners = Collections.synchronizedList(new ArrayList<JPGEKeyListener>());
-	private Map<Integer, Character> pressedKeys = Collections.synchronizedMap(new HashMap<Integer, Character>());
+	private int[] keysBuffer = new int[8];
 	
 	public KeyInputManager() {
+		for (int i = 0; i < keysBuffer.length; i++) {
+			keysBuffer[i] = -1;
+		}
 		KeyboardFocusManager.getCurrentKeyboardFocusManager().addKeyEventDispatcher(new KeyEventDispatcher() {
 
 			@Override
 			public boolean dispatchKeyEvent(KeyEvent e) {
 				switch (e.getID()) {
 				case KeyEvent.KEY_PRESSED:
-					synchronized (pressedKeys) {
-						if (!pressedKeys.containsKey(e.getKeyCode())) {
-							pressedKeys.put(e.getKeyCode(), e.getKeyChar());
+					for (int i = 0; i < keysBuffer.length; i++) {
+						if (keysBuffer[i] == e.getKeyCode())
+							break;
+						if (keysBuffer[i] == -1) {
+							keysBuffer[i] = e.getKeyCode();
+							break;
 						}
 					}
 					break;
 
 				case KeyEvent.KEY_RELEASED:
-					synchronized (keyListeners) {
-						synchronized (pressedKeys) {
-							for (int i = 0; i < keyListeners.size(); i++) {
-								JPGEKeyListener keyListener = keyListeners.get(i);
-								keyListener.keyReleased(new JPGEKeyEvent(e.getKeyChar(), e.getKeyCode()));
-							}
-							pressedKeys.remove(e.getKeyCode());
+					for (int i = 0; i < keysBuffer.length; i++) {
+						if (keysBuffer[i] == e.getKeyCode()) {
+							keysBuffer[i] = -1;
 						}
 					}
 					break;
@@ -46,33 +40,29 @@ public class KeyInputManager {
 			}
 		});
 	}
-
+	
 	/**
-	 * Tells this key input manager to send an event containing 
-	 * the pressed keys to all registered listeners.
+	 * Returns all keys captured since last time reset was called.
+	 * 
+	 * @return all keys captured since last time reset was called.
 	 */
-	public void update() {
-		synchronized (keyListeners) {
-			synchronized (pressedKeys) {
-				for (int key : pressedKeys.keySet()) {
-					char keyChar = pressedKeys.get(key).charValue();
-					for (int i = 0; i < keyListeners.size(); i++) {
-						JPGEKeyListener keyListener = keyListeners.get(i);
-						keyListener.keyPressed(new JPGEKeyEvent(keyChar, key));
-					}
-				}
+	public int[] getKeys() {
+		return keysBuffer;
+	}
+	
+	/**
+	 * Returns if a key with the given id is found it returns true else false.
+	 * The ID of Keys are in the {@link KeyEvent} class. 
+	 * 
+	 * @param id
+	 * @return if a key with the given id is found it returns true else false.
+	 */
+	public boolean getKey(int id) {
+		for (int i = 0; i < keysBuffer.length; i++) {
+			if(keysBuffer[i] == id) {
+				return true;
 			}
 		}
-	}
-
-	/**
-	 * Adds the given {@link JPGEKeyListener} to this key input manager.
-	 * 
-	 * @param listener {@link JPGEKeyListener} to add.
-	 */
-	public void addKeyListener(JPGEKeyListener listener) {
-		synchronized (keyListeners) {
-			keyListeners.add(listener);
-		}
+		return false;
 	}
 }

@@ -10,9 +10,8 @@ import com.johnsproject.jpge.dto.Texture;
 import com.johnsproject.jpge.dto.Transform;
 import com.johnsproject.jpge.graphics.*;
 import com.johnsproject.jpge.io.*;
-import com.johnsproject.jpge.utils.VectorUtils;
 
-public class ExampleScene implements JPGEKeyListener, JPGEMouseListener{
+public class ExampleScene implements JPGE{
 	
 	public static void main(String[] args){
 		new ExampleScene();
@@ -22,7 +21,7 @@ public class ExampleScene implements JPGEKeyListener, JPGEMouseListener{
 	Camera camera, camera2;
 	Light light, light2;
 	Mesh mesh1, mesh2;
-	int renderWidth = 213, renderHeight = 160;
+	int renderWidth = 480, renderHeight = 320;
 	int windowWidth = 640, windowHeight = 480;
 	public ExampleScene() {		
 		try {
@@ -56,159 +55,172 @@ public class ExampleScene implements JPGEKeyListener, JPGEMouseListener{
 		Engine.getInstance().getScene().addSceneObject(sceneObject2);
 		Engine.getInstance().getScene().addCamera(camera);
 		Engine.getInstance().getScene().addCamera(camera2);
-		Engine.getInstance().getKeyInputManager().addKeyListener(this);
-		Engine.getInstance().getMouseInputManager().addMouseListener(this);
+		Engine.getInstance().addJPGEListener(this);
 		Profiler.getInstance().start();
 	}
 	
-	public void keyPressed(JPGEKeyEvent event) {
-		switch (event.getKey()) {
-		case 'w':
-			camera.getTransform().translateLocal(0, 0, 60);
-			break;
-		case 's':
-			camera.getTransform().translateLocal(0, 0, -60);
-			break;
-		case 'a':
-			camera.getTransform().translateLocal(-60, 0, 0);
-			break;
-		case 'd':
-			camera.getTransform().translateLocal(60, 0, 0);
-			break;
-		case 'e':
-			camera.getTransform().translateLocal(0, 60, 0);
-			break;
-		case 'y':
-			camera.getTransform().translateLocal(0, -60, 0);
-			break;
-		case 'b':
+	
+	@Override
+	public void update() {
+		checkKey();
+	}
+	
+	public void checkKey() {
+		if (Engine.getInstance().getKeyInputManager().getKey(66)) {
 			sceneObject.getTransform().rotate(0, 3, 0);
 			sceneObject2.getTransform().rotate(0, 3, 0);
-			break;
-		case 'n':
+		}
+		if (Engine.getInstance().getKeyInputManager().getKey(78)) {
 			sceneObject.getTransform().rotate(3, 0, 0);
 			sceneObject2.getTransform().rotate(3, 0, 0);
-			break;
-		case 'k':
-			camera.getTransform().rotate(0, 1, 0);
-			break;
-		case 'l':
-			camera.getTransform().rotate(0, -1, 0);
-			break;
-		case 'o':
-			camera.getTransform().rotate(1, 0, 0);
-			break;
-		case '.':
-			camera.getTransform().rotate(-1, 0, 0);
-			break;
-		case 'p':
-			camera.getTransform().rotate(0, 0, 1);
-			break;
-		case ',':
-			camera.getTransform().rotate(0, 0, -1);
-			break;
-		case '1':
-			sceneObject.getShader().setDrawingType(Shader.DRAW_VERTEX);
-			sceneObject2.getShader().setDrawingType(Shader.DRAW_VERTEX);
-			break;
-		case '2':
-			sceneObject.getShader().setDrawingType(Shader.DRAW_WIREFRAME);
-			sceneObject2.getShader().setDrawingType(Shader.DRAW_WIREFRAME);
-			break;
-		case '3':
-			sceneObject.getShader().setDrawingType(Shader.DRAW_FLAT);
-			sceneObject2.getShader().setDrawingType(Shader.DRAW_FLAT);
-			break;
-		case '4':
-			sceneObject.getShader().setDrawingType(Shader.DRAW_TEXTURED);
-			sceneObject2.getShader().setDrawingType(Shader.DRAW_TEXTURED);
-			break;
-		case '6':
-			sceneObject.getShader().setProjectionType(Shader.PROJECT_ORTHOGRAPHIC);
-			sceneObject2.getShader().setProjectionType(Shader.PROJECT_ORTHOGRAPHIC);
-			break;
-		case '7':
-			sceneObject.getShader().setProjectionType(Shader.PROJECT_PERSPECTIVE);
-			sceneObject2.getShader().setProjectionType(Shader.PROJECT_PERSPECTIVE);
-		case '8':
-			sceneObject.getShader().setShadingType(Shader.SHADE_FLAT);
-			sceneObject2.getShader().setShadingType(Shader.SHADE_FLAT);
-			break;
-		case '9':
-			sceneObject.getShader().setShadingType(Shader.SHADE_GOURAUD);
-			sceneObject2.getShader().setShadingType(Shader.SHADE_GOURAUD);
-			break;
-		case '+':
-			light.setStrength(light.getStrength()+1);
-			break;
-		case '-':
-			light.setStrength(light.getStrength()-1);
-			break;
 		}
-		if (event.getKeyCode() == 112) { 
-			Profiler.getInstance().start();
-		}
-		if (event.getKeyCode() == 113) { 
-			Profiler.getInstance().stop();
-		}
-		if (event.getKeyCode() == 114) { 
-			Profiler.getInstance().startLogging();
-		}
-		if (event.getKeyCode() == 115) { 
-			Profiler.getInstance().stopLogging();
-		}
-		if (event.getKeyCode() == 116) { 
-			Engine.getInstance().play();
-		}
-		if (event.getKeyCode() == 117) { 
-			Engine.getInstance().pause();
-		}
-		if (event.getKeyCode() == 38) { 
-			light.getTransform().translate(0, 0, 1);
-		}
-		if (event.getKeyCode() == 40) { 
-			light.getTransform().translate(0, 0, -1);
-		}
-		if (event.getKeyCode() == 37) { 
-			light.getTransform().translate(1, 0, 0);
-		}
-		if (event.getKeyCode() == 39) { 
-			light.getTransform().translate(-1, 0, 0);
-		}
-//		System.out.println(event.getKeyCode());
 	}
+	
+//	public void keyPressed(JPGEKeyEvent event) {
+//		switch (event.getKey()) {
+//		case 'w':
+//			camera.getTransform().translateLocal(0, 0, 60);
+//			break;
+//		case 's':
+//			camera.getTransform().translateLocal(0, 0, -60);
+//			break;
+//		case 'a':
+//			camera.getTransform().translateLocal(-60, 0, 0);
+//			break;
+//		case 'd':
+//			camera.getTransform().translateLocal(60, 0, 0);
+//			break;
+//		case 'e':
+//			camera.getTransform().translateLocal(0, 60, 0);
+//			break;
+//		case 'y':
+//			camera.getTransform().translateLocal(0, -60, 0);
+//			break;
+//		case 'b':
+//			sceneObject.getTransform().rotate(0, 3, 0);
+//			sceneObject2.getTransform().rotate(0, 3, 0);
+//			break;
+//		case 'n':
+//			sceneObject.getTransform().rotate(3, 0, 0);
+//			sceneObject2.getTransform().rotate(3, 0, 0);
+//			break;
+//		case 'k':
+//			camera.getTransform().rotate(0, 1, 0);
+//			break;
+//		case 'l':
+//			camera.getTransform().rotate(0, -1, 0);
+//			break;
+//		case 'o':
+//			camera.getTransform().rotate(1, 0, 0);
+//			break;
+//		case '.':
+//			camera.getTransform().rotate(-1, 0, 0);
+//			break;
+//		case 'p':
+//			camera.getTransform().rotate(0, 0, 1);
+//			break;
+//		case ',':
+//			camera.getTransform().rotate(0, 0, -1);
+//			break;
+//		case '1':
+//			sceneObject.getShader().setDrawingType(Shader.DRAW_VERTEX);
+//			sceneObject2.getShader().setDrawingType(Shader.DRAW_VERTEX);
+//			break;
+//		case '2':
+//			sceneObject.getShader().setDrawingType(Shader.DRAW_WIREFRAME);
+//			sceneObject2.getShader().setDrawingType(Shader.DRAW_WIREFRAME);
+//			break;
+//		case '3':
+//			sceneObject.getShader().setDrawingType(Shader.DRAW_FLAT);
+//			sceneObject2.getShader().setDrawingType(Shader.DRAW_FLAT);
+//			break;
+//		case '4':
+//			sceneObject.getShader().setDrawingType(Shader.DRAW_TEXTURED);
+//			sceneObject2.getShader().setDrawingType(Shader.DRAW_TEXTURED);
+//			break;
+//		case '6':
+//			sceneObject.getShader().setProjectionType(Shader.PROJECT_ORTHOGRAPHIC);
+//			sceneObject2.getShader().setProjectionType(Shader.PROJECT_ORTHOGRAPHIC);
+//			break;
+//		case '7':
+//			sceneObject.getShader().setProjectionType(Shader.PROJECT_PERSPECTIVE);
+//			sceneObject2.getShader().setProjectionType(Shader.PROJECT_PERSPECTIVE);
+//		case '8':
+//			sceneObject.getShader().setShadingType(Shader.SHADE_FLAT);
+//			sceneObject2.getShader().setShadingType(Shader.SHADE_FLAT);
+//			break;
+//		case '9':
+//			sceneObject.getShader().setShadingType(Shader.SHADE_GOURAUD);
+//			sceneObject2.getShader().setShadingType(Shader.SHADE_GOURAUD);
+//			break;
+//		case '+':
+//			light.setStrength(light.getStrength()+1);
+//			break;
+//		case '-':
+//			light.setStrength(light.getStrength()-1);
+//			break;
+//		}
+//		if (event.getKeyCode() == 112) { 
+//			Profiler.getInstance().start();
+//		}
+//		if (event.getKeyCode() == 113) { 
+//			Profiler.getInstance().stop();
+//		}
+//		if (event.getKeyCode() == 114) { 
+//			Profiler.getInstance().startLogging();
+//		}
+//		if (event.getKeyCode() == 115) { 
+//			Profiler.getInstance().stopLogging();
+//		}
+//		if (event.getKeyCode() == 116) { 
+//			Engine.getInstance().play();
+//		}
+//		if (event.getKeyCode() == 117) { 
+//			Engine.getInstance().pause();
+//		}
+//		if (event.getKeyCode() == 38) { 
+//			light.getTransform().translate(0, 0, 1);
+//		}
+//		if (event.getKeyCode() == 40) { 
+//			light.getTransform().translate(0, 0, -1);
+//		}
+//		if (event.getKeyCode() == 37) { 
+//			light.getTransform().translate(1, 0, 0);
+//		}
+//		if (event.getKeyCode() == 39) { 
+//			light.getTransform().translate(-1, 0, 0);
+//		}
+////		System.out.println(event.getKeyCode());
+//	}
 
-	public void keyReleased(JPGEKeyEvent event) {
-	}
-
-	boolean dragged = false;
-	int[] postition = new int[2];
-	@Override
-	public void leftClick(JPGEMouseEvent event) {
-		dragged = !dragged;
-		postition = event.getPosition();
-	}
-
-	@Override
-	public void middleClick(JPGEMouseEvent event) {
-		
-	}
-
-	@Override
-	public void rightClick(JPGEMouseEvent event) {
-		
-	}
-
-	@Override
-	public void positionUpdate(JPGEMouseEvent event) {
-		if (dragged) {
-			int fx = (int)Engine.getInstance().getSceneWindow().getPositionX();
-			int fy = (int)Engine.getInstance().getSceneWindow().getPositionY();
-			int x = (event.getPosition()[VectorUtils.X]-fx) - (windowWidth/2);
-			int y = (event.getPosition()[VectorUtils.Y]-fy) - (windowHeight/2);
-//			int z = camera.getTransform().getRotation()[VectorUtils.Z];
-			//System.out.println("x " + x + ", y " + y + ", z " + z);
-			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);
-		}
-	}
+//	boolean dragged = false;
+//	int[] postition = new int[2];
+//	@Override
+//	public void leftClick(JPGEMouseEvent event) {
+//		dragged = !dragged;
+//		postition = event.getPosition();
+//	}
+//
+//	@Override
+//	public void middleClick(JPGEMouseEvent event) {
+//		
+//	}
+//
+//	@Override
+//	public void rightClick(JPGEMouseEvent event) {
+//		
+//	}
+//
+//	@Override
+//	public void positionUpdate(JPGEMouseEvent event) {
+//		if (dragged) {
+//			int fx = (int)Engine.getInstance().getSceneWindow().getPositionX();
+//			int fy = (int)Engine.getInstance().getSceneWindow().getPositionY();
+//			int x = (event.getPosition()[VectorUtils.X]-fx) - (windowWidth/2);
+//			int y = (event.getPosition()[VectorUtils.Y]-fy) - (windowHeight/2);
+////			int z = camera.getTransform().getRotation()[VectorUtils.Z];
+//			//System.out.println("x " + x + ", y " + y + ", z " + z);
+//			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);
+//		}
+//	}
 }

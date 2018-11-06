@@ -63,24 +63,6 @@ public class SceneWindow extends JFrame{
 		}
 	}
 	
-	/**
-	 * Returns the screen position of this scene window in the x axis.
-	 * 
-	 * @return screen position of this scene window in the x axis.
-	 */
-	public int getPositionX() {
-		return (int)this.getLocationOnScreen().getX();
-	}
-	
-	/**
-	 * Returns the screen position of this scene window in the y axis.
-	 * 
-	 * @return screen position of this scene window in the y axis.
-	 */
-	public int getPositionY() {
-		return (int)this.getLocationOnScreen().getY();
-	}
-	
 	private class ScenePanel extends JPanel{
 		
 		private static final long serialVersionUID = 1L;

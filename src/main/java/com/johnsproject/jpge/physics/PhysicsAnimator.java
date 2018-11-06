@@ -11,15 +11,13 @@ public class PhysicsAnimator {
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
 	public void animate(Scene scene) {
-		synchronized (scene.getSceneObjects()) {
-			for (int i = 0; i < scene.getSceneObjects().size(); i++) {
-				SceneObject sceneObject = scene.getSceneObjects().get(i);
-				Transform transform = sceneObject.getTransform();
-				Rigidbody rigidbody = sceneObject.getRigidbody();
-				PhysicsSettings settings = scene.getPhysicsSettings();
-				applyGravity(rigidbody, settings.getGravity());
-				transform.translate(rigidbody.getVelocity());
-			}
+		for (int i = 0; i < scene.getSceneObjects().size(); i++) {
+			SceneObject sceneObject = scene.getSceneObjects().get(i);
+			Transform transform = sceneObject.getTransform();
+			Rigidbody rigidbody = sceneObject.getRigidbody();
+			PhysicsSettings settings = scene.getPhysicsSettings();
+			applyGravity(rigidbody, settings.getGravity());
+			transform.translate(rigidbody.getVelocity());
 		}
 	}
 	

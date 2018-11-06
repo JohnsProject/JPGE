@@ -1,7 +1,6 @@
 package com.johnsproject.jpge.dto;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.johnsproject.jpge.physics.PhysicsSettings;
@@ -14,9 +13,9 @@ import com.johnsproject.jpge.physics.PhysicsSettings;
  */
 public class Scene {
 
-	private final List<SceneObject> sceneObjects = Collections.synchronizedList(new ArrayList<SceneObject>());
-	private final List<Camera> cameras = Collections.synchronizedList(new ArrayList<Camera>());
-	private final List<Light> lights = Collections.synchronizedList(new ArrayList<Light>());
+	private final List<SceneObject> sceneObjects = new ArrayList<SceneObject>();
+	private final List<Camera> cameras = new ArrayList<Camera>();
+	private final List<Light> lights = new ArrayList<Light>();
 	private PhysicsSettings physicsSettings = new PhysicsSettings();
 	
 	/**
@@ -25,9 +24,7 @@ public class Scene {
 	 * @param sceneObject {@link SceneObject} to add.
 	 */
 	public void addSceneObject(SceneObject sceneObject){
-		synchronized (sceneObjects) {
-			sceneObjects.add(sceneObject);
-		}
+		sceneObjects.add(sceneObject);
 	}
 	
 	/**
@@ -36,9 +33,7 @@ public class Scene {
 	 * @param sceneObject {@link SceneObject} to remove.
 	 */
 	public void removeSceneObject(SceneObject sceneObject){
-		synchronized (sceneObjects) {
-			sceneObjects.remove(sceneObject);
-		}
+		sceneObjects.remove(sceneObject);
 	}
 
 	/**
@@ -47,9 +42,7 @@ public class Scene {
 	 * @return all {@link SceneObject SceneObjects} of this scene.
 	 */
 	public List<SceneObject> getSceneObjects() {
-		synchronized (sceneObjects) {
-			return sceneObjects;
-		}
+		return sceneObjects;
 	}
 	
 	/**
@@ -58,9 +51,7 @@ public class Scene {
 	 * @param light {@link Light} to add.
 	 */
 	public void addLight(Light light){
-		synchronized (lights) {
-			lights.add(light);
-		}
+		lights.add(light);
 	}
 	
 	/**
@@ -69,9 +60,7 @@ public class Scene {
 	 * @param light {@link Light} to remove.
 	 */
 	public void removeLight(Light light){
-		synchronized (lights) {
-			lights.remove(light);
-		}
+		lights.remove(light);
 	}
 	
 	/**
@@ -80,9 +69,7 @@ public class Scene {
 	 * @return all {@link Light Lights} of this scene.
 	 */
 	public List<Light> getLights() {
-		synchronized (lights) {
-			return lights;
-		}
+		return lights;
 	}
 	
 	/**
@@ -91,9 +78,7 @@ public class Scene {
 	 * @param camera {@link Camera} to add.
 	 */
 	public void addCamera(Camera camera){
-		synchronized (cameras) {
-			cameras.add(camera);
-		}
+		cameras.add(camera);
 	}
 	
 	/**
@@ -102,9 +87,7 @@ public class Scene {
 	 * @param camera {@link Camera} to remove.
 	 */
 	public void removeCamera(Camera camera){
-		synchronized (cameras) {
-			cameras.remove(camera);
-		}
+		cameras.remove(camera);
 	}
 
 	/**
@@ -113,9 +96,7 @@ public class Scene {
 	 * @return all {@link Camera Cameras} of this scene.
 	 */
 	public List<Camera> getCameras() {
-		synchronized (cameras) {
-			return cameras;
-		}
+		return cameras;
 	}
 
 	/**

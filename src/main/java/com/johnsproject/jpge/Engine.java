@@ -1,5 +1,8 @@
 package com.johnsproject.jpge;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.johnsproject.jpge.dto.DisplayBuffer;
 import com.johnsproject.jpge.dto.Scene;
 import com.johnsproject.jpge.graphics.Animator;
@@ -21,22 +24,24 @@ public class Engine {
 		if (instance == null) {
 			instance = new Engine();
 		}
-		return instance;
+		synchronized (instance) {
+			return instance;
+		}
 	}
 	
 	private Thread graphicsThread;
-	private Thread inputThread;
+	private Thread jpgeThread;
 	private Thread physicsThread;
 	
 	private int graphicsUpdateRate = 30;
-	private int inputUpdateRate = 30;
+	private int jpgeUpdateRate = 30;
 	private int physicsUpdateRate = 30;
 	
 	private long startTime = System.currentTimeMillis();
 	private boolean playing = true;
 	
+	private int lastJPGETime = 0;
 	private int lastGraphicsTime = 0;
-	private int lastInputTime = 0;
 	private int lastPhysicsTime = 0;
 	private int lastRendereredFaces = 0;
 	
@@ -49,10 +54,12 @@ public class Engine {
 	private DisplayBuffer displayBuffer = new DisplayBuffer(320, 240);
 	private SceneWindow sceneWindow = null;
 	
+	private List<JPGE> jpgeListeners = new ArrayList<JPGE>();
+	
 	public Engine() {
 		startGraphicsThread();
 		startPhysicsThread();
-		startInputThread();
+		startJPGEThread();
 	}
 	
 	/**
@@ -208,23 +215,23 @@ public class Engine {
 	}
 
 	/**
-	 * Returns how often input should be updated in a second.
+	 * Returns how often jpge should be updated in a second.
 	 * Default is 30.
 	 * 
-	 * @return how often input should be updated in a second.
+	 * @return how often jpge should be updated in a second.
 	 */
-	public int getInputUpdateRate() {
-		return inputUpdateRate;
+	public int getJPGEUpdateRate() {
+		return jpgeUpdateRate;
 	}
 	
 	/**
-	 * Sets how often input should be updated in a second.
+	 * Sets how often jpge should be updated in a second.
 	 * Default is 30.
 	 * 
-	 * @param inputUpdateRate value to set.
+	 * @param jpgeUpdateRate value to set.
 	 */
-	public void setInputUpdateRate(int inputUpdateRate) {
-		this.inputUpdateRate = inputUpdateRate;
+	public void setJPGEUpdateRate(int jpgeUpdateRate) {
+		this.jpgeUpdateRate = jpgeUpdateRate;
 	}
 
 	/**
@@ -257,12 +264,12 @@ public class Engine {
 	}
 	
 	/**
-	 * Returns how long the input thread took in the last update.
+	 * Returns how long the jpge thread took in the last update.
 	 * 
-	 * @return how long the input thread took in the last update.
+	 * @return how long the jpge thread took in the last update.
 	 */
-	public int getLastInputTime() {
-		return lastInputTime;
+	public int getLastJPGETime() {
+		return lastJPGETime;
 	}
 	
 	/**
@@ -283,6 +290,36 @@ public class Engine {
 		return lastRendereredFaces;
 	}
 	
+	/**
+	 * Adds the given {@link JPGE} listener to the listeners list.
+	 * 
+	 * @param listener listener to add.
+	 */
+	public void addJPGEListener(JPGE listener) {
+		this.jpgeListeners.add(listener);
+	}
+	
+	/**
+	 * Removes the given {@link JPGE} listener from the listeners list.
+	 * 
+	 * @param listener listener to remove.
+	 */
+	public void removeJPGEListener(JPGE listener) {
+		this.jpgeListeners.remove(listener);
+	}
+	
+	private void startJPGEThread() {
+		jpgeThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (true) {
+					lastJPGETime = updateJPGE(lastJPGETime);
+				}
+			}
+		});
+		jpgeThread.start();
+	}
+	
 	private void startGraphicsThread() {
 		graphicsThread = new Thread(new Runnable() {
 			@Override
@@ -293,18 +330,6 @@ public class Engine {
 			}
 		});
 		graphicsThread.start();
-	}
-	
-	private void startInputThread() {
-		inputThread = new Thread(new Runnable() {
-			@Override
-			public void run() {
-				while (true) {
-					lastInputTime = updateInput(lastInputTime);
-				}
-			}
-		});
-		inputThread.start();
 	}
 	
 	private void startPhysicsThread() {
@@ -319,6 +344,20 @@ public class Engine {
 		physicsThread.start();
 	}
 	
+	private int updateJPGE(int lastElapsed) {
+		long before = System.currentTimeMillis();
+		for (int i = 0; i < jpgeListeners.size(); i++) {
+			jpgeListeners.get(i).update();
+		}
+		int elapsed = (int)(System.currentTimeMillis() - before);
+		try {
+			Thread.sleep(1000/getJPGEUpdateRate());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return elapsed;
+	}
+	
 	private int updateGraphics(int lastElapsed) {
 		long before = System.currentTimeMillis();
 		animator.animate(scene);
@@ -329,19 +368,6 @@ public class Engine {
 		int elapsed = (int)(System.currentTimeMillis() - before);
 		try {
 			Thread.sleep(1000/getGraphicsUpdateRate());
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-		return elapsed;
-	}
-	
-	private int updateInput(int lastElapsed) {
-		long before = System.currentTimeMillis();
-		keyManager.update();
-		mouseManager.update();
-		int elapsed = (int)(System.currentTimeMillis() - before);
-		try {
-			Thread.sleep(1000/getInputUpdateRate());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

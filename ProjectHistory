@@ -237,6 +237,11 @@ v0.1 - 24/08/2018
 * Added PhysicsSettings class (contains physics settings of scenes)
 * Added object fall physics
 * Deleted ProfilerData class (Profiler gets data from engine)
+06/11/2018
+* Fixed Key and MouseInputManager key getting bugs
+* Removed the JPGEKey Listener/Event
+* Removed the JPGEMouse Listener/Event
+* Added JPGE interface (Called by the engine, has as a default update method)
 
 
 

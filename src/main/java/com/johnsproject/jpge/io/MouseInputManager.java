@@ -1,81 +1,96 @@
 package com.johnsproject.jpge.io;
 
 import java.awt.AWTEvent;
-import java.awt.MouseInfo;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.johnsproject.jpge.Profiler;
-import com.johnsproject.jpge.utils.VectorUtils;
 
 public class MouseInputManager {
 	
-	private static final int vx = VectorUtils.X, vy = VectorUtils.Y;
-	private static final byte LEFT = 0, MIDDLE = 1, RIGHT = 2;
-	private List<JPGEMouseListener> mouseListeners = Collections.synchronizedList(new ArrayList<JPGEMouseListener>());
-	private Map<Integer, int[]> pressedKeys = Collections.synchronizedMap(new HashMap<Integer, int[]>());
+	public static final byte LEFT = 0, MIDDLE = 1, RIGHT = 2;
+	private int[] keysBuffer = new int[3];
+	private int mouse_x = 0;
+	private int mouse_y = 0;
 
-	private int[] cache = new int[2];
 	public MouseInputManager() {
+		for (int i = 0; i < keysBuffer.length; i++) {
+			keysBuffer[i] = -1;
+		}
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
             public void eventDispatched(AWTEvent event) {
                 if(event instanceof MouseEvent){
-                	synchronized (pressedKeys) {
-	                    MouseEvent evt = (MouseEvent)event;
-	                    if(evt.getID() == MouseEvent.MOUSE_CLICKED){
-	                    	cache[vx] = (int)evt.getX();
-	                    	cache[vy] = (int)evt.getY();
-	        				pressedKeys.put(evt.getButton()-1, cache);
-	                    }
-                	}
+                	 MouseEvent e = (MouseEvent)event;
+	                 switch (e.getID()) {
+	 					case MouseEvent.MOUSE_PRESSED:
+		 					for (int i = 0; i < keysBuffer.length; i++) {
+		 						if (keysBuffer[i] == e.getButton()-1)
+		 								break;
+		 						if ((keysBuffer[i] == -1)) {
+		 							keysBuffer[i] = e.getButton()-1;
+		 		                    break;
+		 						}
+		 					}
+		 					break;
+
+	 					case MouseEvent.MOUSE_MOVED:
+	 						mouse_x = (int)e.getX();
+	 		                mouse_y = (int)e.getY();
+		 					break;
+		 					
+		 				case MouseEvent.MOUSE_RELEASED:
+		 					for (int i = 0; i < keysBuffer.length; i++) {
+		 						if ((keysBuffer[i] == e.getButton()-1)) {
+		 							keysBuffer[i] = -1;
+		 						}
+		 					}
+		 					break;
+	 				}
                 }
             }
-        }, AWTEvent.MOUSE_EVENT_MASK);
-	}
-
-	/**
-	 * Tells this mouse input manager to send an event containing 
-	 * the pressed keys to all registered listeners.
-	 */
-	public void update() {
-		synchronized (mouseListeners) {
-			synchronized (pressedKeys) {
-				for (int key : pressedKeys.keySet()) {
-					for (int i = 0; i < mouseListeners.size(); i++) {
-						JPGEMouseListener mouseListener = mouseListeners.get(i);
-						if (key == LEFT)
-							mouseListener.leftClick(new JPGEMouseEvent(cache));
-						if (key == MIDDLE)
-							mouseListener.middleClick(new JPGEMouseEvent(cache));
-						if (key == RIGHT)
-							mouseListener.rightClick(new JPGEMouseEvent(cache));
-					}
-				}
-				for (int i = 0; i < mouseListeners.size(); i++) {
-					JPGEMouseListener mouseListener = mouseListeners.get(i);
-					cache[vx] = (int) MouseInfo.getPointerInfo().getLocation().getX();
-					cache[vy] = (int) MouseInfo.getPointerInfo().getLocation().getY();
-					mouseListener.positionUpdate(new JPGEMouseEvent(cache));
-				}
-				pressedKeys.clear();
-			}
-		}
+        }, AWTEvent.MOUSE_MOTION_EVENT_MASK + AWTEvent.MOUSE_EVENT_MASK);
 	}
 	
 	/**
-	 * Adds the given {@link JPGEMouseListener} to this mouse input manager.
+	 * Returns all keys captured since last time reset was called.
 	 * 
-	 * @param listener {@link JPGEMouseListener} to add.
+	 * @return all keys captured since last time reset was called.
 	 */
-	public void addMouseListener(JPGEMouseListener listener) {
-		synchronized (mouseListeners) {
-			mouseListeners.add(listener);
+	public int[] getKeys() {
+		return keysBuffer;
+	}
+	
+	
+	/**
+	 * Returns the key with the given button as input.
+	 * If no key is found it returns null.
+	 * 
+	 * @param button
+	 * @return key with the given button as input.
+	 */
+	public int getKey(int button) {
+		for (int i = 0; i < keysBuffer.length; i++) {
+			if (keysBuffer[i] == button) {
+				return keysBuffer[i];
+			}
 		}
+		return -1;
+	}
+	
+	/**
+	 * Returns the position of the mouse in the x axis in pixel coordinates.
+	 * 
+	 * @return position of the mouse in the x axis in pixel coordinates.
+	 */
+	public int getMouseX() {
+		return mouse_x;
+	}
+	
+	/**
+	 * Returns the position of the mouse in the y axis in pixel coordinates.
+	 * 
+	 * @return position of the mouse in the y axis in pixel coordinates.
+	 */
+	public int getMouseY() {
+		return mouse_y;
 	}
 }

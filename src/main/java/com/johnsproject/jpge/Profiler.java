@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -35,12 +36,12 @@ public class Profiler{
 		return instance;
 	}
 	
-	private static final int WIDTH = 330;
-	private static final int HEIGHT = 330;
+	private static final int WIDTH = 300;
+	private static final int HEIGHT = 300;
 	private static final int POS_X = 2;
 	private static final int POS_X2 = 120;
 	private static final int START_Y = 12;
-	private static final int STEP = 17;
+	private static final int STEP = 14;
 	
 	
 	private boolean profile = false;
@@ -114,14 +115,16 @@ public class Profiler{
 	}
 	
 	private int logCommom(Graphics g, int y) {
+		Engine engine = Engine.getInstance();
 		int cpuLoad = (int)Math.round((osxb.getProcessCpuLoad() * 100));
 		int maxMem = Math.round(Runtime.getRuntime().totalMemory() >> 20);
 		int freeMem = Math.round(Runtime.getRuntime().freeMemory() >> 20);
 		int usedMem = (maxMem - freeMem);
+		String jpgeTime =	"" + engine.getLastJPGETime() + " ms";
 		String arch =	"" + osxb.getArch();
 		String cpu =	"" + getBar(cpuLoad, 100) + cpuLoad + " %";
 		String mem =	"" + getBar(usedMem, maxMem) + usedMem + " / " + maxMem + " MB";
-		g.drawString("COMMOM DATA", POS_X, y);
+		g.drawString("COMMOM", POS_X, y);
 		y += STEP;
 		g.drawString("- System arch : ", POS_X, y);
 		g.drawString(arch, POS_X2, y);
@@ -131,11 +134,15 @@ public class Profiler{
 		y += STEP;
 		g.drawString("- Memory usage : ", POS_X, y);
 		g.drawString(mem, POS_X2, y);
+		y += STEP;
+		g.drawString("- JPGE time : ", POS_X, y);
+		g.drawString(jpgeTime, POS_X2, y);
 		if (isLogging()) {
-			System.out.println("COMMOM DATA");
+			System.out.println("COMMOM");
 			System.out.println("- System arch :\t\t" + arch);
 			System.out.println("- JVM CPU load :\t" + cpu);
 			System.out.println("- Memory usage :\t" + mem);
+			System.out.println("- JPGE time :\t" + jpgeTime);
 		}
 		return y;
 	}
@@ -144,11 +151,9 @@ public class Profiler{
 		Engine engine = Engine.getInstance();
 		int renderedPolys = engine.getLastRenderedFaces();
 		int maxPolys = 0;
-		synchronized (engine.getScene()) {
-			List<SceneObject> sceneObjects = engine.getScene().getSceneObjects();
-			for (int i = 0; i < sceneObjects.size(); i++) {
-				maxPolys += sceneObjects.get(i).getMesh().getFaces().length;
-			}
+		List<SceneObject> sceneObjects = engine.getScene().getSceneObjects();
+		for (int i = 0; i < sceneObjects.size(); i++) {
+			maxPolys += sceneObjects.get(i).getMesh().getFaces().length;
 		}
 		String fps =	"" + 1000/(engine.getLastGraphicsTime()+1);
 		String rTime = 	"" + engine.getLastGraphicsTime() + " ms";
@@ -158,7 +163,7 @@ public class Profiler{
 			wRes += engine.getSceneWindow().getWidth() + " x " + engine.getSceneWindow().getHeight();
 		else wRes += "no SceneWindow";
 		String rTris =	"" + getBar(renderedPolys, maxPolys) + renderedPolys + " / " + maxPolys;
-		g.drawString("GRAPHICS DATA", POS_X, y);
+		g.drawString("GRAPHICS", POS_X, y);
 		y += STEP;
 		g.drawString("- FPS : ", POS_X, y);
 		g.drawString(fps, POS_X2, y);
@@ -175,7 +180,7 @@ public class Profiler{
 		g.drawString("- Rendered Faces : ", POS_X, y);
 		g.drawString(rTris, POS_X2, y);
 		if (isLogging()) {
-			System.out.println("GRAPHICS DATA");
+			System.out.println("GRAPHICS");
 			System.out.println("- FPS :\t\t\t" + fps);
 			System.out.println("- Render time :\t\t" + rTime);
 			System.out.println("- Rendering res. :\t" + rRes);
@@ -187,24 +192,24 @@ public class Profiler{
 	
 	private int logInput(Graphics g, int y) {
 		Engine engine = Engine.getInstance();
-		String iTime =	"" + engine.getLastInputTime() + " ms";
-		String key =	"";
-		String mouse =	"";
-		g.drawString("INPUT DATA", POS_X, y);
-		y += STEP;
-		g.drawString("- Input time : ", POS_X, y);
-		g.drawString(iTime, POS_X2, y);
+		String key =	"" + Arrays.toString(engine.getKeyInputManager().getKeys());
+		String mouseKeys =	"" + Arrays.toString(engine.getMouseInputManager().getKeys());
+		String mouse =	"" + engine.getMouseInputManager().getMouseX() + ", " + engine.getMouseInputManager().getMouseY();
+		g.drawString("INPUT", POS_X, y);
 		y += STEP;
 		g.drawString("- Pressed Keys : ", POS_X, y);
 		g.drawString(key, POS_X2, y);
 		y += STEP;
 		g.drawString("- Mouse Clicks : ", POS_X, y);
+		g.drawString(mouseKeys, POS_X2, y);
+		y += STEP;
+		g.drawString("- Mouse Position : ", POS_X, y);
 		g.drawString(mouse, POS_X2, y);
 		if (isLogging()) {
-			System.out.println("INPUT DATA");
-			System.out.println("- Input time :\t\t" + iTime);
+			System.out.println("INPUT");
 			System.out.println("- Pressed Keys :\t" + key);
-			System.out.println("- Mouse Clicks :\t" + mouse);
+			System.out.println("- Mouse Clicks :\t" + mouseKeys);
+			System.out.println("- Mouse Position :\t" + mouse);
 		}
 		return y;
 	}
@@ -212,12 +217,12 @@ public class Profiler{
 	private int logPhysics(Graphics g, int y) {
 		Engine engine = Engine.getInstance();
 		String pTime =	"" + engine.getLastPhysicsTime() + " ms";
-		g.drawString("PHYSICS DATA", POS_X, y);
+		g.drawString("PHYSICS", POS_X, y);
 		y += STEP;
 		g.drawString("- Physics time : ", POS_X, y);
 		g.drawString(pTime, POS_X2, y);
 		if (isLogging()) {
-			System.out.println("PHYSICS DATA");
+			System.out.println("PHYSICS");
 			System.out.println("- Physics time :\t" + pTime);
 		}
 		return y;

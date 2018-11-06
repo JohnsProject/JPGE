@@ -31,27 +31,25 @@ public class Renderer {
 	 * @return rendered {@link Face faces}. (faces that are not culled)
 	 */
 	public int render(Scene scene, DisplayBuffer displayBuffer) {
-		synchronized (scene) {
-			int rendFaces = 0;
-			displayBuffer.clearFrameBuffer();
-			for (int i = 0; i < scene.getCameras().size(); i++) {
-				displayBuffer.clearDepthBuffer();
-				Camera camera = scene.getCameras().get(i);
-				for (int j = 0; j < scene.getSceneObjects().size(); j++) {
-					SceneObject sceneObject = scene.getSceneObjects().get(j);
-					// check if object is active or has changed (no need to render if its the same)
-					if (sceneObject.isActive() && (sceneObject.changed() || camera.changed())) {
-						rendFaces = render(sceneObject, camera, scene.getLights(), displayBuffer);
-					}
+		int rendFaces = 0;
+		displayBuffer.clearFrameBuffer();
+		for (int i = 0; i < scene.getCameras().size(); i++) {
+			displayBuffer.clearDepthBuffer();
+			Camera camera = scene.getCameras().get(i);
+			for (int j = 0; j < scene.getSceneObjects().size(); j++) {
+				SceneObject sceneObject = scene.getSceneObjects().get(j);
+				// check if object is active or has changed (no need to render if its the same)
+				if (sceneObject.isActive() && (sceneObject.changed() || camera.changed())) {
+					rendFaces = render(sceneObject, camera, scene.getLights(), displayBuffer);
 				}
-				camera.changed(false);
 			}
-			for (int i = 0; i < scene.getSceneObjects().size(); i++) {
-				SceneObject sceneObject = scene.getSceneObjects().get(i);
-				sceneObject.changed(false);
-			}
-			return rendFaces;
+			camera.changed(false);
 		}
+		for (int i = 0; i < scene.getSceneObjects().size(); i++) {
+			SceneObject sceneObject = scene.getSceneObjects().get(i);
+			sceneObject.changed(false);
+		}
+		return rendFaces;
 	}
 	
 	/**
