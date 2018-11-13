@@ -12,4 +12,4 @@ John´s Project Game Engine (JPGE) is tiny software based Game Engine writen in 
 # Versions
 v0.1 - beta
 
-[![JPGE v0.1 - beta](https://i9.ytimg.com/vi/LnPAomKeT5o/mq2.jpg?sqp=COjygd8F&rs=AOn4CLAEbk8Y9p_lRN0o8g6DM_c4NI4nCQ)](https://www.youtube.com/watch?v=LnPAomKeT5o&t=1s)
+[![JPGE v0.1 - beta](http://www.salomon-united.com/john/JPGE-v0.1.jpg)](https://www.youtube.com/watch?v=LnPAomKeT5o&t=1s)
