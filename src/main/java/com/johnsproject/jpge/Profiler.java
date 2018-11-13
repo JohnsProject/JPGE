@@ -155,9 +155,10 @@ public class Profiler{
 		for (int i = 0; i < sceneObjects.size(); i++) {
 			maxPolys += sceneObjects.get(i).getMesh().getFaces().length;
 		}
+		maxPolys *= engine.getScene().getCameras().size();
 		String fps =	"" + 1000/(engine.getLastGraphicsTime()+1);
 		String rTime = 	"" + engine.getLastGraphicsTime() + " ms";
-		String rRes =	"" + engine.getDisplayBuffer().getWidth() + " x " + engine.getDisplayBuffer().getHeight();
+		String rRes =	"" + engine.getRenderBuffer().getWidth() + " x " + engine.getRenderBuffer().getHeight();
 		String wRes =	"";
 		if (engine.getSceneWindow() != null)
 			wRes += engine.getSceneWindow().getWidth() + " x " + engine.getSceneWindow().getHeight();

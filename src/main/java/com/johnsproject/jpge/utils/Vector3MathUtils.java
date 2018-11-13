@@ -260,6 +260,20 @@ public class Vector3MathUtils extends MathUtils {
 	public static int[] distance(int[] vector1, int[] vector2, int[] out) {
 		return subtract(vector1, vector2, out);
 	}
+	
+	/**
+	 * Returns the distance between vector1 and vector2.
+	 * 
+	 * @param vector1 fist vector.
+	 * @param vector2 second vector.
+	 * @return distance between vector1 and vector2.
+	 */
+	public static int distance(int[] vector1, int[] vector2) {
+		int dx = vector2[vx] - vector1[vx];
+		int dy = vector2[vy] - vector1[vy];
+		int dz = vector2[vz] - vector1[vz];
+		return sqrt(dx * dx + dy * dy + dz * dz);
+	}
 
 	/**
 	 * Returns the cross product of a and b.
@@ -281,7 +295,6 @@ public class Vector3MathUtils extends MathUtils {
 	 * 
 	 * @param a fist vector.
 	 * @param b second vector.
-	 * @param out vector used to store result.
 	 * @return dot product of a and b.
 	 */
 	public static int dotProduct(int[] a, int[] b) {
@@ -295,7 +308,6 @@ public class Vector3MathUtils extends MathUtils {
 	 * Returns the magnitude of the given vector.
 	 * 
 	 * @param a vector.
-	 * @param out vector used to store result.
 	 * @return magnitude of the given vector.
 	 */
 	public static int magnitude(int[] a) {

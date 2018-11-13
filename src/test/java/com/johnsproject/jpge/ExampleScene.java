@@ -1,10 +1,12 @@
 package com.johnsproject.jpge;
 
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import com.johnsproject.jpge.dto.Camera;
 import com.johnsproject.jpge.dto.Light;
 import com.johnsproject.jpge.dto.Mesh;
+import com.johnsproject.jpge.dto.Rigidbody;
 import com.johnsproject.jpge.dto.SceneObject;
 import com.johnsproject.jpge.dto.Texture;
 import com.johnsproject.jpge.dto.Transform;
@@ -21,18 +23,21 @@ public class ExampleScene implements JPGE{
 	Camera camera, camera2;
 	Light light, light2;
 	Mesh mesh1, mesh2;
-	int renderWidth = 480, renderHeight = 320;
-	int windowWidth = 640, windowHeight = 480;
+	int renderWidth = 512, renderHeight = 512;
+	int windowWidth = 640, windowHeight = 640;
 	public ExampleScene() {		
 		try {
-//			mesh1 = SOMImporter.load("/home/john/Development/test.som");
-			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/cube.som"));
-			mesh2 = SOMImporter.load(getClass().getResourceAsStream("/monkey.som"));
+			mesh1 = SOMImporter.load("/home/john/Development/test.som");
+//			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/monkey.som"));
+			mesh2 = SOMImporter.load(getClass().getResourceAsStream("/cube.som"));
 		} catch (ImportExeption e) {
 			e.printStackTrace();
 		}
-		sceneObject = new SceneObject("test", new Transform(new int[] {-2000, 0, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh1);
-		sceneObject2 = new SceneObject("test2", new Transform(new int[] {2000, -3000, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh2);
+		sceneObject = new SceneObject("test", new Transform(new int[] {0, 0, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh1);
+		sceneObject2 = new SceneObject("test2", new Transform(new int[] {0, -3000, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh2);
+//		sceneObject.getRigidbody().setCollisionType(Rigidbody.COLLISION_AABB);
+//		sceneObject2.getRigidbody().setCollisionType(Rigidbody.COLLISION_AABB);
+		sceneObject.getRigidbody().setCollisionType(Rigidbody.COLLISION_TERRAIN);
 		try {
 			Texture t = new Texture(getClass().getResourceAsStream("/JohnsProject.png"));
 			for (int i = 0; i < mesh1.getMaterials().length; i++) {
@@ -48,8 +53,7 @@ public class ExampleScene implements JPGE{
 		camera2 = new Camera("testCam2", new Transform(new int[] {0, -10000, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), renderWidth-(renderWidth/3), 0, renderWidth/3, renderHeight/3);	
 		light = new Light("testLight", new Transform(new int[] {0, 0, 0}, new int[] {0, 0, 0}, new int[] {1, 1, 1}));
 		Engine.getInstance().setSceneWindow(new SceneWindow(windowWidth, windowHeight));
-		Engine.getInstance().getDisplayBuffer().setSize(renderWidth, renderHeight);
-		Engine.getInstance().getScene().getPhysicsSettings().setGravity(new int[3]);
+		Engine.getInstance().getRenderBuffer().setSize(renderWidth, renderHeight);
 		Engine.getInstance().getScene().addLight(light);
 		Engine.getInstance().getScene().addSceneObject(sceneObject);
 		Engine.getInstance().getScene().addSceneObject(sceneObject2);
@@ -62,17 +66,76 @@ public class ExampleScene implements JPGE{
 	
 	@Override
 	public void update() {
-		checkKey();
+		KeyInputManager keyInput = Engine.getInstance().getKeyInputManager();
+		applyCameraMove(keyInput);
+		applySceneObjectMove(keyInput);
+		applyLightMove(keyInput);
+		MouseInputManager mouseInput = Engine.getInstance().getMouseInputManager();
+		if (mouseInput.getKey(MouseInputManager.LEFT)) {
+			int x = (mouseInput.getMouseX()) - (windowWidth/2);
+			int y = (mouseInput.getMouseY()) - (windowHeight/2);
+			sceneObject.getTransform().setPosition(x*5, y*5, 0);
+//			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);
+		}
+		if (sceneObject2.getRigidbody().isColliding("test")) {
+			sceneObject2.getRigidbody().addForce(0, -100, 0);
+		}
 	}
 	
-	public void checkKey() {
-		if (Engine.getInstance().getKeyInputManager().getKey(66)) {
+	public void applyCameraMove(KeyInputManager input) {
+		if (input.getKey(KeyEvent.VK_W)) {
+			camera.getTransform().translateLocal(0, 0, 60);
+		}
+		if (input.getKey(KeyEvent.VK_S)) {
+			camera.getTransform().translateLocal(0, 0, -60);
+		}
+		if (input.getKey(KeyEvent.VK_A)) {
+			camera.getTransform().translateLocal(-60, 0, 0);
+		}
+		if (input.getKey(KeyEvent.VK_D)) {
+			camera.getTransform().translateLocal(60, 0, 0);
+		}
+		if (input.getKey(KeyEvent.VK_E)) {
+			camera.getTransform().translateLocal(0, -60, 0);
+		}
+		if (input.getKey(KeyEvent.VK_Y)) {
+			camera.getTransform().translateLocal(0, 60, 0);
+		}
+	}
+	
+	public void applySceneObjectMove(KeyInputManager input) {
+		if (input.getKey(KeyEvent.VK_B)) {
 			sceneObject.getTransform().rotate(0, 3, 0);
 			sceneObject2.getTransform().rotate(0, 3, 0);
 		}
-		if (Engine.getInstance().getKeyInputManager().getKey(78)) {
+		if (input.getKey(KeyEvent.VK_N)) {
 			sceneObject.getTransform().rotate(3, 0, 0);
 			sceneObject2.getTransform().rotate(3, 0, 0);
+		}
+		sceneObject.getRigidbody().useGravity(false);
+		if (input.getKey(KeyEvent.VK_G)) {
+			sceneObject2.getRigidbody().addForce(0, -100, 0);
+		}
+	}
+	
+	public void applyLightMove(KeyInputManager input) {
+		if (input.getKey(KeyEvent.VK_I)) {
+			light.getTransform().translateLocal(0, 0, -1);
+		}
+		if (input.getKey(KeyEvent.VK_K)) {
+			light.getTransform().translateLocal(0, 0, 1);
+		}
+		if (input.getKey(KeyEvent.VK_J)) {
+			light.getTransform().translateLocal(1, 0, 0);
+		}
+		if (input.getKey(KeyEvent.VK_L)) {
+			light.getTransform().translateLocal(-1, 0, 0);
+		}
+		if (input.getKey(KeyEvent.VK_M)) {
+			light.getTransform().translateLocal(0, 1, 0);
+		}
+		if (input.getKey(KeyEvent.VK_O)) {
+			light.getTransform().translateLocal(0, -1, 0);
 		}
 	}
 	

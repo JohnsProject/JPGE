@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import com.johnsproject.jpge.Engine;
-import com.johnsproject.jpge.dto.DisplayBuffer;
+import com.johnsproject.jpge.dto.RenderBuffer;
 import com.johnsproject.jpge.dto.Scene;
 import com.johnsproject.jpge.io.FileIO;
 
@@ -23,7 +23,7 @@ public class SceneWindow extends JFrame{
 	private int width = 0;
 	private int height = 0;
 	private ScenePanel panel;
-	private DisplayBuffer displayBuffer;
+	private RenderBuffer RenderBuffer;
 	
 	/**
 	 * Creates a new instance of the SceneWindow class filled with the given values.
@@ -32,23 +32,24 @@ public class SceneWindow extends JFrame{
 	 * @param height scene this height.
 	 */
 	public SceneWindow (int width, int height){
-		this.width = width;
-		this.height = height;
-		panel = new ScenePanel();
-		panel.setSize(width, height);
-		displayBuffer = Engine.getInstance().getDisplayBuffer();
 		setSize(width, height);
+		panel = new ScenePanel();
+		RenderBuffer = Engine.getInstance().getRenderBuffer();
 		try {
 			this.setIconImage(FileIO.loadImage(getClass().getResourceAsStream("/JohnsProjectLogo.png")));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		this.setLayout(null);
 		this.setResizable(false);
 		this.setVisible(true);
 		this.setTitle("JPGE");
-		this.setLayout(null);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.add(panel);
+	}
+	
+	public ScenePanel getPanel() {
+		return panel;
 	}
 	
 	/**
@@ -63,14 +64,14 @@ public class SceneWindow extends JFrame{
 		}
 	}
 	
-	private class ScenePanel extends JPanel{
+	public class ScenePanel extends JPanel{
 		
 		private static final long serialVersionUID = 1L;
 		
 		@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			g.drawImage(displayBuffer.getFrameBuffer(), 0, 0, width, height, null);
+			g.drawImage(RenderBuffer.getFrameBuffer(), 0, 0, width, height, null);
 		}
 	}
 

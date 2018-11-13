@@ -4,6 +4,11 @@ import java.awt.KeyEventDispatcher;
 import java.awt.KeyboardFocusManager;
 import java.awt.event.KeyEvent;
 
+/**
+ * The KeyInputManager class provides realtime keyboard informations.
+ * 
+ * @author John´s Project - John Konrad Ferraz Salomon
+ */
 public class KeyInputManager {
 	
 	private int[] keysBuffer = new int[8];
@@ -51,8 +56,12 @@ public class KeyInputManager {
 	}
 	
 	/**
-	 * Returns if a key with the given id is found it returns true else false.
-	 * The ID of Keys are in the {@link KeyEvent} class. 
+	 * If a key with the given id is found it returns true else false.
+	 * The ID of Keys are in the {@link KeyEvent} class.
+	 * <br> <br>
+	 * <code>
+	 *	getKey(KeyEvent.VK_W)
+	 * </code>
 	 * 
 	 * @param id
 	 * @return if a key with the given id is found it returns true else false.

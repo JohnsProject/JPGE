@@ -7,9 +7,23 @@ public class Rigidbody {
 
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
+	public static final int COLLISION_SPHERE = 0;
+	public static final int COLLISION_AABB = 1;
+	public static final int COLLISION_TERRAIN = 2;
+	
 	private int mass = 10;
 	private int[] velocity = new int[3];
 	private int collisionTime = (int)System.currentTimeMillis();
+	private int collisionType = COLLISION_SPHERE;
+	private int radius = -1;
+	private boolean useGravity = true;
+	private String[] collisionTargets = new String[5];
+	
+	public Rigidbody() {
+		for (int i = 0; i < collisionTargets.length; i++) {
+			collisionTargets[i] = "";
+		}
+	}
 	
 	public int getMass() {
 		return mass;
@@ -24,11 +38,13 @@ public class Rigidbody {
 	}
 	
 	public void addForce(int[] force) {
+		collisionTime = (int)System.currentTimeMillis();
 		Vector3MathUtils.divide(force, mass, force);
 		Vector3MathUtils.add(this.velocity, force, this.velocity);
 	}
 	
 	public void addForce(int x, int y, int z) {
+		collisionTime = (int)System.currentTimeMillis();
 		this.velocity[vx] += x / mass;
 		this.velocity[vy] += y / mass;
 		this.velocity[vz] += z / mass;
@@ -44,11 +60,84 @@ public class Rigidbody {
 		this.velocity[vz] += z;
 	}
 	
-	public int getCollisionTime() {
+	public int getLastCollisionTime() {
 		return collisionTime;
 	}
+	
+	public void collisionEnter(String objectName) {
+		collisionTime = (int)System.currentTimeMillis();
+		for (int i = 0; i < collisionTargets.length; i++) {
+			if (collisionTargets[i].equals(objectName))
+				break;
+			if (collisionTargets[i].equals("")) {
+				collisionTargets[i] = objectName;
+				break;
+			}
+		}
+	}
+	
+	public void collisionExit(String objectName) {
+		for (int i = 0; i < collisionTargets.length; i++) {
+			if (collisionTargets[i].equals(objectName)) {
+				collisionTime = (int)System.currentTimeMillis();
+				collisionTargets[i] = "";
+			}
+		}
+	}
 
-	public void setCollisionTime(int collisionTime) {
-		this.collisionTime = collisionTime;
+	public boolean isColliding(){
+		for (int i = 0; i < collisionTargets.length; i++) {
+			if (!collisionTargets[i].equals("")) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isColliding(String objectName){
+		for (int i = 0; i < collisionTargets.length; i++) {
+			if (collisionTargets[i].equals(objectName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	public boolean isCollidingSimple(String objectName){
+		for (int i = 0; i < collisionTargets.length; i++) {
+			if (collisionTargets[i].contains(objectName)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public String[] getCollisionTargets() {
+		return collisionTargets;
+	}
+
+	public boolean useGravity() {
+		return useGravity;
+	}
+
+	public void useGravity(boolean useGravity) {
+		collisionTime = (int)System.currentTimeMillis();
+		this.useGravity = useGravity;
+	}
+
+	public int getCollisionType() {
+		return collisionType;
+	}
+
+	public void setCollisionType(int collisionType) {
+		this.collisionType = collisionType;
+	}
+
+	public int getColliderRadius() {
+		return radius;
+	}
+
+	public void setColliderRadius(int radius) {
+		this.radius = radius;
 	}
 }

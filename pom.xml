@@ -37,6 +37,18 @@
 		<version.junit>4.12</version.junit>
 	</properties>
 
+	<profiles>
+	    <profile>
+	        <id>disable-java8-doclint</id>
+	        <activation>
+	            <jdk>[1.8,)</jdk>
+	        </activation>
+	        <properties>
+	            <additionalparam>-Xdoclint:none</additionalparam>
+	        </properties>
+	    </profile>
+	</profiles>
+
 	<dependencies>
 		<!-- Test dependencies -->
 		<dependency>

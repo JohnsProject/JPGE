@@ -31,8 +31,10 @@ public class Camera{
 	 * 
 	 * @param name name of this camera.
 	 * @param transform {@link Transform} of this camera.
-	 * @param screenPosition the position of this camera at the {@link SceneWindow}.
-	 * @param screenSize the size of this camera at the {@link SceneWindow}.
+	 * @param x x position of camera in screen.
+	 * @param y y position of camera in screen.
+	 * @param width width of camera in screen.
+	 * @param height height of camera in screen.
 	 */
 	public Camera(String name, Transform transform, int x, int y, int width, int height) {
 		this.name = name;
@@ -130,7 +132,8 @@ public class Camera{
 	/**
 	 * Sets the screen size of this camera.
 	 * 
-	 * @param size screen size to set.
+	 * @param width width to set.
+	 * @param height height to set.
 	 */
 	public void setScreenSize(int width, int height) {
 		this.width = width;

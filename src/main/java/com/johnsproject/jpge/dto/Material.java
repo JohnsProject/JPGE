@@ -1,7 +1,5 @@
 package com.johnsproject.jpge.dto;
 
-import com.johnsproject.jpge.utils.ColorUtils;
-
 /**
  *The Material class contains appearance data of a {@link Mesh}.
  *It contains the color data, texture data and so on.

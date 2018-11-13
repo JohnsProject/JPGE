@@ -212,7 +212,7 @@ public class Mesh {
 	/**
 	 * Returns the animation with the given name.
 	 * 
-	 * @param index index of animation.
+	 * @param name name of animation.
 	 * @return animation at the given index.
 	 */
 	public Animation getAnimation(String name) {

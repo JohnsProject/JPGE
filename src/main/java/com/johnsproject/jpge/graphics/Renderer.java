@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.johnsproject.jpge.dto.Animation;
 import com.johnsproject.jpge.dto.Camera;
-import com.johnsproject.jpge.dto.DisplayBuffer;
+import com.johnsproject.jpge.dto.RenderBuffer;
 import com.johnsproject.jpge.dto.Face;
 import com.johnsproject.jpge.dto.Light;
 import com.johnsproject.jpge.dto.Mesh;
@@ -26,21 +26,21 @@ public class Renderer {
 	 * Tells this scene renderer to render the given {@link Scene}.
 	 * 
 	 * @param scene {@link Scene} to render.
-	 * @param displayBuffer {@link DisplayBuffer} to use.
+	 * @param RenderBuffer {@link RenderBuffer} to use.
 	 * 
 	 * @return rendered {@link Face faces}. (faces that are not culled)
 	 */
-	public int render(Scene scene, DisplayBuffer displayBuffer) {
+	public int render(Scene scene, RenderBuffer RenderBuffer) {
 		int rendFaces = 0;
-		displayBuffer.clearFrameBuffer();
+		RenderBuffer.clearFrameBuffer();
 		for (int i = 0; i < scene.getCameras().size(); i++) {
-			displayBuffer.clearDepthBuffer();
+			RenderBuffer.clearDepthBuffer();
 			Camera camera = scene.getCameras().get(i);
 			for (int j = 0; j < scene.getSceneObjects().size(); j++) {
 				SceneObject sceneObject = scene.getSceneObjects().get(j);
 				// check if object is active or has changed (no need to render if its the same)
 				if (sceneObject.isActive() && (sceneObject.changed() || camera.changed())) {
-					rendFaces = render(sceneObject, camera, scene.getLights(), displayBuffer);
+					rendFaces += render(sceneObject, camera, scene.getLights(), RenderBuffer);
 				}
 			}
 			camera.changed(false);
@@ -59,11 +59,11 @@ public class Renderer {
 	 * @param sceneObject {@link SceneObject} to render.
 	 * @param camera {@link Camera} that the {@link SceneObject} will be rendered to.
 	 * @param lights {@link Light Lights} influencing the {@link SceneObject}.
-	 * @param displayBuffer {@link DisplayBuffer} to use.
+	 * @param RenderBuffer {@link RenderBuffer} to use.
 	 * 
 	 * @return rendered {@link Face faces}. (faces that are not culled)
 	 */
-	int render(SceneObject sceneObject, Camera camera, List<Light> lights, DisplayBuffer displayBuffer) {
+	int render(SceneObject sceneObject, Camera camera, List<Light> lights, RenderBuffer RenderBuffer) {
 		Mesh mesh = sceneObject.getMesh();
 		Animation animation = mesh.getCurrentAnimation();
 		Shader shader = sceneObject.getShader();
@@ -79,7 +79,7 @@ public class Renderer {
 		// shade faces
 		for (int i = 0; i < mesh.getFaces().length; i++) {
 			Face face = mesh.getFace(i);
-			face = shader.shadeFace(face, mesh, sceneObject.getTransform(), lights, camera, displayBuffer);
+			face = shader.shadeFace(face, mesh, sceneObject.getTransform(), lights, camera, RenderBuffer);
 			if (!face.isCulled()) rendFaces++;
 		}
 		return rendFaces;

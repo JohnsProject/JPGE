@@ -232,8 +232,8 @@ v0.1 - 24/08/2018
 * Moved Animator from SceneWindow to Engine
 * Moved SceneWindow back to src/main/java (moved to src/test/java accidently in last commit)
 05/11/2018
-* Added DisplayBuffer class
-* Removed viewBuffer from the Camera class drawing directly to DisplayBuffer now
+* Added RenderBuffer class
+* Removed viewBuffer from the Camera class drawing directly to RenderBuffer now
 * Added PhysicsSettings class (contains physics settings of scenes)
 * Added object fall physics
 * Deleted ProfilerData class (Profiler gets data from engine)
@@ -242,7 +242,11 @@ v0.1 - 24/08/2018
 * Removed the JPGEKey Listener/Event
 * Removed the JPGEMouse Listener/Event
 * Added JPGE interface (Called by the engine, has as a default update method)
-
+13/11/2018
+* Renamed DisplayBuffer to RenderBuffer
+* Added sphere collision detection!!!
+* Added Plane mesh to the resources folder
+* Refactored and fixed bugs
 
 
 

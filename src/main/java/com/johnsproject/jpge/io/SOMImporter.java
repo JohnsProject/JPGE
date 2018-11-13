@@ -63,7 +63,7 @@ public class SOMImporter {
 	/**
 	 * Parses the som file from the given string and returns it as a {@link Mesh}.
 	 * 
-	 * @param path path of the som file.
+	 * @param data data of the som file.
 	 * @return a mesh containing the parsed som file data.
 	 * @throws ImportExeption
 	 */

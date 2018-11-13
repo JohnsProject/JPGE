@@ -3,7 +3,7 @@ package com.johnsproject.jpge;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.johnsproject.jpge.dto.DisplayBuffer;
+import com.johnsproject.jpge.dto.RenderBuffer;
 import com.johnsproject.jpge.dto.Scene;
 import com.johnsproject.jpge.graphics.Animator;
 import com.johnsproject.jpge.graphics.Renderer;
@@ -13,7 +13,8 @@ import com.johnsproject.jpge.io.MouseInputManager;
 import com.johnsproject.jpge.physics.PhysicsAnimator;
 
 /**
- * The Engine class keeps everything working.
+ * The Engine class initializes the needed components 
+ * and manages the threads used to call the update methods.
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
@@ -33,9 +34,9 @@ public class Engine {
 	private Thread jpgeThread;
 	private Thread physicsThread;
 	
-	private int graphicsUpdateRate = 30;
+	private int graphicsUpdateRate = 50;
 	private int jpgeUpdateRate = 30;
-	private int physicsUpdateRate = 30;
+	private int physicsUpdateRate = 50;
 	
 	private long startTime = System.currentTimeMillis();
 	private boolean playing = true;
@@ -51,7 +52,7 @@ public class Engine {
 	private KeyInputManager keyManager = new KeyInputManager();
 	private MouseInputManager mouseManager = new MouseInputManager();
 	private PhysicsAnimator physicsAnimator = new PhysicsAnimator();
-	private DisplayBuffer displayBuffer = new DisplayBuffer(320, 240);
+	private RenderBuffer RenderBuffer = new RenderBuffer(320, 240);
 	private SceneWindow sceneWindow = null;
 	
 	private List<JPGE> jpgeListeners = new ArrayList<JPGE>();
@@ -168,12 +169,12 @@ public class Engine {
 	}
 	
 	/**
-	 * Returns the {@link DisplayBuffer} used by the engine.
+	 * Returns the {@link RenderBuffer} used by the engine.
 	 * 
-	 * @return {@link DisplayBuffer} used by the engine.
+	 * @return {@link RenderBuffer} used by the engine.
 	 */
-	public DisplayBuffer getDisplayBuffer() {
-		return displayBuffer;
+	public RenderBuffer getRenderBuffer() {
+		return RenderBuffer;
 	}
 	
 	/**
@@ -196,7 +197,7 @@ public class Engine {
 	
 	/**
 	 * Returns how often graphics should be updated in a second.
-	 * Default is 30.
+	 * Default is 50.
 	 * 
 	 * @return how often graphics should be updated in a second.
 	 */
@@ -206,7 +207,7 @@ public class Engine {
 
 	/**
 	 * Sets how often graphics should be updated in a second.
-	 * Default is 30.
+	 * Default is 50.
 	 * 
 	 * @param graphicsUpdateRate value to set.
 	 */
@@ -236,7 +237,7 @@ public class Engine {
 
 	/**
 	 * Returns how often physics should be updated in a second.
-	 * Default is 30.
+	 * Default is 50.
 	 * 
 	 * @return how often physics should be updated in a second.
 	 */
@@ -246,7 +247,7 @@ public class Engine {
 
 	/**
 	 * Sets how often physics should be updated in a second.
-	 * Default is 30.
+	 * Default is 50.
 	 * 
 	 * @param physicsUpdateRate value to set.
 	 */
@@ -361,7 +362,7 @@ public class Engine {
 	private int updateGraphics(int lastElapsed) {
 		long before = System.currentTimeMillis();
 		animator.animate(scene);
-		lastRendereredFaces = renderer.render(scene, displayBuffer);
+		lastRendereredFaces = renderer.render(scene, RenderBuffer);
 		if (sceneWindow != null) {
 			sceneWindow.draw();
 		}

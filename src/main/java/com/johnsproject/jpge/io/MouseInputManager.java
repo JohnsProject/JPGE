@@ -5,6 +5,11 @@ import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
 import java.awt.event.MouseEvent;
 
+/**
+ * The MouseInputManager class provides realtime mouse informations.
+ * 
+ * @author John´s Project - John Konrad Ferraz Salomon
+ */
 public class MouseInputManager {
 	
 	public static final byte LEFT = 0, MIDDLE = 1, RIGHT = 2;
@@ -37,6 +42,11 @@ public class MouseInputManager {
 	 		                mouse_y = (int)e.getY();
 		 					break;
 		 					
+	 					case MouseEvent.MOUSE_DRAGGED:
+	 						mouse_x = (int)e.getX();
+	 		                mouse_y = (int)e.getY();
+		 					break;
+		 					
 		 				case MouseEvent.MOUSE_RELEASED:
 		 					for (int i = 0; i < keysBuffer.length; i++) {
 		 						if ((keysBuffer[i] == e.getButton()-1)) {
@@ -59,21 +69,24 @@ public class MouseInputManager {
 		return keysBuffer;
 	}
 	
-	
 	/**
-	 * Returns the key with the given button as input.
-	 * If no key is found it returns null.
+	 * If a key with the given id is found it returns true else false.
+	 * The ID of Keys are in this class.
+	 * <br> <br>
+	 * <code>
+	 *	getKey(MouseInputManager.MIDDLE)
+	 * </code>
 	 * 
-	 * @param button
-	 * @return key with the given button as input.
+	 * @param id
+	 * @return if a key with the given id is found it returns true else false.
 	 */
-	public int getKey(int button) {
+	public boolean getKey(int id) {
 		for (int i = 0; i < keysBuffer.length; i++) {
-			if (keysBuffer[i] == button) {
-				return keysBuffer[i];
+			if (keysBuffer[i] == id) {
+				return true;
 			}
 		}
-		return -1;
+		return false;
 	}
 	
 	/**

@@ -19,12 +19,12 @@ public class Light {
 	 * Creates a new instance of the Light class filled with the given values.
 	 * 
 	 * @param name name of this light.
-	 * @param lightDirection direction of this light.
+	 * @param transform transform of this light.
 	 */
-	public Light(String name, Transform position) {
+	public Light(String name, Transform transform) {
 		this.name = name;
 		this.color = ColorUtils.convert(254, 254, 254);
-		this.transform = position;
+		this.transform = transform;
 	}
 	
 	/**

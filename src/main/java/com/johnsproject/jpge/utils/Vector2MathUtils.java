@@ -201,6 +201,19 @@ public class Vector2MathUtils extends MathUtils {
 	public static int[] distance(int[] vector1, int[] vector2, int[] out) {
 		return subtract(vector1, vector2, out);
 	}
+	
+	/**
+	 * Returns the distance between vector1 and vector2.
+	 * 
+	 * @param vector1 fist vector.
+	 * @param vector2 second vector.
+	 * @return distance between vector1 and vector2.
+	 */
+	public static int distance(int[] vector1, int[] vector2) {
+		int dx = vector2[vx] - vector1[vx];
+		int dy = vector2[vy] - vector1[vy];
+		return sqrt(dx * dx + dy * dy);
+	}
 
 	/**
 	 * Returns the dot product of a and b.

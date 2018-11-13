@@ -3,7 +3,7 @@ package com.johnsproject.jpge.graphics;
 import java.util.List;
 
 import com.johnsproject.jpge.dto.Camera;
-import com.johnsproject.jpge.dto.DisplayBuffer;
+import com.johnsproject.jpge.dto.RenderBuffer;
 import com.johnsproject.jpge.dto.Face;
 import com.johnsproject.jpge.dto.Light;
 import com.johnsproject.jpge.dto.Mesh;
@@ -86,10 +86,10 @@ public class Shader {
 	 * @param objectTransform 	{@link Transform} of the {@link SceneObject} this face belongs to.
 	 * @param lights All 		{@link Light Lights} of the {@link Scene} being rendered.
 	 * @param camera 			{@link Camera} being rendered to.
-	 * @param displayBuffer 	{@link DisplayBuffer} to use.
+	 * @param RenderBuffer 	{@link RenderBuffer} to use.
 	 * @return shaded polygon.
 	 */
-	public Face shadeFace(Face face, Mesh mesh, Transform objectTransform, List<Light> lights, Camera camera, DisplayBuffer displayBuffer) {
+	public Face shadeFace(Face face, Mesh mesh, Transform objectTransform, List<Light> lights, Camera camera, RenderBuffer RenderBuffer) {
 		// view frustum culling
 		if (!RenderUtils.isInsideViewFrustum(face, mesh, camera)) {
 			if (!RenderUtils.isBackface(face, mesh)) {
@@ -112,19 +112,19 @@ public class Shader {
 				// draw based on the cameras rendering type
 				switch (drawingType) {
 				case DRAW_VERTEX:
-					drawVertex(vt1, vt2, vt3, shadedColor, camera, displayBuffer);
+					drawVertex(vt1, vt2, vt3, shadedColor, camera, RenderBuffer);
 					break;
 
 				case DRAW_WIREFRAME:
-					drawWireframe(vt1, vt2, vt3, shadedColor, camera, displayBuffer);
+					drawWireframe(vt1, vt2, vt3, shadedColor, camera, RenderBuffer);
 					break;
 
 				case DRAW_FLAT:
-					RenderUtils.drawFaceGouraud(face, mesh, this, camera, displayBuffer);
+					RenderUtils.drawFaceGouraud(face, mesh, this, camera, RenderBuffer);
 					break;
 
 				case DRAW_TEXTURED:
-					RenderUtils.drawFaceAffine(face, mesh, this, camera, displayBuffer);
+					RenderUtils.drawFaceAffine(face, mesh, this, camera, RenderBuffer);
 					break;
 				}
 			}
@@ -140,20 +140,20 @@ public class Shader {
 	 * @param z position of pixel in the z axis.
 	 * @param color color of pixel.
 	 * @param camera {@link Camera} to set pixel.
-	 * @param displayBuffer {@link DisplayBuffer} to use.
+	 * @param RenderBuffer {@link RenderBuffer} to use.
 	 */
-	public void shadePixel (int x, int y, int z, int color, Camera camera, DisplayBuffer displayBuffer) {
+	public void shadePixel (int x, int y, int z, int color, Camera camera, RenderBuffer RenderBuffer) {
 		// check if pixel is inside camera
 		if (x > 0 && x < camera.getWidth() && y > 0 && y < camera.getHeight()) {
 			// calculate 1D array position of 2D xy position
-			int pos = (camera.getPositionX() + x) + ((camera.getPositionY() + y) * displayBuffer.getWidth());
-			int[] depthBuffer = displayBuffer.getDepthBuffer();
-			// check if pixel is inside displayBuffer
+			int pos = (camera.getPositionX() + x) + ((camera.getPositionY() + y) * RenderBuffer.getWidth());
+			int[] depthBuffer = RenderBuffer.getDepthBuffer();
+			// check if pixel is inside RenderBuffer
 			if (pos < depthBuffer.length) {
 				// z test
 				if (depthBuffer[pos] > z) {
 					depthBuffer[pos] = z;
-					displayBuffer.getFrameBufferData()[pos] = color;
+					RenderBuffer.getFrameBufferData()[pos] = color;
 				}
 			}
 		}
@@ -177,7 +177,7 @@ public class Shader {
 		return ColorUtils.lerpRBG(ColorUtils.convert(255, 255, 255), 0, -factor-50);
 	}
 	
-	private void drawVertex(Vertex vt1, Vertex vt2, Vertex vt3, int color, Camera camera, DisplayBuffer displayBuffer) {
+	private void drawVertex(Vertex vt1, Vertex vt2, Vertex vt3, int color, Camera camera, RenderBuffer RenderBuffer) {
 		// get position of vertexes
 		int[] vp1 = vt1.getPosition();
 		int[] vp2 = vt2.getPosition();
@@ -187,12 +187,12 @@ public class Shader {
 			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
 	    // color used if rendering type is wireframe or vertex
 	    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
-	    shadePixel(x1, y1, z1, shadedColor, camera, displayBuffer);
-	    shadePixel(x2, y2, z2, shadedColor, camera, displayBuffer);
-	    shadePixel(x3, y3, z3, shadedColor, camera, displayBuffer);
+	    shadePixel(x1, y1, z1, shadedColor, camera, RenderBuffer);
+	    shadePixel(x2, y2, z2, shadedColor, camera, RenderBuffer);
+	    shadePixel(x3, y3, z3, shadedColor, camera, RenderBuffer);
 	}
 	
-	private void drawWireframe(Vertex vt1, Vertex vt2, Vertex vt3, int color, Camera camera, DisplayBuffer displayBuffer) {
+	private void drawWireframe(Vertex vt1, Vertex vt2, Vertex vt3, int color, Camera camera, RenderBuffer RenderBuffer) {
 		// get position of vertexes
 		int[] vp1 = vt1.getPosition();
 		int[] vp2 = vt2.getPosition();
@@ -202,9 +202,9 @@ public class Shader {
 			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
 	    // color used if rendering type is wireframe or vertex
 	    int shadedColor = ColorUtils.lerpRBG(color,  vt1.getColor(), -255);
-	    RenderUtils.drawLine(x1, y1, x2, y2, z1, shadedColor, this, camera, displayBuffer);
-		RenderUtils.drawLine(x2, y2, x3, y3, z2, shadedColor, this, camera, displayBuffer);
-		RenderUtils.drawLine(x3, y3, x1, y1, z3, shadedColor, this, camera, displayBuffer);
+	    RenderUtils.drawLine(x1, y1, x2, y2, z1, shadedColor, this, camera, RenderBuffer);
+		RenderUtils.drawLine(x2, y2, x3, y3, z2, shadedColor, this, camera, RenderBuffer);
+		RenderUtils.drawLine(x3, y3, x1, y1, z3, shadedColor, this, camera, RenderBuffer);
 	}
 	
 	/**
