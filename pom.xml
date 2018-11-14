@@ -6,7 +6,7 @@
 
 	<groupId>com.johnsproject</groupId>	
 	<artifactId>JPGE</artifactId>
-	<version>0.1</version>
+	<version>0.2</version>
 	<packaging>jar</packaging>
 
 	<name>John's Project Game Engine</name>
@@ -36,18 +36,6 @@
 		<!-- JUnit Version -->
 		<version.junit>4.12</version.junit>
 	</properties>
-
-	<profiles>
-	    <profile>
-	        <id>disable-java8-doclint</id>
-	        <activation>
-	            <jdk>[1.8,)</jdk>
-	        </activation>
-	        <properties>
-	            <additionalparam>-Xdoclint:none</additionalparam>
-	        </properties>
-	    </profile>
-	</profiles>
 
 	<dependencies>
 		<!-- Test dependencies -->
@@ -111,6 +99,9 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+          			<stylesheetfile>src/main/resources/johnsproject_stylesheet.css</stylesheetfile>
+        		</configuration>
 			</plugin>
 
 			<plugin>
