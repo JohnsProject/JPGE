@@ -20,7 +20,7 @@ public class PhysicsAnimator {
 				rigidbody.setColliderRadius(getRadius(sceneObject));
 			PhysicsSettings settings = scene.getPhysicsSettings();
 			detectCollision(scene, sceneObject);
-			if (!rigidbody.isColliding()) {
+			if (!rigidbody.isColliding() && !rigidbody.isKinematic()) {
 				applyGravity(rigidbody, settings.getGravity());
 			}
 			transform.translate(rigidbody.getVelocity());

@@ -16,7 +16,8 @@ public class Rigidbody {
 	private int collisionTime = (int)System.currentTimeMillis();
 	private int collisionType = COLLISION_SPHERE;
 	private int radius = -1;
-	private boolean useGravity = true;
+	private boolean gravity = true;
+	private boolean kinematic = false;
 	private String[] collisionTargets = new String[5];
 	
 	public Rigidbody() {
@@ -70,6 +71,11 @@ public class Rigidbody {
 			if (collisionTargets[i].equals(objectName))
 				break;
 			if (collisionTargets[i].equals("")) {
+				if (!isKinematic()) {
+					velocity[vx] = 0;
+					velocity[vy] = 0;
+					velocity[vz] = 0;
+				}
 				collisionTargets[i] = objectName;
 				break;
 			}
@@ -117,12 +123,12 @@ public class Rigidbody {
 	}
 
 	public boolean useGravity() {
-		return useGravity;
+		return gravity;
 	}
 
 	public void useGravity(boolean useGravity) {
 		collisionTime = (int)System.currentTimeMillis();
-		this.useGravity = useGravity;
+		this.gravity = useGravity;
 	}
 
 	public int getCollisionType() {
@@ -139,5 +145,13 @@ public class Rigidbody {
 
 	public void setColliderRadius(int radius) {
 		this.radius = radius;
+	}
+
+	public boolean isKinematic() {
+		return kinematic;
+	}
+
+	public void setKinematic(boolean kinematic) {
+		this.kinematic = kinematic;
 	}
 }
