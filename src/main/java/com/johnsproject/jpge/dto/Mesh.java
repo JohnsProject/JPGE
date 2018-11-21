@@ -15,28 +15,30 @@ import com.johnsproject.jpge.utils.VectorUtils;
 public class Mesh {
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
-	/** Values containing location of data in a vertex. This is used by the SOM importer when parsing values. */
-	public static final byte V_NORMAL = 3, V_BONE_INDEX = 6, V_MATERIAL_INDEX = 7;
-	/** Default vertex length. This is used by the SOM importer when parsing values. */
-	public static final byte VERTEX_LENGTH = 8;
+	/**
+	 * Path to default models under the resources folder.
+	 * Load them with:
+	 * <br>
+	 * <br>
+	 * <code>
+	 * SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_));
+	 * </code>
+	 */
+	public static final String RESOURCES_CUBE = "/cube.som",
+								RESOURCES_CONE = "/cone.som",
+								RESOURCES_CYLINDER = "/cylinder.som",
+								RESOURCES_SPHERE = "/sphere.som",
+								RESOURCES_PLANE = "/plane.som",
+								RESOURCES_MONKEY = "/monkey.som",
+								RESOURCES_TORUS = "/torus.som",
+								RESOURCES_ALL = "/meshes.som";
+	
 	private Vertex[] vertexes;
 	private Vertex[] vertexesBuffer;
-	/** Values containing location of data in a face. This is used by the SOM importer when parsing values. */
-	public static final byte F_VERTEX_1 = 0, F_VERTEX_2 = 1, F_VERTEX_3 = 2, 
-							F_UV_1 = 4, F_UV_2 = 6, F_UV_3 = 8,
-							F_MATERIAL_INDEX = 3, F_CULLED = 10;
-	/** Default face length. This is used by the SOM importer when parsing values. */
-	public static final byte FACE_LENGTH = 11;
 	private Face[] faces;
-	/** Default material length. This is used by the SOM importer when parsing values. */
-	public static final byte MATERIAL_LENGTH = 4;
 	private Material[] materials;
-	/** Values containing location of data in a bone. This is used by the SOM importer when parsing values. */
-	public static final byte POSITION = 0, ROTATION = 3, SCALE = 6;
-	/** Default bone length. This is used by the SOM importer when parsing values. */
-	public static final byte BONE_LENGTH = 9;
 	private Animation[] animations;
-	private Animation currentAnimation;
+	private int currentAnimation;
 	
 	/**
 	 * Creates a new instance of the Mesh class filled with the given values.
@@ -53,7 +55,7 @@ public class Mesh {
 		this.faces = faces;
 		this.materials = materials;
 		this.animations = animations;
-		this.currentAnimation = animations[0];
+		this.currentAnimation = 0;
 	}
 	
 	/**
@@ -169,7 +171,10 @@ public class Mesh {
 	 * @param name name of animation.
 	 */
 	public void playAnimation(String name) {
-		currentAnimation = getAnimation(name);
+		for (int i = 0; i < animations.length; i++) {
+			if (animations[i].getName().equals(name))
+				currentAnimation = i;
+		}
 	}
 	
 	/**
@@ -178,16 +183,7 @@ public class Mesh {
 	 * @param id id of animation.
 	 */
 	public void playAnimation(int id) {
-		currentAnimation = animations[id];
-	}
-	
-	/**
-	 * Sets the given animation as current animation of this mesh.
-	 * 
-	 * @param animation animation to play.
-	 */
-	public void playAnimation(Animation animation) {
-		currentAnimation = animation;
+		currentAnimation = id;
 	}
 	
 	/**
@@ -196,7 +192,7 @@ public class Mesh {
 	 * @return current animation of this mesh.
 	 */
 	public Animation getCurrentAnimation() {
-		return currentAnimation;
+		return animations[currentAnimation];
 	}
 	
 	/**
@@ -216,11 +212,11 @@ public class Mesh {
 	 * @return animation at the given index.
 	 */
 	public Animation getAnimation(String name) {
-		Animation anim = null;
-		for (Animation animation : animations) {
-			if (animation.getName() == name) anim = animation;
+		for (int i = 0; i < animations.length; i++) {
+			if (animations[i].getName().equals(name))
+				return animations[i];
 		}
-		return anim;
+		return null;
 	}
 	
 	/**

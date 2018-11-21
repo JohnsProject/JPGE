@@ -34,9 +34,9 @@ public class Engine {
 	private Thread jpgeThread;
 	private Thread physicsThread;
 	
-	private int graphicsUpdateRate = 50;
+	private int graphicsUpdateRate = 30;
 	private int jpgeUpdateRate = 30;
-	private int physicsUpdateRate = 50;
+	private int physicsUpdateRate = 30;
 	
 	private long startTime = System.currentTimeMillis();
 	private boolean playing = true;
@@ -197,7 +197,7 @@ public class Engine {
 	
 	/**
 	 * Returns how often graphics should be updated in a second.
-	 * Default is 50.
+	 * Default is 30.
 	 * 
 	 * @return how often graphics should be updated in a second.
 	 */
@@ -207,7 +207,7 @@ public class Engine {
 
 	/**
 	 * Sets how often graphics should be updated in a second.
-	 * Default is 50.
+	 * Default is 30.
 	 * 
 	 * @param graphicsUpdateRate value to set.
 	 */
@@ -237,7 +237,7 @@ public class Engine {
 
 	/**
 	 * Returns how often physics should be updated in a second.
-	 * Default is 50.
+	 * Default is 30.
 	 * 
 	 * @return how often physics should be updated in a second.
 	 */
@@ -247,7 +247,7 @@ public class Engine {
 
 	/**
 	 * Sets how often physics should be updated in a second.
-	 * Default is 50.
+	 * Default is 30.
 	 * 
 	 * @param physicsUpdateRate value to set.
 	 */

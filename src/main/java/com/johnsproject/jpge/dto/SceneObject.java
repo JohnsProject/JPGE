@@ -106,6 +106,7 @@ public class SceneObject {
 	 * @param shader {@link Shader} to set.
 	 */
 	public void setShader(Shader shader) {
+		changed = true;
 		this.shader = shader;
 	}
 
@@ -115,6 +116,7 @@ public class SceneObject {
 	 * @return {@link Rigidbody} used by this scene object.
 	 */
 	public Rigidbody getRigidbody() {
+		changed = true;
 		return rigidbody;
 	}
 
@@ -124,6 +126,7 @@ public class SceneObject {
 	 * @return if this object is active or not.
 	 */
 	public boolean isActive() {
+		changed = true;
 		return active;
 	}
 
@@ -134,6 +137,7 @@ public class SceneObject {
 	 * @param active
 	 */
 	public void setActive(boolean active) {
+		changed = true;
 		this.active = active;
 	}	
 }

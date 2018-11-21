@@ -8,7 +8,6 @@ import com.johnsproject.jpge.dto.Face;
 import com.johnsproject.jpge.dto.Material;
 import com.johnsproject.jpge.dto.Mesh;
 import com.johnsproject.jpge.dto.Texture;
-import com.johnsproject.jpge.dto.Transform;
 import com.johnsproject.jpge.dto.Vertex;
 import com.johnsproject.jpge.utils.ColorUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
@@ -134,68 +133,48 @@ public class SOMImporter {
 		String mCountData = rawData.split("mCount<")[1].split(">mCount", 2)[0];
 		Material[] materials = new Material[toInt(mCountData)];
 		String[] mColorData = rawData.split("mColor<")[1].split(">mColor", 2)[0].split(",");
-		for (int i = 0; i < materials.length * 4; i+=4) {
-			int r = toInt(mColorData[i]);
-			int	g = toInt(mColorData[i+1]);
-			int	b = toInt(mColorData[i+2]);
-			int	a = toInt(mColorData[i+3]);
-			materials[i/4] = new Material(ColorUtils.convert(r, g, b, a), new Texture(10, 10));
+		if (materials.length > 1) {
+			for (int i = 0; i < materials.length * 4; i+=4) {
+				int r = toInt(mColorData[i]);
+				int	g = toInt(mColorData[i+1]);
+				int	b = toInt(mColorData[i+2]);
+				int	a = toInt(mColorData[i+3]);
+				materials[i/4] = new Material(ColorUtils.convert(r, g, b, a), new Texture(10, 10));
+			}
+		}else {
+			materials = new Material[] {new Material(ColorUtils.convert(0, 0, 0, 255), new Texture(10, 10))};
 		}
 		return materials;
 	}
 	
 	static Animation[] parseAnimations(String rawData) throws ImportExeption {
 		String[] rawAnimationsData = rawData.split("Animations<")[1].split(">Animations", 2)[0].split("Animation<");
-		int bonesCount = toInt(rawAnimationsData[0].split("BonesCount<")[1].split(">BonesCount")[0]);
-		int step = Mesh.BONE_LENGTH;
-		Animation[] animations = null;
-		if(rawAnimationsData.length > 1){
-			animations = new Animation[rawAnimationsData.length-1];
-//			System.out.println(rawAnimationsData.length);
-//			System.out.println(animations.length);
-			for (int i = 1; i < rawAnimationsData.length; i++) {
-				animations[i-1] = parseAnimation(rawAnimationsData[i].split(">Animation", 2)[0], step, bonesCount);
-			}
-		}else {
-			animations = new Animation[1];
-			Transform[] bones = null;
-			if(bonesCount > 0) {
-				bones = new Transform[bonesCount];
-				for (int i = 0; i < bones.length; i++) {
-					int[] vector = new int[] {1, 1, 1};
-					bones[i] = new Transform(vector, vector, vector);
-				}
-			}else {
-				bones = new Transform[1];
-				int[] vector = new int[] {1, 1, 1};
-				bones[0] = new Transform(vector, vector, vector);
-			}
-			animations[0] = new Animation("Default", 1, bonesCount, bones);
-		}
+//		int bonesCount = toInt(rawAnimationsData[0].split("BonesCount<")[1].split(">BonesCount")[0]);
+		Animation[] animations = new Animation[rawAnimationsData.length-1];
+		animations = new Animation[] {new Animation("Default", 0, 0, null)};
+//		for (int i = 0; i < rawAnimationsData.length-1; i++) {
+//			String animName = rawAnimationData.split("Name<")[1].split(">Name", 2)[0];
+//			String[] rawBonesData = rawAnimationData.split("Bones<")[1].split(">Bones", 2)[0].split(",");
+//			int framesCount = rawBonesData.length/(step * bonesCount);
+//			Transform[] bones = new Transform[bonesCount*framesCount];
+//			for (int j = 0; j < rawBonesData.length; j+=3) {
+//				int px = toInt(rawBonesData[j + vx]);
+//				int py = toInt(rawBonesData[j + vy]);
+//				int pz = toInt(rawBonesData[j + vz]);
+//				int rx = toInt(rawBonesData[j + vx]);
+//				int ry = toInt(rawBonesData[j + vy]);
+//				int rz = toInt(rawBonesData[j + vz]);
+//				int sx = toInt(rawBonesData[j + vx]);
+//				int sy = toInt(rawBonesData[j + vy]);
+//				int sz = toInt(rawBonesData[j + vz]);
+//				int[] pos = new int[] {px, py, pz};
+//				int[] rot = new int[] {rx, ry, rz};
+//				int[] scale = new int[] {sx, sy, sz};
+//				bones[j/step] =  new Transform(pos, rot, scale);
+//			}
+//			animations[i] = new Animation(animName, framesCount, bonesCount, bones);
+//		}
 		return animations;
-	}
-	
-	static Animation parseAnimation(String rawAnimationData, int step, int bonesCount) {
-		String animName = rawAnimationData.split("Name<")[1].split(">Name", 2)[0];
-		String[] rawBonesData = rawAnimationData.split("Bones<")[1].split(">Bones", 2)[0].split(",");
-		int framesCount = rawBonesData.length/(step * bonesCount);
-		Transform[] bones = new Transform[bonesCount*framesCount];
-		for (int j = 0; j < rawBonesData.length; j+=step) {
-			int px = toInt(rawBonesData[j + Mesh.POSITION + vx]);
-			int py = toInt(rawBonesData[j + Mesh.POSITION + vy]);
-			int pz = toInt(rawBonesData[j + Mesh.POSITION + vz]);
-			int rx = toInt(rawBonesData[j + Mesh.ROTATION + vx]);
-			int ry = toInt(rawBonesData[j + Mesh.ROTATION + vy]);
-			int rz = toInt(rawBonesData[j + Mesh.ROTATION + vz]);
-			int sx = toInt(rawBonesData[j + Mesh.SCALE + vx]);
-			int sy = toInt(rawBonesData[j + Mesh.SCALE + vy]);
-			int sz = toInt(rawBonesData[j + Mesh.SCALE + vz]);
-			int[] pos = new int[] {px, py, pz};
-			int[] rot = new int[] {rx, ry, rz};
-			int[] scale = new int[] {sx, sy, sz};
-			bones[j/step] =  new Transform(pos, rot, scale);
-		}
-		return new Animation(animName, framesCount, bonesCount, bones);
 	}
 	
 	static int toInt(String string) {

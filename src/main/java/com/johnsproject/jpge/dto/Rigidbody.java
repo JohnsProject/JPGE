@@ -8,7 +8,7 @@ public class Rigidbody {
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
 	public static final int COLLISION_SPHERE = 0;
-	public static final int COLLISION_TERRAIN = 2;
+	public static final int COLLISION_MESH = 2;
 	
 	private int mass = 10;
 	private int[] velocity = new int[3];

@@ -41,7 +41,10 @@ def write(filepath,
 						bpy.context.scene.frame_set(i)
 						bpy.context.scene.update()
 						for bone in bones:
-						   animData.addBone(bone)
+							animData.addB_Position(bone.head)
+							bone.rotation_mode = 'XYZ'
+							animData.addB_Rotation(bone.rotation_euler)
+							animData.addB_Scale(bone.scale)
 					animsData.append(animData)  
 		if me is not None:
 			bm = bmesh.new()
@@ -210,16 +213,36 @@ def writeToFile(filepath, meshData, animsData):
 	for animData in animsData:
 		file.write(" Animation < " + "\n")
 		file.write("  Name < " + animData.name + "> Name \n")
-		file.write("  Bones < ")
 		i = 0
-		for value in animData.bones:
+		file.write("  bPosition < ")
+		for value in animData.bPosition:
 			i += 1
-			if (i < len(animData.bones)):
+			if (i < len(animData.bPosition)):
 				file.write("%i," % value)
 			else:
 				file.write(("%i" % value))
 		
-		file.write(" > Bones" + "\n")
+		file.write(" > bPosition" + "\n")
+		i = 0
+		file.write("  bRotation < ")
+		for value in animData.bRotation:
+			i += 1
+			if (i < len(animData.bRotation)):
+				file.write("%i," % value)
+			else:
+				file.write(("%i" % value))
+		
+		file.write(" > bRotation" + "\n")
+		i = 0
+		file.write("  bScale < ")
+		for value in animData.bScale:
+			i += 1
+			if (i < len(animData.bScale)):
+				file.write("%i," % value)
+			else:
+				file.write(("%i" % value))
+		
+		file.write(" > bScale" + "\n")
 		file.write(" > Animation " + "\n")
 	file.write("> Animations" + "\n")
 	
@@ -314,15 +337,27 @@ class MeshData:
 class AnimData:
 	def __init__(self, name):
 		self.name = name
-		self.bones = []
-	def addBone(self, bone):
-		self.bones.append(bone.head[0]*100)
-		self.bones.append(bone.head[1]*100)
-		self.bones.append(bone.head[2]*100)
-		bone.rotation_mode = 'XYZ'
-		self.bones.append(math.degrees(bone.rotation_euler[0]))
-		self.bones.append(math.degrees(bone.rotation_euler[1]))
-		self.bones.append(math.degrees(bone.rotation_euler[2]))
-		self.bones.append(bone.scale[0])
-		self.bones.append(bone.scale[1])
-		self.bones.append(bone.scale[2])
+		self.bPosition = []
+		self.bRotation = []
+		self.bScale = []
+
+	def addB_Position(self, value):
+		self.bPosition.append(value[0]*100)
+		self.bPosition.append(value[1]*100)
+		self.bPosition.append(value[2]*100)	
+
+	def addB_Rotation(self, value):
+		self.bRotation.append(math.degrees(value[0]))
+		self.bRotation.append(math.degrees(value[1]))
+		self.bRotation.append(math.degrees(value[2]))		
+
+	def addB_Scale(self, value):
+		self.bScale.append(value[0])
+		self.bScale.append(value[1])
+		self.bScale.append(value[2])	
+
+
+
+
+
+

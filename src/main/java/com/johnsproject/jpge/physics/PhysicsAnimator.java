@@ -10,6 +10,8 @@ import com.johnsproject.jpge.utils.VectorUtils;
 public class PhysicsAnimator {
 
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
+	private int[] vectorCache1 = new int[3];
+	private int[] vectorCache2 = new int[3];
 	
 	public void animate(Scene scene) {
 		for (int i = 0; i < scene.getSceneObjects().size(); i++) {
@@ -57,17 +59,16 @@ public class PhysicsAnimator {
 		Rigidbody rb2 = sceneObject2.getRigidbody();
 		if(!sceneObject2.getName().equals(sceneObject1.getName())) {
 			if(sphereToSphere(sceneObject1, sceneObject2)) {
-				if (rb1.getCollisionType() + rb2.getCollisionType() == Rigidbody.COLLISION_SPHERE*2)
+				if (rb1.getCollisionType() + rb2.getCollisionType() == Rigidbody.COLLISION_SPHERE * 2)
 					return true;
-				if (rb1.getCollisionType() + rb2.getCollisionType() == Rigidbody.COLLISION_SPHERE + Rigidbody.COLLISION_TERRAIN) { 
+				if (rb1.getCollisionType() + rb2.getCollisionType() == Rigidbody.COLLISION_SPHERE + Rigidbody.COLLISION_MESH) {
 					if (rb1.getCollisionType() == Rigidbody.COLLISION_SPHERE)
-						return sphereToTerrain(sceneObject1, sceneObject2);
-					else 
-						return sphereToTerrain(sceneObject2, sceneObject1);
+						return sphereToMesh(sceneObject1, sceneObject2);
+					else
+						return sphereToMesh(sceneObject2, sceneObject1);
 				}
-//				if (rb1.getCollisionType() + rb2.getCollisionType() == Rigidbody.COLLISION_AABB*2) {
-//					return AABBToAABB(sceneObject1, sceneObject2);
-//				}
+				if (rb1.getCollisionType() + rb2.getCollisionType() == Rigidbody.COLLISION_MESH * 2)
+					return meshToMesh(sceneObject1, sceneObject2);
 			}
 		}
 		return false;
@@ -82,47 +83,57 @@ public class PhysicsAnimator {
 		int radius1 = rigidbody1.getColliderRadius();
 		int radius2 = rigidbody2.getColliderRadius();
 		int radius = radius1 + radius2;
-		if (distance <= radius) {
+		if (distance < radius) {
 			return true;
 		}
 		return false;
 	}
 	
-	private int[] vector = new int[3];
-	boolean sphereToTerrain(SceneObject sceneObject1, SceneObject sceneObject2) {
-		Rigidbody rigidbody1 = sceneObject1.getRigidbody();
-		int[] pos1 = sceneObject1.getTransform().getPosition();
-		int[] pos2 = sceneObject2.getTransform().getPosition();
-		Vector3MathUtils.subtract(pos2, pos1, vector);
-		int radius = rigidbody1.getColliderRadius();
+	boolean sphereToMesh(SceneObject sceneObject1, SceneObject sceneObject2) {
+		Transform transform1 = sceneObject1.getTransform();
+		Transform transform2 = sceneObject2.getTransform();
+		int radius = sceneObject1.getRigidbody().getColliderRadius();
 		for (int i = 0; i < sceneObject2.getMesh().getVertexes().length; i++) {
 			int[] pos = sceneObject2.getMesh().getVertex(i).getPosition();
-			if (pos[vx] - pos1[vx] <= radius
-				&& pos[vy] - pos1[vy] <= radius
-				&& pos[vz] - pos1[vz] <= radius) {
+			VectorUtils.copy3(vectorCache1, pos);
+			Vector3MathUtils.movePointByAnglesXYZ(vectorCache1, transform2.getRotation(), vectorCache1);
+			Vector3MathUtils.movePointByScale(vectorCache1, transform2.getScale(), vectorCache1);
+			Vector3MathUtils.add(vectorCache1, transform2.getPosition(), vectorCache1);
+			int distance = Vector3MathUtils.distance(vectorCache1, transform1.getPosition());
+			if (distance < radius) {
 				return true;
 			}
 		}
 		return false;
 	}
-//	
-//	private int[] bb1 = new int[3];
-//	private int[] bb2 = new int[3];
-//	boolean AABBToAABB(SceneObject sceneObject1, SceneObject sceneObject2) {
-//		int[] pos1 = sceneObject1.getTransform().getPosition();
-//		int[] pos2 = sceneObject2.getTransform().getPosition();
-//		getBoundingBox(sceneObject1, bb1);
-//		getBoundingBox(sceneObject2, bb2);
-//		if((pos1[vx] <= pos2[vx] + bb2[vx])
-//			&& (pos1[vx] + bb1[vx] >= pos2[vx])
-//			&& (pos1[vy] <= pos2[vy] + bb2[vy])
-//			&& (pos1[vy] + bb1[vy] >= pos2[vy])
-//			&& (pos1[vz] <= pos2[vz] + bb2[vz])
-//			&& (pos1[vz] + bb1[vz] >= pos2[vz])) {
-//			return true;
-//		}
-//		return false;
-//	}
+	
+	boolean meshToMesh(SceneObject sceneObject1, SceneObject sceneObject2) {
+		Transform transform1 = sceneObject1.getTransform();
+		Transform transform2 = sceneObject2.getTransform();
+		int length1 = sceneObject1.getMesh().getVertexes().length;
+		int step1 = (length1 >> 12) + 1;
+		for (int i = 0; i < length1; i += step1) {
+			int[] pos1 = sceneObject1.getMesh().getVertex(i).getPosition();
+			VectorUtils.copy3(vectorCache1, pos1);
+			Vector3MathUtils.movePointByAnglesXYZ(vectorCache1, transform1.getRotation(), vectorCache1);
+			Vector3MathUtils.movePointByScale(vectorCache1, transform1.getScale(), vectorCache1);
+			Vector3MathUtils.add(vectorCache1, transform1.getPosition(), vectorCache1);
+			int length2 = sceneObject2.getMesh().getVertexes().length;
+			int step2 = (length2 >> 12) + 1;
+			for (int j = 0; j < length2; j += step2) {
+				int[] pos2 = sceneObject2.getMesh().getVertex(j).getPosition();
+				VectorUtils.copy3(vectorCache2, pos2);
+				Vector3MathUtils.movePointByAnglesXYZ(vectorCache2, transform2.getRotation(), vectorCache2);
+				Vector3MathUtils.movePointByScale(vectorCache2, transform2.getScale(), vectorCache2);
+				Vector3MathUtils.add(vectorCache2, transform2.getPosition(), vectorCache2);
+				int distance = Vector3MathUtils.distance(vectorCache2, vectorCache1);
+				if (distance < 100) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 	
 	int getRadius(SceneObject sceneObject) {
 		int radius = 0;
@@ -133,25 +144,5 @@ public class PhysicsAnimator {
 			if(radius < pos[vz]) radius = pos[vz];
 		}
 		return radius;
-	}
-	
-	private int[] vectorCache = new int[3];
-	private int[] bbMin = new int[3];
-	private int[] bbMax = new int[3];
-	void getBoundingBox(SceneObject sceneObject, int[] out) {
-		bbMin[vx] = 0; bbMin[vy] = 0; bbMin[vz] = 0;
-		bbMax[vx] = 0; bbMax[vy] = 0; bbMax[vz] = 0;
-		for (int i = 0; i < sceneObject.getMesh().getVertexes().length; i++) {
-			int[] pos = sceneObject.getMesh().getVertex(i).getPosition();
-			Vector3MathUtils.movePointByScale(pos, sceneObject.getTransform().getScale(), vectorCache);
-			Vector3MathUtils.movePointByAnglesXYZ(vectorCache, sceneObject.getTransform().getRotation(), vectorCache);
-			if(bbMin[vx] > vectorCache[vx]) bbMin[vx] = vectorCache[vx];
-			if(bbMin[vy] > vectorCache[vy]) bbMin[vy] = vectorCache[vy];
-			if(bbMin[vz] > vectorCache[vz]) bbMin[vz] = vectorCache[vz];
-			if(bbMax[vx] < vectorCache[vx]) bbMax[vx] = vectorCache[vx];
-			if(bbMax[vy] < vectorCache[vy]) bbMax[vy] = vectorCache[vy];
-			if(bbMax[vz] < vectorCache[vz]) bbMax[vz] = vectorCache[vz];
-		}
-		Vector3MathUtils.subtract(bbMax, bbMin, out);
 	}
 }

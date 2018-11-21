@@ -209,7 +209,7 @@ v0.1 - 24/08/2018
 * Renamed SceneFrame to SceneWindow
 * Moved JPanel from each Camera to 1 JPanel in the SceneWindow (less ram usage, fixed flickering bug when more than 1 Camera is active)
 * Moved projection type, rendering type... from camera to shader class in form of constants
-27/10/2018
+v0.2 - 27/10/2018
 * Fixed some bugs
 30/10/2018
 * Fixed multiple cameras overlapping bug
@@ -255,8 +255,10 @@ v0.1 - 24/08/2018
 * Fixed som exporter bug
 * Fixed som files from resources folder
 * Added new som file to resources
-
-
+* Added path to models in resources as constants to Mesh class
+* Added SphereToMesh collision detection
+* Added MeshToMesh collision detection
+* fixed bugs
 
 
 

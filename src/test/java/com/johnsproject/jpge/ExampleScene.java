@@ -28,8 +28,8 @@ public class ExampleScene implements JPGE{
 	public ExampleScene() {		
 		try {
 //			mesh1 = SOMImporter.load("/home/john/Development/test.som");
-			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/plane.som"));
-			mesh2 = SOMImporter.load(getClass().getResourceAsStream("/meshes.som"));
+			mesh1 = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_MONKEY));
+			mesh2 = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_SPHERE));
 //			mesh2 = SOMImporter.load("/home/john/Development/test.som");
 		} catch (ImportExeption e) {
 			e.printStackTrace();
@@ -37,8 +37,8 @@ public class ExampleScene implements JPGE{
 		sceneObject = new SceneObject("test", new Transform(new int[] {0, 0, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh1);
 		sceneObject2 = new SceneObject("test2", new Transform(new int[] {0, -3000, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh2);
 //		sceneObject.getRigidbody().setCollisionType(Rigidbody.COLLISION_AABB);
-//		sceneObject2.getRigidbody().setCollisionType(Rigidbody.COLLISION_AABB);
-		sceneObject.getRigidbody().setCollisionType(Rigidbody.COLLISION_TERRAIN);
+//		sceneObject2.getRigidbody().setCollisionType(Rigidbody.COLLISION_MESH);
+		sceneObject.getRigidbody().setCollisionType(Rigidbody.COLLISION_MESH);
 		try {
 			Texture t = new Texture(getClass().getResourceAsStream("/JohnsProject.png"));
 			for (int i = 0; i < mesh1.getMaterials().length; i++) {
@@ -78,9 +78,9 @@ public class ExampleScene implements JPGE{
 			sceneObject.getTransform().setPosition(x*5, y*5, 0);
 //			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);
 		}
-		if (sceneObject2.getRigidbody().isColliding("test")) {
-			sceneObject2.getRigidbody().addForce(0, -100, 0);
-		}
+//		if (sceneObject2.getRigidbody().isColliding("test")) {
+//			sceneObject2.getRigidbody().addForce(0, -100, 0);
+//		}
 	}
 	
 	public void applyCameraMove(KeyInputManager input) {
