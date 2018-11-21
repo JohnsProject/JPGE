@@ -252,6 +252,9 @@ v0.1 - 24/08/2018
 21/11/2018
 * Refactored SOM file
 * Changed Shader to UnifiedShaderModel
+* Fixed som exporter bug
+* Fixed som files from resources folder
+* Added new som file to resources
 
 
 

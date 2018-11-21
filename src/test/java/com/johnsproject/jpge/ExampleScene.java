@@ -27,9 +27,10 @@ public class ExampleScene implements JPGE{
 	int windowWidth = 640, windowHeight = 640;
 	public ExampleScene() {		
 		try {
-			mesh1 = SOMImporter.load("/home/john/Development/test.som");
-//			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/plane.som"));
-			mesh2 = SOMImporter.load("/home/john/Development/test.som");
+//			mesh1 = SOMImporter.load("/home/john/Development/test.som");
+			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/plane.som"));
+			mesh2 = SOMImporter.load(getClass().getResourceAsStream("/meshes.som"));
+//			mesh2 = SOMImporter.load("/home/john/Development/test.som");
 		} catch (ImportExeption e) {
 			e.printStackTrace();
 		}

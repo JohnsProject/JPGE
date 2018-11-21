@@ -134,7 +134,7 @@ public class SOMImporter {
 		String mCountData = rawData.split("mCount<")[1].split(">mCount", 2)[0];
 		Material[] materials = new Material[toInt(mCountData)];
 		String[] mColorData = rawData.split("mColor<")[1].split(">mColor", 2)[0].split(",");
-		for (int i = 0; i < mColorData.length; i+=4) {
+		for (int i = 0; i < materials.length * 4; i+=4) {
 			int r = toInt(mColorData[i]);
 			int	g = toInt(mColorData[i+1]);
 			int	b = toInt(mColorData[i+2]);

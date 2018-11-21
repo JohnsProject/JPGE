@@ -2,11 +2,12 @@ import bpy
 import math
 import bmesh
 bonesCount = 0
-materialsCount = 0
 def write(filepath,
 			applyMods=False
 			):
-#   bpy.ops.object.mode_set(mode = 'EDIT')
+	bpy.ops.object.select_all(action='SELECT')
+	bpy.ops.object.transform_apply(location = True, scale = True, rotation = True)
+	bpy.ops.object.select_all(action='DESELECT')
 	scene = bpy.context.scene
 	meshData = MeshData()
 	animsData = []
@@ -17,8 +18,6 @@ def write(filepath,
 				bones.append(bone)
 	global bonesCount
 	bonesCount = len(bones)
-	global materialsCount
-	materialsCount = 0
 	for obj in bpy.context.visible_objects:
 		if applyMods or obj.type != "MESH":
 			try:
@@ -52,7 +51,6 @@ def write(filepath,
 			bm.to_mesh(me)
 			bm.free()
 			del bm
-			meshData.setV_Count(len(me.vertices))
 			for vertex in me.vertices:
 				found = 0
 				for group in vertex.groups:
@@ -66,17 +64,17 @@ def write(filepath,
 				meshData.addV_Bone(found)
 				# empty value as place for material index later
 				meshData.addV_Material(0)
-			meshData.setF_Count(len(me.polygons))
 			for polygon in me.polygons:
 				meshData.addF_Vertex(polygon)
 				meshData.addF_Material(polygon)
 				meshData.addF_UVs(polygon, me)
-			meshData.setM_Count(len(obj.material_slots))
+			meshData.setF_Count(meshData.fCount + len(me.polygons))
+			meshData.setV_Count(meshData.vCount + len(me.vertices))
+			meshData.setM_Count(meshData.mCount + len(obj.material_slots))
 			for mat_slot in obj.material_slots:
 				meshData.addM_Color(mat_slot)  	  
 			if is_tmp_mesh:
 				bpy.data.meshes.remove(me)
-			materialsCount += len(obj.material_slots)
 	writeToFile(filepath, meshData, animsData)
 
 def writeToFile(filepath, meshData, animsData):
@@ -271,16 +269,15 @@ class MeshData:
 		self.fCount = value
 
 	def addF_Vertex(self, value):
-		self.fVertex1.append(value.vertices[0])
-		self.fVertex2.append(value.vertices[1])
-		self.fVertex3.append(value.vertices[2])
+		self.fVertex1.append(self.vCount + value.vertices[0])
+		self.fVertex2.append(self.vCount + value.vertices[1])
+		self.fVertex3.append(self.vCount + value.vertices[2])
 		
 	def addF_Material(self, value):
-		global materialsCount
-		self.fMaterial.append(materialsCount + value.material_index)
-		self.vMaterial[value.vertices[0]] = materialsCount + value.material_index
-		self.vMaterial[value.vertices[1]] = materialsCount + value.material_index
-		self.vMaterial[value.vertices[2]] = materialsCount + value.material_index
+		self.fMaterial.append(self.mCount  + value.material_index)
+		self.vMaterial[value.vertices[0]] = self.mCount + value.material_index
+		self.vMaterial[value.vertices[1]] = self.mCount + value.material_index
+		self.vMaterial[value.vertices[2]] = self.mCount + value.material_index
 		
 	
 	def addF_UVs(self, value, me):

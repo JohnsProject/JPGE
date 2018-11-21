@@ -106,6 +106,34 @@ public class RenderBuffer {
 	}
 	
 	/**
+	 * Returns the color of the pixel at the given coordinates.
+	 * 
+	 * @param x position of pixel in the x axis.
+	 * @param y position of pixel in the y axis.
+	 * @return color of the pixel at the given coordinates.
+	 */
+	public int getPixel(int x, int y) {
+		int pos = x + (y * width);
+		if (pos < length) 
+			return frameBufferData[pos];
+		return -1;
+	}
+	
+	/**
+	 * Returns the depth of the pixel at the given coordinates.
+	 * 
+	 * @param x position of pixel in the x axis.
+	 * @param y position of pixel in the y axis.
+	 * @return depth of the pixel at the given coordinates.
+	 */
+	public int getPixelDepth(int x, int y) {
+		int pos = x + (y * width);
+		if (pos < length) 
+			return depthBuffer[pos];
+		return -1;
+	}
+	
+	/**
 	 * Returns the width of this RenderBuffer.
 	 * 
 	 * @return width of this RenderBuffer.
