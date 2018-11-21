@@ -52,7 +52,7 @@ public class Engine {
 	private KeyInputManager keyManager = new KeyInputManager();
 	private MouseInputManager mouseManager = new MouseInputManager();
 	private PhysicsAnimator physicsAnimator = new PhysicsAnimator();
-	private RenderBuffer RenderBuffer = new RenderBuffer(320, 240);
+	private RenderBuffer renderBuffer = new RenderBuffer(320, 240);
 	private SceneWindow sceneWindow = null;
 	
 	private List<JPGE> jpgeListeners = new ArrayList<JPGE>();
@@ -174,7 +174,7 @@ public class Engine {
 	 * @return {@link RenderBuffer} used by the engine.
 	 */
 	public RenderBuffer getRenderBuffer() {
-		return RenderBuffer;
+		return renderBuffer;
 	}
 	
 	/**
@@ -362,7 +362,7 @@ public class Engine {
 	private int updateGraphics(int lastElapsed) {
 		long before = System.currentTimeMillis();
 		animator.animate(scene);
-		lastRendereredFaces = renderer.render(scene, RenderBuffer);
+		lastRendereredFaces = renderer.render(scene, renderBuffer);
 		if (sceneWindow != null) {
 			sceneWindow.draw();
 		}

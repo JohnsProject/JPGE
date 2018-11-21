@@ -23,7 +23,7 @@ public class SceneWindow extends JFrame{
 	private int width = 0;
 	private int height = 0;
 	private ScenePanel panel;
-	private RenderBuffer RenderBuffer;
+	private RenderBuffer renderBuffer;
 	
 	/**
 	 * Creates a new instance of the SceneWindow class filled with the given values.
@@ -34,7 +34,7 @@ public class SceneWindow extends JFrame{
 	public SceneWindow (int width, int height){
 		setSize(width, height);
 		panel = new ScenePanel();
-		RenderBuffer = Engine.getInstance().getRenderBuffer();
+		renderBuffer = Engine.getInstance().getRenderBuffer();
 		try {
 			this.setIconImage(FileIO.loadImage(getClass().getResourceAsStream("/JohnsProjectLogo.png")));
 		} catch (IOException e) {
@@ -71,7 +71,7 @@ public class SceneWindow extends JFrame{
 		@Override
 		protected void paintComponent(Graphics g) {
 			super.paintComponent(g);
-			g.drawImage(RenderBuffer.getFrameBuffer(), 0, 0, width, height, null);
+			g.drawImage(renderBuffer.getFrameBuffer(), 0, 0, width, height, null);
 		}
 	}
 

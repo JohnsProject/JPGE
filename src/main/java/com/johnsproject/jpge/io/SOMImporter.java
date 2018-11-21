@@ -69,120 +69,83 @@ public class SOMImporter {
 	 */
 	public static Mesh loadFromRaw(String data) throws ImportExeption {
 		String rawData = data.replace(" ", "").replace("\n", "");
-		String[] rawVertexesData = rawData.split("Vertexes<")[1].split(">Vertexes", 2)[0].split(",");
-		String[] rawFacesData = rawData.split("Faces<")[1].split(">Faces", 2)[0].split(",");
-		String[] rawMaterialsData = rawData.split("Materials<")[1].split(">Materials", 2)[0].split(",");
-		String[] rawAnimationsData = rawData.split("Animations<")[1].split(">Animations", 2)[0].split("Animation<");
-		Mesh result = new Mesh(parseVertexes(rawVertexesData),
-								parseFaces(rawFacesData),
-								parseMaterials(rawMaterialsData),
-								parseAnimations(rawAnimationsData));
+		Vertex[] vertexes = parseVertexes(rawData);
+		Face[] faces = parseFaces(rawData);
+		Material[] materials = parseMaterials(rawData);
+		Animation[] animations = parseAnimations(rawData);
+		Mesh result = new Mesh(vertexes, faces, materials, animations);
 		System.gc();
 		return result;
 	}
 	
-	/**
-	 * Parses the {@link Vertex Vertexes} of a {@link Mesh} from the given string and returns it.
-	 * The parameter should contain the content inside the "Vertexes<" and ">Vertexes" 
-	 * pieces of the som file and should be by ',' splited because the method only sorts 
-	 * and parses the sorted integer values to the right place in the {@link Vertex Vertexes}.
-	 * 
-	 * @param rawVertexesData the string array containing the splited data.
-	 * @return an {@link Vertex} array.
-	 * @throws ImportExeption
-	 */
-	static Vertex[] parseVertexes(String[] rawVertexesData) throws ImportExeption {
-		int step = Mesh.VERTEX_LENGTH;
-		Vertex[] vertexes = new Vertex[rawVertexesData.length/step];
-		if(rawVertexesData.length > 2){
-			for (int i = 0; i < rawVertexesData.length; i+= step) {
-				int[] position = new int[3];
-				position[vx] = toInt(rawVertexesData[i + vx]);
-				position[vy] = toInt(rawVertexesData[i + vy]);
-				position[vz] = toInt(rawVertexesData[i + vz]);
-				int[] normal = new int[3];
-				normal[vx] = toInt(rawVertexesData[i + Mesh.V_NORMAL + vx]);
-				normal[vy] = toInt(rawVertexesData[i + Mesh.V_NORMAL + vy]);
-				normal[vz] = toInt(rawVertexesData[i + Mesh.V_NORMAL + vz]);
-				int bone = toInt(rawVertexesData[i + Mesh.V_BONE_INDEX]);
-				int material = toInt(rawVertexesData[i + Mesh.V_MATERIAL_INDEX]);
-				vertexes[i/step] = new Vertex(position, normal, bone, material);
-			}
+	static Vertex[] parseVertexes(String rawData) throws ImportExeption {
+		String vCountData = rawData.split("vCount<")[1].split(">vCount", 2)[0];
+		Vertex[] vertexes = new Vertex[toInt(vCountData)];
+		String[] vPositionData = rawData.split("vPosition<")[1].split(">vPosition", 2)[0].split(",");
+		String[] vNormalData = rawData.split("vNormal<")[1].split(">vNormal", 2)[0].split(",");
+		String[] vBoneData = rawData.split("vBone<")[1].split(">vBone", 2)[0].split(",");
+		String[] vMaterialData = rawData.split("vMaterial<")[1].split(">vMaterial", 2)[0].split(",");
+		for (int i = 0; i < vertexes.length * 3; i += 3) {
+			int[] position = new int[3];
+			position[vx] = toInt(vPositionData[i + vx]);
+			position[vy] = toInt(vPositionData[i + vy]);
+			position[vz] = toInt(vPositionData[i + vz]);
+			int[] normal = new int[3];
+			normal[vx] = toInt(vNormalData[i + vx]);
+			normal[vy] = toInt(vNormalData[i + vy]);
+			normal[vz] = toInt(vNormalData[i + vz]);
+			int bone = toInt(vBoneData[i / 3]);
+			int material = toInt(vMaterialData[i / 3]);
+			vertexes[i / 3] = new Vertex(position, normal, bone, material);
 		}
 		return vertexes;
 	}
 	
-	/**
-	 * Parses the {@link Face Faces} of a {@link Mesh} from the given string and returns it.
-	 * The parameter should contain the content inside the "Faces<" and ">Faces" 
-	 * pieces of the som file and should be by ',' splited because the method only sorts 
-	 * and parses the sorted integer values to the right place in the {@link Face Faces}.
-	 * 
-	 * @param rawFacesData the string array containing the splited data.
-	 * @return an {@link Face} array.
-	 * @throws ImportExeption
-	 */
-	static Face[] parseFaces(String[] rawFacesData) throws ImportExeption {
-		int step = Mesh.FACE_LENGTH-1;
-		Face[] faces = new Face[rawFacesData.length/step];
-		if(rawFacesData.length > 2){
-			for (int i = 0; i < rawFacesData.length; i+=step) {
-				int vertex1 = toInt(rawFacesData[i + Mesh.F_VERTEX_1]);
-				int vertex2 = toInt(rawFacesData[i + Mesh.F_VERTEX_2]);
-				int vertex3 = toInt(rawFacesData[i + Mesh.F_VERTEX_3]);
-				int material = toInt(rawFacesData[i + Mesh.F_MATERIAL_INDEX]);
-				int[] uv1 = new int[2];
-				uv1[vx] = toInt(rawFacesData[i + Mesh.F_UV_1 + vx]);
-				uv1[vy] = toInt(rawFacesData[i + Mesh.F_UV_1 + vy]);
-				int[] uv2 = new int[2];
-				uv2[vx] = toInt(rawFacesData[i + Mesh.F_UV_2 + vx]);
-				uv2[vy] = toInt(rawFacesData[i + Mesh.F_UV_2 + vy]);
-				int[] uv3 = new int[2];
-				uv3[vx] = toInt(rawFacesData[i + Mesh.F_UV_3 + vx]);
-				uv3[vy] = toInt(rawFacesData[i + Mesh.F_UV_3 + vy]);
-				faces[i/step] = new Face(vertex1, vertex2, vertex3, material, uv1, uv2, uv3);
-			}
+	static Face[] parseFaces(String rawData) throws ImportExeption {
+		String fCountData = rawData.split("fCount<")[1].split(">fCount", 2)[0];
+		Face[] faces = new Face[toInt(fCountData)];
+		String[] fVertex1Data = rawData.split("fVertex1<")[1].split(">fVertex1", 2)[0].split(",");
+		String[] fVertex2Data = rawData.split("fVertex2<")[1].split(">fVertex2", 2)[0].split(",");
+		String[] fVertex3Data = rawData.split("fVertex3<")[1].split(">fVertex3", 2)[0].split(",");
+		String[] fMaterialData = rawData.split("fMaterial<")[1].split(">fMaterial", 2)[0].split(",");
+		String[] fUV1Data = rawData.split("fUV1<")[1].split(">fUV1", 2)[0].split(",");
+		String[] fUV2Data = rawData.split("fUV2<")[1].split(">fUV2", 2)[0].split(",");
+		String[] fUV3Data = rawData.split("fUV3<")[1].split(">fUV3", 2)[0].split(",");
+		for (int i = 0; i < faces.length * 2; i += 2) {
+			int vertex1 = toInt(fVertex1Data[i / 2]);
+			int vertex2 = toInt(fVertex2Data[i / 2]);
+			int vertex3 = toInt(fVertex3Data[i / 2]);
+			int material = toInt(fMaterialData[i / 2]);
+			int[] uv1 = new int[2];
+			uv1[vx] = toInt(fUV1Data[i + vx]);
+			uv1[vy] = toInt(fUV1Data[i + vy]);
+			int[] uv2 = new int[2];
+			uv2[vx] = toInt(fUV2Data[i + vx]);
+			uv2[vy] = toInt(fUV2Data[i + vy]);
+			int[] uv3 = new int[2];
+			uv3[vx] = toInt(fUV3Data[i + vx]);
+			uv3[vy] = toInt(fUV3Data[i + vy]);
+			faces[i / 2] = new Face(vertex1, vertex2, vertex3, material, uv1, uv2, uv3);
 		}
 		return faces;
 	}
 	
-	/**
-	 * Parses the {@link Material Materials} of a {@link Mesh} from the given string and returns it.
-	 * The parameter should contain the content inside the "Materials<" and ">Materials" 
-	 * pieces of the som file and should be by ',' splited because the method only sorts 
-	 * and parses the sorted integer values to the right place in the {@link Material}.
-	 * 
-	 * @param rawMaterialsData the string array containing the splited data.
-	 * @return an {@link Material} array.
-	 * @throws ImportExeption
-	 */
-	static Material[] parseMaterials(String[] rawMaterialsData){
-		Material[] materials = null;
-		if(rawMaterialsData.length > 2) {
-			materials = new Material[rawMaterialsData.length/4];
-			for (int i = 0; i < rawMaterialsData.length; i+=4) {
-				int r = toInt(rawMaterialsData[i]), g = toInt(rawMaterialsData[i+1]),
-					b = toInt(rawMaterialsData[i+2]), a = toInt(rawMaterialsData[i+3]);
-				materials[i/4] = new Material(ColorUtils.convert(r, g, b, a), new Texture(101, 101));
-			}
-		}else {
-			materials = new Material[1];
-			materials[0] = new Material(ColorUtils.convert(100, 100, 100), new Texture(101, 101));
+	static Material[] parseMaterials(String rawData){
+		String mCountData = rawData.split("mCount<")[1].split(">mCount", 2)[0];
+		Material[] materials = new Material[toInt(mCountData)];
+		String[] mColorData = rawData.split("mColor<")[1].split(">mColor", 2)[0].split(",");
+		for (int i = 0; i < mColorData.length; i+=4) {
+			int r = toInt(mColorData[i]);
+			int	g = toInt(mColorData[i+1]);
+			int	b = toInt(mColorData[i+2]);
+			int	a = toInt(mColorData[i+3]);
+			materials[i/4] = new Material(ColorUtils.convert(r, g, b, a), new Texture(10, 10));
 		}
 		return materials;
 	}
 	
-	/**
-	 * Parses the {@link Animation Animations} of a {@link Mesh} from the given string and returns it.
-	 * The parameter should contain the content inside the "Animations<" and ">Animations" 
-	 * pieces of the som file and should be by ',' splited because the method only sorts 
-	 * and parses the sorted integer values to the right place in the bones of an {@link Animation}.
-	 * 
-	 * @param rawAnimationsData the string array containing the splited data.
-	 * @return an {@link Animation} array.
-	 * @throws ImportExeption
-	 */
-	static Animation[] parseAnimations(String[] rawAnimationsData) throws ImportExeption {
+	static Animation[] parseAnimations(String rawData) throws ImportExeption {
+		String[] rawAnimationsData = rawData.split("Animations<")[1].split(">Animations", 2)[0].split("Animation<");
 		int bonesCount = toInt(rawAnimationsData[0].split("BonesCount<")[1].split(">BonesCount")[0]);
 		int step = Mesh.BONE_LENGTH;
 		Animation[] animations = null;

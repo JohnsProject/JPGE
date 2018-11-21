@@ -20,6 +20,7 @@ import com.sun.management.OperatingSystemMXBean;
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
+@SuppressWarnings("restriction")
 public class Profiler{
 	
 	private static Profiler instance;

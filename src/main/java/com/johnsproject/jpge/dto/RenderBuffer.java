@@ -18,6 +18,7 @@ public class RenderBuffer {
 	
 	private int width;
 	private int height;
+	private int length;
 	private BufferedImage frameBuffer;
 	private int[] frameBufferData;
 	private int[] depthBuffer;
@@ -39,15 +40,6 @@ public class RenderBuffer {
 	 */
 	public BufferedImage getFrameBuffer() {
 		return frameBuffer;
-	}
-	
-	/**
-	 * Returns the pixel data of the {@link BufferedImage frameBuffer} of this RenderBuffer.
-	 * 
-	 * @return pixel data of the {@link BufferedImage frameBuffer} of this RenderBuffer.
-	 */
-	public int[] getFrameBufferData() {
-		return frameBufferData;
 	}
 	
 	/**
@@ -87,9 +79,30 @@ public class RenderBuffer {
 	public void setSize(int width, int height) {
 		this.width = width;
 		this.height = height;
+		this.length = width * height;
 		this.frameBuffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB_PRE);
 		this.frameBufferData = ((DataBufferInt)frameBuffer.getRaster().getDataBuffer()).getData();
-		this.depthBuffer = new int[width*height];
+		this.depthBuffer = new int[length];
+	}
+	
+	/**
+	 * Sets a pixel of this RenderBuffer at the given position, but only if it passes the depth test.
+	 * 
+	 * @param x position of pixel in the x axis.
+	 * @param y position of pixel in the y axis.
+	 * @param z position of pixel in the z axis.
+	 * @param color color of pixel.
+	 */
+	public void setPixel(int x, int y, int z, int color) {
+		int pos = x + (y * width);
+		// check if pixel is inside RenderBuffer
+		if (pos < length) {
+			// z test
+			if (depthBuffer[pos] > z) {
+				depthBuffer[pos] = z;
+				frameBufferData[pos] = color;
+			}
+		}
 	}
 	
 	/**

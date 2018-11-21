@@ -8,7 +8,6 @@ import com.johnsproject.jpge.dto.Mesh;
 import com.johnsproject.jpge.dto.Texture;
 import com.johnsproject.jpge.dto.Transform;
 import com.johnsproject.jpge.dto.Vertex;
-import com.johnsproject.jpge.graphics.Shader;
 
 /**
  * The RenderUtils class provides methods needed at the rendering process.
@@ -148,12 +147,11 @@ public class RenderUtils {
 	 * @param y2 end y position.
 	 * @param z z position used by the zBuffer.
 	 * @param color color of the line.
-	 * @param shader {@link Shader} to use.
 	 * @param camera {@link Camera} to draw on.
 	 * @param renderBuffer {@link RenderBuffer} to use.
 	 */
 	public static void drawLine(int x1, int y1, int x2, int y2, int z, int color,
-						Shader shader, Camera camera, RenderBuffer renderBuffer) {
+						Camera camera, RenderBuffer renderBuffer) {
 		int w = x2 - x1;
 		int h = y2 - y1;
 		// deltas
@@ -174,7 +172,7 @@ public class RenderUtils {
 		int numerator = longest >> 1;
 		for (int i = 0; i < longest; i++, numerator += shortest) {
 			// set pixel
-			shader.shadePixel(x1, y1, z, color, camera, renderBuffer);
+			setPixel(x1, y1, z, color, camera, renderBuffer);
 			// increase deltas
 			if (numerator > longest) {
 				numerator -= longest;
@@ -194,11 +192,10 @@ public class RenderUtils {
 	 * 
 	 * @param face {@link Face} to draw.
 	 * @param mesh {@link Mesh} that contains the given {@link Face}.
-	 * @param shader {@link Shader} to use.
 	 * @param camera {@link Camera} to draw on.
 	 * @param renderBuffer {@link RenderBuffer} to use.
 	 */
-	public static void drawFaceGouraud(Face face, Mesh mesh, Shader shader, Camera camera, RenderBuffer renderBuffer) {
+	public static void drawFaceGouraud(Face face, Mesh mesh, Camera camera, RenderBuffer renderBuffer) {
 		Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
 		Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
 		Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
@@ -244,12 +241,12 @@ public class RenderUtils {
 		   				tmp = vc2; vc2 = vc1; vc1 = tmp;}
 		if (y1 == y2) y2++;
 		if (y2 == y3) y3++;
-		face(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, color, shader, camera, renderBuffer);
+		face(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, color, camera, renderBuffer);
 	}
 	
 	// face drawing and filling with fixed point scanline algorithm that supports gouraud shading
 	static void face(int x1, int y1, int z1, int vc1, int x2, int y2, int z2, int vc2, int x3, int y3, int z3, int vc3,
-							int color, Shader shader, Camera cam, RenderBuffer renderBuffer) {
+							int color, Camera cam, RenderBuffer renderBuffer) {
 		// get color values
 		int r1 = ColorUtils.getRed(vc1), g1 = ColorUtils.getGreen(vc1), b1 = ColorUtils.getBlue(vc1), a1 = ColorUtils.getAlpha(vc1);
 		int r2 = ColorUtils.getRed(vc2), g2 = ColorUtils.getGreen(vc2), b2 = ColorUtils.getBlue(vc2), a2 = ColorUtils.getAlpha(vc2);
@@ -317,7 +314,7 @@ public class RenderUtils {
 			}
 		    for (; sy < y2; sy++) {
 		    	// bitshift right to get right values
-		    	drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, shader, cam, renderBuffer);
+		    	drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, cam, renderBuffer);
 		    	// increase left and right values by the calculated delta
 		    	sx += dx2; ex += dx1;
 		    	sz += dz2;
@@ -337,7 +334,7 @@ public class RenderUtils {
 				da = ((da3 - da2) << SHIFT) / (dxdx);
 			}
 			for (; sy < y3; sy++) {
-				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, shader, cam, renderBuffer);
+				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, cam, renderBuffer);
 				sx += dx2; ex += dx3;
 				sz += dz2;
 				sr += dr2;
@@ -355,7 +352,7 @@ public class RenderUtils {
 				da = ((da2 - da1) << SHIFT) / (dxdx);
 			}
 	    	for (; sy < y2; sy++) {
-	    		drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, shader, cam, renderBuffer);
+	    		drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, cam, renderBuffer);
 	    		sx += dx1; ex += dx2;
 	    		sz += dz1;
 	    		sr += dr1;
@@ -373,7 +370,7 @@ public class RenderUtils {
 				da = ((da2 - da3) << SHIFT) / (dxdx);
 			}
 			for (; sy < y3; sy++) {
-				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, shader, cam, renderBuffer);
+				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, cam, renderBuffer);
 				sx += dx3; ex += dx2;
 				sz += dz3;
 				sr += dr3;
@@ -385,11 +382,11 @@ public class RenderUtils {
 	}
 	
 	static void drawHLine(int sx, int ex, int sz, int dz, int sr, int dr, int sg, int dg, int sb, int db, int sa, int da,
-			int sy, int color, Shader shader, Camera camera, RenderBuffer renderBuffer) {
+			int sy, int color, Camera camera, RenderBuffer renderBuffer) {
 		for (; sx < ex; sx++) {
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
 			// no need to shift sz as the z test is just check if its a higher value
-			shader.shadePixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 500), camera, renderBuffer);
+			setPixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 500), camera, renderBuffer);
 			sz += dz;
 			sr += dr;
 			sg += dg;
@@ -404,11 +401,10 @@ public class RenderUtils {
 	 * 
 	 * @param face {@link Face} to draw.
 	 * @param mesh {@link Mesh} that contains the given {@link Face}.
-	 * @param shader {@link Shader} to use.
 	 * @param camera {@link Camera} to draw on.
 	 * @param renderBuffer {@link RenderBuffer} to use.
 	 */
-	public static void drawFaceAffine(Face face, Mesh mesh, Shader shader, Camera camera, RenderBuffer renderBuffer) {
+	public static void drawFaceAffine(Face face, Mesh mesh, Camera camera, RenderBuffer renderBuffer) {
 		Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
 		Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
 		Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
@@ -454,13 +450,13 @@ public class RenderUtils {
 		   				tmp = vc2; vc2 = vc1; vc1 = tmp;}
 		if (y1 == y2) y2++;
 		if (y2 == y3) y3++;
-		faceAffine(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, u1, v1, u2, v2, u3, v3, img, shader, camera, renderBuffer);
+		faceAffine(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, u1, v1, u2, v2, u3, v3, img, camera, renderBuffer);
 	}
 	
 	// face drawing and filling with fixed point scanline algorithm that supports gouraud shading
 	static void faceAffine(int x1, int y1, int z1, int vc1, int x2, int y2, int z2, int vc2, int x3, int y3, int z3, int vc3,
 								int u1, int v1, int u2, int v2, int u3, int v3,
-								Texture img, Shader shader, Camera cam, RenderBuffer renderBuffer) {
+								Texture img, Camera cam, RenderBuffer renderBuffer) {
 		// interpolate uv coordinates
 		int w = img.getWidth() - 1, h = img.getHeight() - 1;
 		int sh = 7;
@@ -547,7 +543,7 @@ public class RenderUtils {
 			}
 		    for (; sy < y2; sy++) {
 		    	// bitshift right to get right values
-		    	drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, shader, cam, renderBuffer);
+		    	drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, cam, renderBuffer);
 		    	// increase left and right values by the calculated delta
 				sx += dx2; ex += dx1;
 				sz += dz2;
@@ -571,7 +567,7 @@ public class RenderUtils {
 				da = ((da3 - da2) << SHIFT) / (dxdx);
 			}
 			for (; sy < y3; sy++) {
-				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, shader, cam, renderBuffer);
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, cam, renderBuffer);
 				sx += dx2; ex += dx3;
 				sz += dz2;
 				su += du2;
@@ -593,7 +589,7 @@ public class RenderUtils {
 				da = ((da2 - da1) << SHIFT) / (dxdx);
 			}
 			for (; sy < y2; sy++) {
-				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, shader, cam, renderBuffer);
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, cam, renderBuffer);
 				sx += dx1; ex += dx2;
 				sz += dz1;
 				su += du1;
@@ -615,7 +611,7 @@ public class RenderUtils {
 				da = ((da2 - da3) << SHIFT) / (dxdx);
 			}
 			for (; sy < y3; sy++) {
-				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, shader, cam, renderBuffer);
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, cam, renderBuffer);
 				sx += dx3; ex += dx2;
 				sz += dz3;
 				su += du3;
@@ -630,13 +626,13 @@ public class RenderUtils {
 	
 	static void drawHLineAffine(int sx, int ex, int sz, int dz, int su, int du, int sv, int dv, int sr,
 								int dr, int sg, int dg, int sb, int db, int sa, int da, int sy,
-								Texture img, Shader shader, Camera camera, RenderBuffer renderBuffer) {
+								Texture img, Camera camera, RenderBuffer renderBuffer) {
 		for (; sx < ex; sx++) {
 			// get texture pixel / texel color
 			int color = img.getPixel(su >> SHIFT, sv >> SHIFT);
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
 			// no need to shift sz as the z test is just check if its a higher value
-			shader.shadePixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 500), camera, renderBuffer);
+			setPixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 500), camera, renderBuffer);
 			sz += dz;
 			su += du;
 			sv += dv;
@@ -644,6 +640,23 @@ public class RenderUtils {
 			sg += dg;
 			sb += db;
 			sa += da;
+		}
+	}
+	
+	/**
+	 * Sets a pixel in the RenderBuffer with given coordinates taking in account the camera.
+	 * 
+	 * @param x
+	 * @param y
+	 * @param z
+	 * @param color
+	 * @param camera
+	 * @param renderBuffer
+	 */
+	public static void setPixel(int x, int y, int z, int color, Camera camera, RenderBuffer renderBuffer) {
+		// check if pixel is inside camera
+		if (x > 0 && x < camera.getWidth() && y > 0 && y < camera.getHeight()) {
+			renderBuffer.setPixel(camera.getPositionX() + x, camera.getPositionY() + y, z, color);
 		}
 	}
 }
