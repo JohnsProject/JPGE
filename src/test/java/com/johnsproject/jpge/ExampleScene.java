@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.johnsproject.jpge.dto.Camera;
 import com.johnsproject.jpge.dto.Light;
 import com.johnsproject.jpge.dto.Mesh;
+import com.johnsproject.jpge.dto.Rigidbody;
 import com.johnsproject.jpge.dto.SceneObject;
 import com.johnsproject.jpge.dto.Texture;
 import com.johnsproject.jpge.dto.Transform;
@@ -27,8 +28,8 @@ public class ExampleScene implements JPGE{
 	public ExampleScene() {		
 		try {
 			mesh1 = SOMImporter.load("/home/john/Development/test.som");
-//			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/monkey.som"));
-			mesh2 = SOMImporter.load(getClass().getResourceAsStream("/cube.som"));
+//			mesh1 = SOMImporter.load(getClass().getResourceAsStream("/plane.som"));
+			mesh2 = SOMImporter.load("/home/john/Development/test.som");
 		} catch (ImportExeption e) {
 			e.printStackTrace();
 		}
@@ -36,7 +37,7 @@ public class ExampleScene implements JPGE{
 		sceneObject2 = new SceneObject("test2", new Transform(new int[] {0, -3000, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh2);
 //		sceneObject.getRigidbody().setCollisionType(Rigidbody.COLLISION_AABB);
 //		sceneObject2.getRigidbody().setCollisionType(Rigidbody.COLLISION_AABB);
-//		sceneObject.getRigidbody().setCollisionType(Rigidbody.COLLISION_TERRAIN);
+		sceneObject.getRigidbody().setCollisionType(Rigidbody.COLLISION_TERRAIN);
 		try {
 			Texture t = new Texture(getClass().getResourceAsStream("/JohnsProject.png"));
 			for (int i = 0; i < mesh1.getMaterials().length; i++) {

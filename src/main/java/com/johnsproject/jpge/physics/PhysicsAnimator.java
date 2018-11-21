@@ -59,12 +59,12 @@ public class PhysicsAnimator {
 			if(sphereToSphere(sceneObject1, sceneObject2)) {
 				if (rb1.getCollisionType() + rb2.getCollisionType() == Rigidbody.COLLISION_SPHERE*2)
 					return true;
-//				if (rb1.getCollisionType() + rb2.getCollisionType() == Rigidbody.COLLISION_SPHERE + Rigidbody.COLLISION_TERRAIN) { 
-//					if (rb1.getCollisionType() == Rigidbody.COLLISION_SPHERE)
-//						return sphereToTerrain(sceneObject1, sceneObject2);
-//					else 
-//						return sphereToTerrain(sceneObject2, sceneObject1);
-//				}
+				if (rb1.getCollisionType() + rb2.getCollisionType() == Rigidbody.COLLISION_SPHERE + Rigidbody.COLLISION_TERRAIN) { 
+					if (rb1.getCollisionType() == Rigidbody.COLLISION_SPHERE)
+						return sphereToTerrain(sceneObject1, sceneObject2);
+					else 
+						return sphereToTerrain(sceneObject2, sceneObject1);
+				}
 //				if (rb1.getCollisionType() + rb2.getCollisionType() == Rigidbody.COLLISION_AABB*2) {
 //					return AABBToAABB(sceneObject1, sceneObject2);
 //				}
@@ -88,23 +88,23 @@ public class PhysicsAnimator {
 		return false;
 	}
 	
-//	private int[] vector = new int[3];
-//	boolean sphereToTerrain(SceneObject sceneObject1, SceneObject sceneObject2) {
-//		Rigidbody rigidbody1 = sceneObject1.getRigidbody();
-//		int[] pos1 = sceneObject1.getTransform().getPosition();
-//		int[] pos2 = sceneObject2.getTransform().getPosition();
-////		Vector3MathUtils.subtract(pos2, pos1, vector);
-//		int radius = rigidbody1.getColliderRadius();
-//		for (int i = 0; i < sceneObject2.getMesh().getVertexes().length; i++) {
-//			int[] pos = sceneObject2.getMesh().getVertex(i).getPosition();
-//			if (pos[vx] - pos1[vx] <= radius
-//				&& pos[vy] - pos1[vy] <= radius
-//				&& pos[vz] - pos1[vz] <= radius) {
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
+	private int[] vector = new int[3];
+	boolean sphereToTerrain(SceneObject sceneObject1, SceneObject sceneObject2) {
+		Rigidbody rigidbody1 = sceneObject1.getRigidbody();
+		int[] pos1 = sceneObject1.getTransform().getPosition();
+		int[] pos2 = sceneObject2.getTransform().getPosition();
+		Vector3MathUtils.subtract(pos2, pos1, vector);
+		int radius = rigidbody1.getColliderRadius();
+		for (int i = 0; i < sceneObject2.getMesh().getVertexes().length; i++) {
+			int[] pos = sceneObject2.getMesh().getVertex(i).getPosition();
+			if (pos[vx] - pos1[vx] <= radius
+				&& pos[vy] - pos1[vy] <= radius
+				&& pos[vz] - pos1[vz] <= radius) {
+				return true;
+			}
+		}
+		return false;
+	}
 //	
 //	private int[] bb1 = new int[3];
 //	private int[] bb2 = new int[3];
