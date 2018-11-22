@@ -6,7 +6,6 @@ import java.io.IOException;
 import com.johnsproject.jpge.dto.Camera;
 import com.johnsproject.jpge.dto.Light;
 import com.johnsproject.jpge.dto.Mesh;
-import com.johnsproject.jpge.dto.Rigidbody;
 import com.johnsproject.jpge.dto.SceneObject;
 import com.johnsproject.jpge.dto.Texture;
 import com.johnsproject.jpge.dto.Transform;
@@ -19,7 +18,7 @@ public class ExampleScene implements JPGE{
 		new ExampleScene();
 	}
 	
-	SceneObject sceneObject, sceneObject2;
+	SceneObject sceneObject1, sceneObject2;
 	Camera camera, camera2;
 	Light light, light2;
 	Mesh mesh1, mesh2;
@@ -34,11 +33,10 @@ public class ExampleScene implements JPGE{
 		} catch (ImportExeption e) {
 			e.printStackTrace();
 		}
-		sceneObject = new SceneObject("test", new Transform(new int[] {0, 0, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh1);
+		sceneObject1 = new SceneObject("test", new Transform(new int[] {0, 0, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh1);
 		sceneObject2 = new SceneObject("test2", new Transform(new int[] {0, -3000, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh2);
-//		sceneObject.getRigidbody().setCollisionType(Rigidbody.COLLISION_AABB);
+//		sceneObject1.getRigidbody().setCollisionType(Rigidbody.COLLISION_MESH);
 //		sceneObject2.getRigidbody().setCollisionType(Rigidbody.COLLISION_MESH);
-		sceneObject.getRigidbody().setCollisionType(Rigidbody.COLLISION_MESH);
 		try {
 			Texture t = new Texture(getClass().getResourceAsStream("/JohnsProject.png"));
 			for (int i = 0; i < mesh1.getMaterials().length; i++) {
@@ -56,7 +54,7 @@ public class ExampleScene implements JPGE{
 		Engine.getInstance().setSceneWindow(new SceneWindow(windowWidth, windowHeight));
 		Engine.getInstance().getRenderBuffer().setSize(renderWidth, renderHeight);
 		Engine.getInstance().getScene().addLight(light);
-		Engine.getInstance().getScene().addSceneObject(sceneObject);
+		Engine.getInstance().getScene().addSceneObject(sceneObject1);
 		Engine.getInstance().getScene().addSceneObject(sceneObject2);
 		Engine.getInstance().getScene().addCamera(camera);
 		Engine.getInstance().getScene().addCamera(camera2);
@@ -75,7 +73,7 @@ public class ExampleScene implements JPGE{
 		if (mouseInput.getKey(MouseInputManager.LEFT)) {
 			int x = (mouseInput.getMouseX()) - (windowWidth/2);
 			int y = (mouseInput.getMouseY()) - (windowHeight/2);
-			sceneObject.getTransform().setPosition(x*5, y*5, 0);
+			sceneObject1.getTransform().setPosition(x*5, y*5, 0);
 //			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);
 		}
 //		if (sceneObject2.getRigidbody().isColliding("test")) {
@@ -106,14 +104,14 @@ public class ExampleScene implements JPGE{
 	
 	public void applySceneObjectMove(KeyInputManager input) {
 		if (input.getKey(KeyEvent.VK_B)) {
-			sceneObject.getTransform().rotate(0, 3, 0);
+			sceneObject1.getTransform().rotate(0, 3, 0);
 			sceneObject2.getTransform().rotate(0, 3, 0);
 		}
 		if (input.getKey(KeyEvent.VK_N)) {
-			sceneObject.getTransform().rotate(3, 0, 0);
+			sceneObject1.getTransform().rotate(3, 0, 0);
 			sceneObject2.getTransform().rotate(3, 0, 0);
 		}
-		sceneObject.getRigidbody().useGravity(false);
+		sceneObject1.getRigidbody().useGravity(false);
 		if (input.getKey(KeyEvent.VK_G)) {
 			sceneObject2.getRigidbody().addForce(0, -100, 0);
 		}

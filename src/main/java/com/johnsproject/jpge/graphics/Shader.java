@@ -63,27 +63,25 @@ public class Shader {
 		int[] normal = vertex.getNormal();
 		// transform normal in object space
 		normal = Vector3MathUtils.movePointByAnglesXYZ(normal, objt.getRotation(), normal);
-//		if (normal[vz] < 500) {
-			// transform vertex in object space
-			vector = Vector3MathUtils.movePointByScale(vector, objt.getScale(), vector);
-			vector = Vector3MathUtils.movePointByAnglesXYZ(vector, objt.getRotation(), vector);
-			if(shadingType == SHADE_GOURAUD) {
-				// calculate shaded color for every vertex
-				vertex.setColor(shade(lights, vector, normal));
-			}
-			// transform vertex to world space
-			vector = Vector3MathUtils.add(vector, objt.getPosition(), vector);
-			// transform vertex to camera space
-			vector = Vector3MathUtils.subtract(vector, camt.getPosition(), vector);
-			vector = Vector3MathUtils.movePointByAnglesXYZ(vector, camt.getRotation(), vector);
-			// transform / project vertex to screen space
-			if(projectionType == PROJECT_ORTHOGRAPHIC) {
-				vector = RenderUtils.orthographicProject(vector, camera);
-			}
-			if(projectionType == PROJECT_PERSPECTIVE) {
-				vector = RenderUtils.perspectiveProject(vector, camera);
-			}
-//		}
+		// transform vertex in object space
+		vector = Vector3MathUtils.movePointByScale(vector, objt.getScale(), vector);
+		vector = Vector3MathUtils.movePointByAnglesXYZ(vector, objt.getRotation(), vector);
+		if (shadingType == SHADE_GOURAUD) {
+			// calculate shaded color for every vertex
+			vertex.setColor(shade(lights, vector, normal));
+		}
+		// transform vertex to world space
+		vector = Vector3MathUtils.add(vector, objt.getPosition(), vector);
+		// transform vertex to camera space
+		vector = Vector3MathUtils.subtract(vector, camt.getPosition(), vector);
+		vector = Vector3MathUtils.movePointByAnglesXYZ(vector, camt.getRotation(), vector);
+		// transform / project vertex to screen space
+		if (projectionType == PROJECT_ORTHOGRAPHIC) {
+			vector = RenderUtils.orthographicProject(vector, camera);
+		}
+		if (projectionType == PROJECT_PERSPECTIVE) {
+			vector = RenderUtils.perspectiveProject(vector, camera);
+		}
 		return vertex;
 	}
 
@@ -96,7 +94,6 @@ public class Shader {
 				Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
 				Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
 				Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
-//			if (vt1.getNormal()[vz] < 500) {
 				if (shadingType == SHADE_FLAT) {
 					// calculate shaded color for 1 vertex
 					int result = shade(lights, objectTransform.getPosition(), vt1.getNormal());

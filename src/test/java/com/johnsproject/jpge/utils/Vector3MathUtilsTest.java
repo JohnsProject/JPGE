@@ -133,7 +133,8 @@ public class Vector3MathUtilsTest {
 		int[] vector = new int[] {x1, y1, z1};
 		int[] result = new int[3];
 		vector = Vector3MathUtils.movePointByAngleZ(vector, 90, result);
-		assert (vector[vx] == 0);
+		assert (vector[vx] <= 0 + precision);
+		assert (vector[vx] >= 0 - precision);
 		assert (vector[vy] <= 100 + precision);
 		assert (vector[vy] >= 100 - precision);
 	}
@@ -145,7 +146,8 @@ public class Vector3MathUtilsTest {
 		int[] vector = new int[] {x1, y1, z1};
 		int[] result = new int[3];
 		vector = Vector3MathUtils.movePointByAngleY(vector, 90, result);
-		assert (vector[vx] == 0);
+		assert (vector[vx] <= 0 + precision);
+		assert (vector[vx] >= 0 - precision);
 		assert (vector[vz] <= 100 + precision);
 		assert (vector[vz] >= 100 - precision);
 	}
@@ -157,7 +159,8 @@ public class Vector3MathUtilsTest {
 		int[] vector = new int[] {x1, y1, z1};
 		int[] result = new int[3];
 		vector = Vector3MathUtils.movePointByAngleX(vector, 90, result);
-		assert (vector[vy] == 0);
+		assert (vector[vy] <= 0 + precision);
+		assert (vector[vy] >= 0 - precision);
 		assert (vector[vz] <= 100 + precision);
 		assert (vector[vz] >= 100 - precision);
 	}

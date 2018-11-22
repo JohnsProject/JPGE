@@ -86,12 +86,12 @@ public class Benchmarks {
 //		Math.sqrt(125);
 //	}
 //	
-//	@Benchmark
-//	@Fork(value = 1)
-//	@BenchmarkMode(Mode.Throughput)
-//	public void mathUtilsSqrtBenchmark() {
-//		MathUtils.sqrt(125);
-//	}
+	@Benchmark
+	@Fork(value = 1)
+	@BenchmarkMode(Mode.Throughput)
+	public void mathUtilsSqrtBenchmark() {
+		MathUtils.sqrt(125);
+	}
 //	
 //	@Benchmark
 //	@Fork(value = 1)
@@ -107,27 +107,27 @@ public class Benchmarks {
 //		MathUtils.pow(5, 5);
 //	}
 	
-	@Benchmark
-	@Fork(value = 1)
-	@BenchmarkMode(Mode.Throughput)
-	public void arrayBenchmark() {
-		int[] vector = new int[] {50,50,50};
-		Vertex vertex = new Vertex(new int[] {50, 50, 50}, new int[] {0,0,0}, 0, 0);
-	    int x = vector[0];
-	    int y = vector[1];
-	    int z = vector[2];
-	}
-	
-	@Benchmark
-	@Fork(value = 1)
-	@BenchmarkMode(Mode.Throughput)
-	public void classBenchmark() {
-		int[] vector = new int[] {50,50,50};
-		Vertex vertex = new Vertex(new int[] {50, 50, 50}, new int[] {0,0,0}, 0, 0);
-	    int x = vertex.getPosition()[0];
-	    int y = vertex.getPosition()[1];
-	    int z = vertex.getPosition()[2];
-	}
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void arrayBenchmark() {
+//		int[] vector = new int[] {50,50,50};
+//		Vertex vertex = new Vertex(new int[] {50, 50, 50}, new int[] {0,0,0}, 0, 0);
+//	    int x = vector[0];
+//	    int y = vector[1];
+//	    int z = vector[2];
+//	}
+//	
+//	@Benchmark
+//	@Fork(value = 1)
+//	@BenchmarkMode(Mode.Throughput)
+//	public void classBenchmark() {
+//		int[] vector = new int[] {50,50,50};
+//		Vertex vertex = new Vertex(new int[] {50, 50, 50}, new int[] {0,0,0}, 0, 0);
+//	    int x = vertex.getPosition()[0];
+//	    int y = vertex.getPosition()[1];
+//	    int z = vertex.getPosition()[2];
+//	}
 	
 //	@Benchmark
 //	@Fork(value = 1)
@@ -165,10 +165,10 @@ public class Benchmarks {
  * Benchmarks.mathUtilsPowBenchmark     	thrpt   20   517305246,373 ±   1841468,156  ops/s
  * 
  * Benchmarks.mathSinCosBenchmark       	thrpt   20    10612065,678 ±    259946,905  ops/s
- * Benchmarks.mathUtilsSinCosBenchmark  	thrpt   20  1313963994,723 ±  55156688,179  ops/s
+ * Benchmarks.mathUtilsSinCosBenchmark  	thrpt   20  1444695918,874 ±  52460196,818  ops/s
  * 
  * Benchmarks.mathSqrtBenchmark         	thrpt   20  2971027729,621 ±  88309944,454  ops/s
- * Benchmarks.mathUtilsSqrtBenchmark    	thrpt   20   239768505,712 ±   8972302,570  ops/s
+ * Benchmarks.mathUtilsSqrtBenchmark  		thrpt   20  3202462958,330 ±  33535129,759  ops/s
  * 
  * Benchmarks.vectorIntArrayBenchmark   	thrpt   20  3282109759,848 ±  13874974,082  ops/s
  * Benchmarks.vectorPackedBenchmark     	thrpt   20  3282280731,327 ±   8531409,716  ops/s

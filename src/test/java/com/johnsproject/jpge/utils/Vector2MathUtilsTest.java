@@ -124,7 +124,8 @@ public class Vector2MathUtilsTest {
 		int[] vector = new int[] {x1, y1};
 		int[] result = new int[2];
 		result = Vector2MathUtils.movePointByAngleZ(vector, 90, result);
-		assert (result[vx] == 0);
+		assert (result[vx] <= 0 + precision);
+		assert (result[vx] >= 0 - precision);
 		assert (result[vy] <= 100 + precision);
 		assert (result[vy] >= 100 - precision);
 	}

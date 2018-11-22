@@ -10,12 +10,13 @@ package com.johnsproject.jpge.utils;
 public class MathUtils {
 
 	// sin table from 0-90 degrees
-	private static short[] valuesSin = {0, 4, 9, 13, 18, 22, 27, 31, 36, 40, 44, 49, 53, 58, 62, 66, 
-			71, 75, 79, 83, 88, 92, 96, 100, 104, 108, 112, 116, 120, 124, 128, 
-			132, 136, 139, 143, 147, 150, 154, 158, 161, 165, 168, 171, 175, 178, 181, 
-			184, 187, 190, 193, 196, 199, 202, 204, 207, 210, 212, 215, 217, 219, 222, 
-			224, 226, 228, 230, 232, 234, 236, 237, 239, 241, 242, 243, 245, 246, 247, 
-			248, 249, 250, 251, 252, 253, 254, 254, 255, 255, 255, 256, 256, 256, 256, 
+	private static byte[] valuesSin = {
+			-128, -125, -120, -116, -111, -107, -102, -98, -93, -89, -85, -80, -76, -71, -67, -63, 
+			-58, -54, -50, -46, -41, -37, -33, -29, -25, -21, -17, -13, -9, -5, -1, 
+			3, 7, 10, 14, 18, 21, 25, 29, 32, 36, 39, 42, 46, 49, 52, 
+			55, 58, 61, 64, 67, 70, 73, 75, 78, 81, 83, 86, 88, 90, 93, 
+			95, 97, 99, 101, 103, 105, 107, 108, 110, 112, 113, 114, 116, 117, 118, 
+			119, 120, 121, 122, 123, 124, 125, 125, 126, 126, 126, 127, 127, 127, 127, 
 			};
 
 	// used by the power method
@@ -64,18 +65,36 @@ public class MathUtils {
 	 * @return sine of angle.
 	 */
 	public static int sin(int angle) {
-		int a = wrap0to(angle, 360);
-		int result = 0;
-		if (a <= 90)
-			result = valuesSin[a];
-		else if (a > 90 && a <= 180)
-			result = valuesSin[180 - a];
-		else if (a > 180 && a <= 270)
-			result = -valuesSin[a - 180];
-		else if (a > 270 && a <= 360)
-			result = -valuesSin[360 - a];
-		if (angle < 0) return -result;
-		return result;
+		int a = Math.abs(angle);
+		int i = 0;
+		int quadrant = 0;
+		while (a >= i) {
+			i += 90;
+			quadrant++;
+			if (quadrant > 4) {
+				quadrant = 1;
+			}
+		}
+		a = (a - i) + 90;
+		switch (quadrant) {
+		case 1:
+			if (angle > 0)
+				return valuesSin[a] + 129;
+			return -(valuesSin[a] + 129);
+		case 2:
+			if (angle > 0)
+				return valuesSin[90 - a] + 129;
+			return -(valuesSin[90 - a] + 129);
+		case 3:
+			if (angle > 0)
+				return -(valuesSin[a] + 129);
+			return (valuesSin[a] + 129);
+		case 4:
+			if (angle > 0)
+				return -(valuesSin[90 - a] + 129);
+			return (valuesSin[90 - a] + 129);
+		}
+		return 0;
 	}
 
 	/**
@@ -93,17 +112,28 @@ public class MathUtils {
 	 * @return cosine of angle.
 	 */
 	public static int cos(int angle) {
-		int a = wrap0to(angle, 360);
-		int result = 0;
-		if (a <= 90)
-			result = valuesSin[90 - a];
-		else if (a > 90 && a <= 180)
-			result = -valuesSin[a - 90];
-		else if (a > 180 && a <= 270)
-			result = -valuesSin[270 - a];
-		else if (a > 270 && a <= 360)
-			result = valuesSin[a - 270];
-		return result;
+		int a = Math.abs(angle);
+		int i = 0;
+		int quadrant = 0;
+		while (a >= i) {
+			i += 90;
+			quadrant++;
+			if (quadrant > 4) {
+				quadrant = 1;
+			}
+		}
+		a = (a - i) + 90;
+		switch (quadrant) {
+		case 1:
+			return valuesSin[90 - a] + 129;
+		case 2:
+			return -(valuesSin[a] + 129);
+		case 3:
+			return -(valuesSin[90 - a] + 129);
+		case 4:
+			return (valuesSin[a] + 129);
+		}
+		return 0;
 	}
 	
 	/**
@@ -271,12 +301,18 @@ public class MathUtils {
 	 * @return square root of the given number.
 	 */
 	public static int sqrt(int number) {
-		if (number < 0) return 0;
-		if (number < 2) return number;
-		int sc = sqrt(number >> 2) << 1;
-		int lc = sc + 1;
-		if (lc * lc > number) return sc;
-		return lc;
+		int res = 0;
+		int add = 0x8000;
+		int i;
+		for (i = 0; i < 16; i++) {
+			int temp = res | add;
+			int g2 = temp * temp;
+			if (number >= g2) {
+				res = temp;
+			}
+			add >>= 1;
+		}
+		return res;
 	}
 	
 	/**

@@ -110,17 +110,13 @@ public class PhysicsAnimator {
 	boolean meshToMesh(SceneObject sceneObject1, SceneObject sceneObject2) {
 		Transform transform1 = sceneObject1.getTransform();
 		Transform transform2 = sceneObject2.getTransform();
-		int length1 = sceneObject1.getMesh().getVertexes().length;
-		int step1 = (length1 >> 12) + 1;
-		for (int i = 0; i < length1; i += step1) {
+		for (int i = 0; i < sceneObject1.getMesh().getVertexes().length; i++) {
 			int[] pos1 = sceneObject1.getMesh().getVertex(i).getPosition();
 			VectorUtils.copy3(vectorCache1, pos1);
 			Vector3MathUtils.movePointByAnglesXYZ(vectorCache1, transform1.getRotation(), vectorCache1);
 			Vector3MathUtils.movePointByScale(vectorCache1, transform1.getScale(), vectorCache1);
 			Vector3MathUtils.add(vectorCache1, transform1.getPosition(), vectorCache1);
-			int length2 = sceneObject2.getMesh().getVertexes().length;
-			int step2 = (length2 >> 12) + 1;
-			for (int j = 0; j < length2; j += step2) {
+			for (int j = 0; j < sceneObject2.getMesh().getVertexes().length; j++) {
 				int[] pos2 = sceneObject2.getMesh().getVertex(j).getPosition();
 				VectorUtils.copy3(vectorCache2, pos2);
 				Vector3MathUtils.movePointByAnglesXYZ(vectorCache2, transform2.getRotation(), vectorCache2);
