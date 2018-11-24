@@ -57,7 +57,7 @@ public class Profiler{
 	 * Creates a new instance of the profiler class.
 	 */
 	public Profiler () {
-		osxb = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+		osxb = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 		frame = new JFrame();
 		panel = new ProfilerPanel();
 	}
