@@ -1,5 +1,7 @@
 package com.johnsproject.jpge.dto;
 
+import java.io.Serializable;
+
 import com.johnsproject.jpge.graphics.Shader;
 
 /**
@@ -7,7 +9,9 @@ import com.johnsproject.jpge.graphics.Shader;
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class SceneObject {
+public class SceneObject implements Serializable{
+
+	private static final long serialVersionUID = 5517684517308413441L;
 	
 	private String name;
 	private Transform transform;

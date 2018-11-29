@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 
 import com.johnsproject.jpge.io.FileIO;
 import com.johnsproject.jpge.utils.MathUtils;
@@ -13,7 +14,9 @@ import com.johnsproject.jpge.utils.MathUtils;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Texture {
+public class Texture implements Serializable{
+
+	private static final long serialVersionUID = -1930284191151225776L;
 	
 	private int[] image = null;
 	private int width = 0, height = 0;

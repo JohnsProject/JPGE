@@ -2,6 +2,7 @@ package com.johnsproject.jpge.dto;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.Serializable;
 
 import com.johnsproject.jpge.Engine;
 import com.johnsproject.jpge.graphics.Renderer;
@@ -14,7 +15,9 @@ import com.johnsproject.jpge.graphics.SceneWindow;
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class RenderBuffer {
+public class RenderBuffer implements Serializable{
+	
+	private static final long serialVersionUID = 8349642103859979367L;
 	
 	private int width;
 	private int height;

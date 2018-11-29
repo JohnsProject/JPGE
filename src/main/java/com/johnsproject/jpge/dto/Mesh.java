@@ -1,5 +1,6 @@
 package com.johnsproject.jpge.dto;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import com.johnsproject.jpge.graphics.Renderer;
@@ -12,7 +13,10 @@ import com.johnsproject.jpge.utils.VectorUtils;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Mesh {
+public class Mesh implements Serializable{
+
+	private static final long serialVersionUID = -5344798038852090833L;
+
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
 	/**

@@ -1,5 +1,6 @@
 package com.johnsproject.jpge.dto;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +12,10 @@ import com.johnsproject.jpge.physics.PhysicsSettings;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Scene {
+public class Scene implements Serializable{
 
+	private static final long serialVersionUID = -209301980209001616L;
+	
 	private final List<SceneObject> sceneObjects = new ArrayList<SceneObject>();
 	private final List<Camera> cameras = new ArrayList<Camera>();
 	private final List<Light> lights = new ArrayList<Light>();

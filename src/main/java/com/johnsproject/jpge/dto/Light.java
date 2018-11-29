@@ -1,5 +1,7 @@
 package com.johnsproject.jpge.dto;
 
+import java.io.Serializable;
+
 import com.johnsproject.jpge.utils.ColorUtils;
 
 /**
@@ -7,8 +9,9 @@ import com.johnsproject.jpge.utils.ColorUtils;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Light {
+public class Light implements Serializable{
 	
+	private static final long serialVersionUID = 3540500112050837747L;
 	private String name;
 	private Transform transform;
 	private int type = 0;

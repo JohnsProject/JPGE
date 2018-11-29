@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.lang.management.ManagementFactory;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,14 +12,12 @@ import javax.swing.JPanel;
 
 import com.johnsproject.jpge.dto.SceneObject;
 import com.johnsproject.jpge.io.FileIO;
-import com.sun.management.OperatingSystemMXBean;
 
 /**
  * The Profiler class shows informations about what the engine is currently doing.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-@SuppressWarnings("restriction")
 public class Profiler{
 	
 	private static Profiler instance;
@@ -48,7 +45,6 @@ public class Profiler{
 	private boolean profile = false;
 	private boolean log = false;
 	private Thread profileThread;
-	private OperatingSystemMXBean osxb = null;
 	private JFrame frame;
 	private ProfilerPanel panel;
 	private BufferedImage backroundImage = null;
@@ -57,7 +53,6 @@ public class Profiler{
 	 * Creates a new instance of the profiler class.
 	 */
 	public Profiler () {
-		osxb = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
 		frame = new JFrame();
 		panel = new ProfilerPanel();
 	}
@@ -117,21 +112,12 @@ public class Profiler{
 	
 	private int logCommom(Graphics g, int y) {
 		Engine engine = Engine.getInstance();
-		int cpuLoad = (int)Math.round((osxb.getProcessCpuLoad() * 100));
 		int maxMem = Math.round(Runtime.getRuntime().totalMemory() >> 20);
 		int freeMem = Math.round(Runtime.getRuntime().freeMemory() >> 20);
 		int usedMem = (maxMem - freeMem);
 		String jpgeTime =	"" + engine.getLastJPGETime() + " ms";
-		String arch =	"" + osxb.getArch();
-		String cpu =	"" + getBar(cpuLoad, 100) + cpuLoad + " %";
 		String mem =	"" + getBar(usedMem, maxMem) + usedMem + " / " + maxMem + " MB";
 		g.drawString("COMMOM", POS_X, y);
-		y += STEP;
-		g.drawString("- System arch : ", POS_X, y);
-		g.drawString(arch, POS_X2, y);
-		y += STEP;
-		g.drawString("- JVM CPU load : ", POS_X, y);
-		g.drawString(cpu, POS_X2, y);
 		y += STEP;
 		g.drawString("- Memory usage : ", POS_X, y);
 		g.drawString(mem, POS_X2, y);
@@ -140,8 +126,6 @@ public class Profiler{
 		g.drawString(jpgeTime, POS_X2, y);
 		if (isLogging()) {
 			System.out.println("COMMOM");
-			System.out.println("- System arch :\t\t" + arch);
-			System.out.println("- JVM CPU load :\t" + cpu);
 			System.out.println("- Memory usage :\t" + mem);
 			System.out.println("- JPGE time :\t" + jpgeTime);
 		}

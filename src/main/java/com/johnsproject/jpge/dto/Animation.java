@@ -3,6 +3,7 @@
  */
 package com.johnsproject.jpge.dto;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -11,8 +12,9 @@ import java.util.Arrays;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Animation {
+public class Animation implements Serializable{
 	
+	private static final long serialVersionUID = 5604951472450171754L;
 	private String name;
 	private int bonesCount = 0;
 	private int framesCount = 0;

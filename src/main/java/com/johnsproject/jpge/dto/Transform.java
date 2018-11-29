@@ -1,4 +1,6 @@
 package com.johnsproject.jpge.dto;
+import java.io.Serializable;
+
 import com.johnsproject.jpge.utils.Vector3MathUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 
@@ -7,8 +9,10 @@ import com.johnsproject.jpge.utils.VectorUtils;
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Transform {
+public class Transform implements Serializable{
 	
+	private static final long serialVersionUID = 3177394875298143014L;
+
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
 	private int[] position;

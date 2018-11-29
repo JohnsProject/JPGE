@@ -1,13 +1,16 @@
 package com.johnsproject.jpge.dto;
 
+import java.io.Serializable;
+
 /**
  *The Material class contains appearance data of a {@link Mesh}.
  *It contains the color data, texture data and so on.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Material {
+public class Material implements Serializable{
 
+	private static final long serialVersionUID = 8961543929625431193L;
 	private int color;
 //	private int ambientColor;
 	private Texture texture;

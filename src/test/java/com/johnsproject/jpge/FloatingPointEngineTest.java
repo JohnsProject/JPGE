@@ -7,6 +7,8 @@ import java.awt.image.DataBufferInt;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import org.junit.Test;
+
 import com.johnsproject.jpge.dto.Mesh;
 import com.johnsproject.jpge.io.ImportExeption;
 import com.johnsproject.jpge.io.SOMImporter;
@@ -35,11 +37,8 @@ public class FloatingPointEngineTest extends JPanel{
 	private float[][] verticesCache = new float[0][0];
 	private int[][] faces = new int[0][0];
 	
-	public static void main(String[] args) {
-		new FloatingPointEngineTest();
-	}
-	
-	public FloatingPointEngineTest() {
+	@Test
+	public void Test() throws Exception {
 		this.setSize(WIDTH, HEIGHT);
 		this.viewBuffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB_PRE);
 		this.viewBufferData = ((DataBufferInt)viewBuffer.getRaster().getDataBuffer()).getData();

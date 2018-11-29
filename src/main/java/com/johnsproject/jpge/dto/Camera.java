@@ -1,5 +1,7 @@
 package com.johnsproject.jpge.dto;
 
+import java.io.Serializable;
+
 import com.johnsproject.jpge.graphics.Renderer;
 import com.johnsproject.jpge.graphics.SceneWindow;
 
@@ -10,8 +12,9 @@ import com.johnsproject.jpge.graphics.SceneWindow;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Camera{
+public class Camera implements Serializable{
 	
+	private static final long serialVersionUID = -175574154748016681L;
 	private String name;
 	private int x = 0;
 	private int y = 0;

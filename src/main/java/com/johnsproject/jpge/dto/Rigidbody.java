@@ -1,9 +1,13 @@
 package com.johnsproject.jpge.dto;
 
+import java.io.Serializable;
+
 import com.johnsproject.jpge.utils.Vector3MathUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 
-public class Rigidbody {
+public class Rigidbody implements Serializable{
+
+	private static final long serialVersionUID = 6444599308644383247L;
 
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	

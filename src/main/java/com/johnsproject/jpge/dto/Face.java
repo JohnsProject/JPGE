@@ -1,12 +1,15 @@
 package com.johnsproject.jpge.dto;
 
+import java.io.Serializable;
+
 /**
  * The Face class contains data of a face.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Face {
+public class Face implements Serializable{
 
+	private static final long serialVersionUID = -6880148086300072710L;
 	private int vertex1;
 	private int vertex2;
 	private int vertex3;

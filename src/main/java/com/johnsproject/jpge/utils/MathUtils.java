@@ -10,33 +10,11 @@ package com.johnsproject.jpge.utils;
 public class MathUtils {
 
 	// sin table from 0-90 degrees
-	private static byte[] valuesSin = {
-			-128, -125, -120, -116, -111, -107, -102, -98, -93, -89, -85, -80, -76, -71, -67, -63, 
-			-58, -54, -50, -46, -41, -37, -33, -29, -25, -21, -17, -13, -9, -5, -1, 
-			3, 7, 10, 14, 18, 21, 25, 29, 32, 36, 39, 42, 46, 49, 52, 
-			55, 58, 61, 64, 67, 70, 73, 75, 78, 81, 83, 86, 88, 90, 93, 
-			95, 97, 99, 101, 103, 105, 107, 108, 110, 112, 113, 114, 116, 117, 118, 
-			119, 120, 121, 122, 123, 124, 125, 125, 126, 126, 126, 127, 127, 127, 127, 
-			};
-
-	// used by the power method
-	private static final short[] highest_bit_set = {
-	        0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
-	        5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-	        6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 255, // anything past 63 is a guaranteed overflow with base > 1
-	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	        255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-	    };
+	private static final byte[] sinLUT = { -128, -125, -120, -116, -111, -107, -102, -98, -93, -89, -85, -80, -76, -71,
+			-67, -63, -58, -54, -50, -46, -41, -37, -33, -29, -25, -21, -17, -13, -9, -5, -1, 3, 7, 10, 14, 18, 21, 25,
+			29, 32, 36, 39, 42, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 75, 78, 81, 83, 86, 88, 90, 93, 95, 97, 99, 101,
+			103, 105, 107, 108, 110, 112, 113, 114, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 125, 126, 126,
+			126, 127, 127, 127, 127, };
 	
 	/**
 	 * This value is used to normalize the values that needs to be modified by sin, cos.
@@ -49,6 +27,7 @@ public class MathUtils {
 	 * </code>
 	 */
 	public static final byte SHIFT = 8;
+	private final static int HALF_SHIFT = (1 << (SHIFT-1)) + 1;
 	
 	/**
 	 * Returns the sine value of the given angle.
@@ -79,20 +58,20 @@ public class MathUtils {
 		switch (quadrant) {
 		case 1:
 			if (angle > 0)
-				return valuesSin[a] + 129;
-			return -(valuesSin[a] + 129);
+				return sinLUT[a] + HALF_SHIFT;
+			return -(sinLUT[a] + HALF_SHIFT);
 		case 2:
 			if (angle > 0)
-				return valuesSin[90 - a] + 129;
-			return -(valuesSin[90 - a] + 129);
+				return sinLUT[90 - a] + HALF_SHIFT;
+			return -(sinLUT[90 - a] + HALF_SHIFT);
 		case 3:
 			if (angle > 0)
-				return -(valuesSin[a] + 129);
-			return (valuesSin[a] + 129);
+				return -(sinLUT[a] + HALF_SHIFT);
+			return (sinLUT[a] + HALF_SHIFT);
 		case 4:
 			if (angle > 0)
-				return -(valuesSin[90 - a] + 129);
-			return (valuesSin[90 - a] + 129);
+				return -(sinLUT[90 - a] + HALF_SHIFT);
+			return (sinLUT[90 - a] + HALF_SHIFT);
 		}
 		return 0;
 	}
@@ -125,13 +104,13 @@ public class MathUtils {
 		a = (a - i) + 90;
 		switch (quadrant) {
 		case 1:
-			return valuesSin[90 - a] + 129;
+			return sinLUT[90 - a] + HALF_SHIFT;
 		case 2:
-			return -(valuesSin[a] + 129);
+			return -(sinLUT[a] + HALF_SHIFT);
 		case 3:
-			return -(valuesSin[90 - a] + 129);
+			return -(sinLUT[90 - a] + HALF_SHIFT);
 		case 4:
-			return (valuesSin[a] + 129);
+			return (sinLUT[a] + HALF_SHIFT);
 		}
 		return 0;
 	}
@@ -323,36 +302,10 @@ public class MathUtils {
 	 * @return power of the given number.
 	 */
 	public static int pow(int base, int exp) {
-	    int result = 1;
-	    switch (highest_bit_set[exp]) {
-	    case 255: // we use 255 as an overflow marker and return 0 on overflow/underflow
-	        if (base == 1) return 1;
-	        if (base == -1) return 1 - 2 * (exp & 1);
-	        return 0;
-	    case 6:
-	        if ((exp & 1) != 0) result *= base;
-	        exp >>= 1;
-	        base *= base;
-	    case 5:
-	        if ((exp & 1) != 0) result *= base;
-	        exp >>= 1;
-	        base *= base;
-	    case 4:
-	        if ((exp & 1) != 0) result *= base;
-	        exp >>= 1;
-	        base *= base;
-	    case 3:
-	        if ((exp & 1) != 0) result *= base;
-	        exp >>= 1;
-	        base *= base;
-	    case 2:
-	        if ((exp & 1) != 0) result *= base;
-	        exp >>= 1;
-	        base *= base;
-	    case 1:
-	        if ((exp & 1) != 0) result *= base;
-	    default:
-	        return result;
-	    }
+		int result = base;
+		for (int i = 0; i < exp; i++) {
+			result *= base;
+		}
+		return result;
 	}
 }

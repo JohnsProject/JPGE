@@ -1,12 +1,16 @@
 package com.johnsproject.jpge.dto;
 
+import java.io.Serializable;
+
 /**
  * The Vertex class contains data of a vertex point.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Vertex {
+public class Vertex implements Serializable{
 
+	private static final long serialVersionUID = 6394891669446103431L;
+	
 	private int[] position;
 	private int[] normal;
 	private int color;

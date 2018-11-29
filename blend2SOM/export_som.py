@@ -85,7 +85,7 @@ def writeToFile(filepath, meshData, animsData):
 	file = open(filepath, "w")
 	i = 0
 	# write the commons to the file
-	commons = "".join("SOM (SceneObjectMesh) file created by Blender SOM exporter version 0.3"
+	commons = "".join("SOM (SceneObjectMesh) file created by Blender SOM exporter"
 			+ "\n" + "project page: https://github.com/JohnsProject/JPGE" + "\n")
 	file.write(commons)
 	# write the vertex data to the file
