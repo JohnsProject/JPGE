@@ -1,11 +1,15 @@
 package com.johnsproject.jpge.dto;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Arrays;
 
 import com.johnsproject.jpge.utils.Vector3MathUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 
-public class Rigidbody implements Serializable{
+public class Rigidbody implements Externalizable {
 
 	private static final long serialVersionUID = 6444599308644383247L;
 
@@ -16,12 +20,13 @@ public class Rigidbody implements Serializable{
 	
 	private int mass = 10;
 	private int[] velocity = new int[3];
-	private int collisionTime = (int)System.currentTimeMillis();
-	private int collisionType = COLLISION_SPHERE;
 	private int radius = -1;
 	private boolean gravity = true;
 	private boolean kinematic = false;
+	
 	private String[] collisionTargets = new String[5];
+	private int collisionTime = (int)System.currentTimeMillis();
+	private int collisionType = COLLISION_SPHERE;
 	
 	public Rigidbody() {
 		for (int i = 0; i < collisionTargets.length; i++) {
@@ -157,4 +162,66 @@ public class Rigidbody implements Serializable{
 	public void setKinematic(boolean kinematic) {
 		this.kinematic = kinematic;
 	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeInt(mass);
+		out.writeInt(velocity[vx]);
+		out.writeInt(velocity[vy]);
+		out.writeInt(velocity[vz]);
+		out.writeInt(radius);
+		out.writeBoolean(gravity);
+		out.writeBoolean(kinematic);
+		out.writeInt(collisionType);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		mass = in.readInt();
+		velocity[vx] = in.readInt();
+		velocity[vy] = in.readInt();
+		velocity[vz] = in.readInt();
+		radius = in.readInt();
+		gravity = in.readBoolean();
+		kinematic = in.readBoolean();
+		collisionType = in.readInt();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + collisionType;
+		result = prime * result + (gravity ? 1231 : 1237);
+		result = prime * result + (kinematic ? 1231 : 1237);
+		result = prime * result + mass;
+		result = prime * result + radius;
+		result = prime * result + Arrays.hashCode(velocity);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Rigidbody other = (Rigidbody) obj;
+		if (collisionType != other.collisionType)
+			return false;
+		if (gravity != other.gravity)
+			return false;
+		if (kinematic != other.kinematic)
+			return false;
+		if (mass != other.mass)
+			return false;
+		if (radius != other.radius)
+			return false;
+		if (!Arrays.equals(velocity, other.velocity))
+			return false;
+		return true;
+	}
+	
 }

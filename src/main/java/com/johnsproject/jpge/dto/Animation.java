@@ -3,23 +3,27 @@
  */
 package com.johnsproject.jpge.dto;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.Arrays;
 
 /**
- * The Animation class contains the data of imported mesh animations. It contains name, 
- * bones data (position, rotation, scale) at each frame and so on.
+ * The Animation class contains the data of imported {@link Mesh} animations.
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Animation implements Serializable{
+public class Animation implements Externalizable{
 	
 	private static final long serialVersionUID = 5604951472450171754L;
-	private String name;
+	private String name = "Default";
 	private int bonesCount = 0;
 	private int framesCount = 0;
 	private int currentFrame = 0;
-	private Transform[] bones;
+	private Transform[] bones = new Transform[0];
+	
+	public Animation() {}
 	
 	/**
 	 * Creates a new instance of the Animation class filled with the given values.
@@ -101,8 +105,66 @@ public class Animation implements Serializable{
 	}
 
 	@Override
-	public String toString() {
-		return "Animation [name=" + name + ", bonesCount=" + bonesCount + ", framesCount=" + framesCount
-				+ ", currentFrame=" + currentFrame + ", bones=" + Arrays.toString(bones) + "]";
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeUTF(name);
+		out.writeInt(bonesCount);
+		out.writeInt(framesCount);
+		out.writeInt(currentFrame);
+		final int boneLength = bones.length;
+		out.writeInt(boneLength);
+		for (int i = 0; i < boneLength; i++) {
+			out.writeObject(bones[i]);
+		}
 	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		name = in.readUTF();
+		bonesCount = in.readInt();
+		framesCount = in.readInt();
+		currentFrame = in.readInt();
+		final int boneLength = in.readInt();
+		bones = new Transform[boneLength];
+		for (int i = 0; i < boneLength; i++) {
+			bones[i] = (Transform) in.readObject();
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(bones);
+		result = prime * result + bonesCount;
+		result = prime * result + currentFrame;
+		result = prime * result + framesCount;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Animation other = (Animation) obj;
+		if (!Arrays.equals(bones, other.bones))
+			return false;
+		if (bonesCount != other.bonesCount)
+			return false;
+		if (currentFrame != other.currentFrame)
+			return false;
+		if (framesCount != other.framesCount)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		return true;
+	}
+
 }

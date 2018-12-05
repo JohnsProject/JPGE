@@ -20,7 +20,7 @@ import com.johnsproject.jpge.io.FileIO;
  */
 public class Profiler{
 	
-	private static Profiler instance;
+	private static Profiler instance = new Profiler();
 
 	/**
 	 * Returns an instance of the profiler class.
@@ -28,9 +28,6 @@ public class Profiler{
 	 * @return instance of the profiler class.
 	 */
 	public static Profiler getInstance() {
-		if (instance == null) {
-			instance = new Profiler();
-		}
 		return instance;
 	}
 	

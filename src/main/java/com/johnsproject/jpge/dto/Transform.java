@@ -1,24 +1,30 @@
 package com.johnsproject.jpge.dto;
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Arrays;
 
 import com.johnsproject.jpge.utils.Vector3MathUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
- * The Transform class contains position, rotation and scale data of a object like {@link SceneObject} or {@link Camera}.
+ * The Transform class contains position, rotation and scale data of a object.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Transform implements Serializable{
+public class Transform implements Externalizable {
 	
 	private static final long serialVersionUID = 3177394875298143014L;
 
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
-	private int[] position;
-	private int[] rotation;
-	private int[] scale;
+	private int[] position = new int[3];
+	private int[] rotation = new int[3];
+	private int[] scale = new int[3];
 	private int[] cache = new int[3];
+	
+	public Transform() {}
 	
 	/**
 	 * Creates a new instance of the Transform class filled with the given values.
@@ -165,6 +171,60 @@ public class Transform implements Serializable{
 		return "Transform [position=" + VectorUtils.toString(position)
 		+ ", rotation=" + VectorUtils.toString(rotation)
 		+ ", scale=" + VectorUtils.toString(scale) + "]";
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeInt(position[vx]);
+		out.writeInt(position[vy]);
+		out.writeInt(position[vz]);
+		out.writeInt(rotation[vx]);
+		out.writeInt(rotation[vy]);
+		out.writeInt(rotation[vz]);
+		out.writeInt(scale[vx]);
+		out.writeInt(scale[vy]);
+		out.writeInt(scale[vz]);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		position[vx] = in.readInt();
+		position[vy] = in.readInt();
+		position[vz] = in.readInt();
+		rotation[vx] = in.readInt();
+		rotation[vy] = in.readInt();
+		rotation[vz] = in.readInt();
+		scale[vx] = in.readInt();
+		scale[vy] = in.readInt();
+		scale[vz] = in.readInt();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(position);
+		result = prime * result + Arrays.hashCode(rotation);
+		result = prime * result + Arrays.hashCode(scale);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Transform other = (Transform) obj;
+		if (!Arrays.equals(position, other.position))
+			return false;
+		if (!Arrays.equals(rotation, other.rotation))
+			return false;
+		if (!Arrays.equals(scale, other.scale))
+			return false;
+		return true;
 	}
 	
 }

@@ -1,23 +1,34 @@
 package com.johnsproject.jpge.dto;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Arrays;
+
+import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * The Face class contains data of a face.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Face implements Serializable{
+public class Face implements Externalizable {
 
 	private static final long serialVersionUID = -6880148086300072710L;
-	private int vertex1;
-	private int vertex2;
-	private int vertex3;
-	private int[] uv1;
-	private int[] uv2;
-	private int[] uv3;
-	private int material;
-	private boolean culled;
+	
+	private static final int vx = VectorUtils.X, vy = VectorUtils.Y;
+	
+	private int vertex1 = 0;
+	private int vertex2 = 0;
+	private int vertex3 = 0;
+	private int[] uv1 = new int[2];
+	private int[] uv2 = new int[2];
+	private int[] uv3 = new int[2];
+	private int material = 0;
+	private boolean culled = false;
+	
+	public Face() {}
 	
 	/**
 	 * Creates a new instance of the Face class filled with the given values.
@@ -128,5 +139,73 @@ public class Face implements Serializable{
 	 */
 	public void setCulled(boolean culled) {
 		this.culled = culled;
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeInt(vertex1);
+		out.writeInt(vertex2);
+		out.writeInt(vertex3);
+		out.writeInt(uv1[vx]);
+		out.writeInt(uv1[vy]);
+		out.writeInt(uv2[vx]);
+		out.writeInt(uv2[vy]);
+		out.writeInt(uv3[vx]);
+		out.writeInt(uv3[vy]);
+		out.writeInt(material);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		vertex1 = in.readInt();
+		vertex2 = in.readInt();
+		vertex3 = in.readInt();
+		uv1[vx] = in.readInt();
+		uv1[vy] = in.readInt();
+		uv2[vx] = in.readInt();
+		uv2[vy] = in.readInt();
+		uv3[vx] = in.readInt();
+		uv3[vy] = in.readInt();
+		material = in.readInt();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + material;
+		result = prime * result + Arrays.hashCode(uv1);
+		result = prime * result + Arrays.hashCode(uv2);
+		result = prime * result + Arrays.hashCode(uv3);
+		result = prime * result + vertex1;
+		result = prime * result + vertex2;
+		result = prime * result + vertex3;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Face other = (Face) obj;
+		if (material != other.material)
+			return false;
+		if (!Arrays.equals(uv1, other.uv1))
+			return false;
+		if (!Arrays.equals(uv2, other.uv2))
+			return false;
+		if (!Arrays.equals(uv3, other.uv3))
+			return false;
+		if (vertex1 != other.vertex1)
+			return false;
+		if (vertex2 != other.vertex2)
+			return false;
+		if (vertex3 != other.vertex3)
+			return false;
+		return true;
 	}
 }

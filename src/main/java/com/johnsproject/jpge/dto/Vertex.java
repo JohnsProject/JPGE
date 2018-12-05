@@ -1,21 +1,31 @@
 package com.johnsproject.jpge.dto;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Arrays;
+
+import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * The Vertex class contains data of a vertex point.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Vertex implements Serializable{
+public class Vertex implements Externalizable {
 
 	private static final long serialVersionUID = 6394891669446103431L;
 	
-	private int[] position;
-	private int[] normal;
-	private int color;
-	private int material;
-	private int bone;
+	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
+	
+	private int[] position = new int[3];
+	private int[] normal = new int[3];
+	private int color = 0;
+	private int material = 0;
+	private int bone = 0;
+	
+	public Vertex() {}
 	
 	/**
 	 * Creates a new instance of the Vertex class filled with the given values.
@@ -95,5 +105,65 @@ public class Vertex implements Serializable{
 	 */
 	public int getBone() {
 		return bone;
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeInt(position[vx]);
+		out.writeInt(position[vy]);
+		out.writeInt(position[vz]);
+		out.writeInt(normal[vx]);
+		out.writeInt(normal[vy]);
+		out.writeInt(normal[vz]);
+		out.writeInt(color);
+		out.writeInt(material);
+		out.writeInt(bone);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		position[vx] = in.readInt();
+		position[vy] = in.readInt();
+		position[vz] = in.readInt();
+		normal[vx] = in.readInt();
+		normal[vy] = in.readInt();
+		normal[vz] = in.readInt();
+		color = in.readInt();
+		material = in.readInt();
+		bone = in.readInt();
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + bone;
+		result = prime * result + color;
+		result = prime * result + material;
+		result = prime * result + Arrays.hashCode(normal);
+		result = prime * result + Arrays.hashCode(position);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Vertex other = (Vertex) obj;
+		if (bone != other.bone)
+			return false;
+		if (color != other.color)
+			return false;
+		if (material != other.material)
+			return false;
+		if (!Arrays.equals(normal, other.normal))
+			return false;
+		if (!Arrays.equals(position, other.position))
+			return false;
+		return true;
 	}
 }

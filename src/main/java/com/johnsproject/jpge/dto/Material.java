@@ -1,6 +1,9 @@
 package com.johnsproject.jpge.dto;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 /**
  *The Material class contains appearance data of a {@link Mesh}.
@@ -8,12 +11,14 @@ import java.io.Serializable;
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Material implements Serializable{
+public class Material implements Externalizable{
 
 	private static final long serialVersionUID = 8961543929625431193L;
 	private int color;
 //	private int ambientColor;
 	private Texture texture;
+	
+	public Material() {}
 	
 	/**
 	 * Creates a new instance of the Material class filled with the given values.
@@ -64,7 +69,42 @@ public class Material implements Serializable{
 	}
 
 	@Override
-	public String toString() {
-		return "Material [color=" + color + ", texture=" + texture + "]";
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeInt(color);
+		out.writeObject(texture);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		color = in.readInt();
+		texture = (Texture) in.readObject();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + color;
+		result = prime * result + ((texture == null) ? 0 : texture.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Material other = (Material) obj;
+		if (color != other.color)
+			return false;
+		if (texture == null) {
+			if (other.texture != null)
+				return false;
+		} else if (!texture.equals(other.texture))
+			return false;
+		return true;
 	}
 }

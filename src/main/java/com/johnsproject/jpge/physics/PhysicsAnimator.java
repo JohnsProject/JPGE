@@ -1,5 +1,6 @@
 package com.johnsproject.jpge.physics;
 
+import com.johnsproject.jpge.dto.PhysicsSettings;
 import com.johnsproject.jpge.dto.Rigidbody;
 import com.johnsproject.jpge.dto.Scene;
 import com.johnsproject.jpge.dto.SceneObject;

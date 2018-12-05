@@ -1,26 +1,30 @@
 package com.johnsproject.jpge.dto;
 
-import java.io.Serializable;
-
 import com.johnsproject.jpge.graphics.Shader;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 /**
- *The SceneObject class contains data of a object in the {@link Scene}.
+ * The SceneObject class contains data of a object in the {@link Scene}.
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class SceneObject implements Serializable{
+public class SceneObject implements Externalizable {
 
 	private static final long serialVersionUID = 5517684517308413441L;
 	
-	private String name;
-	private Transform transform;
-	private Mesh mesh;
-	private Shader shader;
-	private Rigidbody rigidbody;
+	private String name = "Default";
+	private Transform transform = new Transform();
+	private Mesh mesh = new Mesh();
+	private Shader shader = new Shader();
+	private Rigidbody rigidbody = new Rigidbody();
 	private boolean changed = false;
 	private boolean active = true;
 
+	public SceneObject() {}
+	
 	/**
 	 * Creates a new instance of the SceneObject class filled with the given values.
 	 * 
@@ -33,8 +37,6 @@ public class SceneObject implements Serializable{
 		this.transform = transform;
 		this.mesh = mesh;
 		this.changed = true;
-		this.shader = new Shader();
-		this.rigidbody = new Rigidbody();
 	}
 
 	/**
@@ -143,5 +145,72 @@ public class SceneObject implements Serializable{
 	public void setActive(boolean active) {
 		changed = true;
 		this.active = active;
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeUTF(name);
+		out.writeObject(transform);
+		out.writeObject(mesh);
+		out.writeObject(rigidbody);
+		out.writeBoolean(active);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		name = in.readUTF();
+		transform = (Transform)in.readObject();
+		mesh = (Mesh)in.readObject();
+		rigidbody = (Rigidbody)in.readObject();
+		active = in.readBoolean();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((mesh == null) ? 0 : mesh.hashCode());
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((rigidbody == null) ? 0 : rigidbody.hashCode());
+		result = prime * result + ((shader == null) ? 0 : shader.hashCode());
+		result = prime * result + ((transform == null) ? 0 : transform.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SceneObject other = (SceneObject) obj;
+		if (mesh == null) {
+			if (other.mesh != null)
+				return false;
+		} else if (!mesh.equals(other.mesh))
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (rigidbody == null) {
+			if (other.rigidbody != null)
+				return false;
+		} else if (!rigidbody.equals(other.rigidbody))
+			return false;
+		if (shader == null) {
+			if (other.shader != null)
+				return false;
+		} else if (!shader.getClass().getName().equals(other.shader.getClass().getName()))
+			return false;
+		if (transform == null) {
+			if (other.transform != null)
+				return false;
+		} else if (!transform.equals(other.transform))
+			return false;
+		return true;
 	}	
 }

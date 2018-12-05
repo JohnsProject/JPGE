@@ -2,7 +2,11 @@ package com.johnsproject.jpge.dto;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Arrays;
 
 import com.johnsproject.jpge.Engine;
 import com.johnsproject.jpge.graphics.Renderer;
@@ -15,7 +19,7 @@ import com.johnsproject.jpge.graphics.SceneWindow;
  *
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class RenderBuffer implements Serializable{
+public class RenderBuffer implements Externalizable{
 	
 	private static final long serialVersionUID = 8349642103859979367L;
 	
@@ -25,6 +29,10 @@ public class RenderBuffer implements Serializable{
 	private BufferedImage frameBuffer;
 	private int[] frameBufferData;
 	private int[] depthBuffer;
+	
+	public RenderBuffer() {
+		setSize(1, 1);
+	}
 	
 	/**
 	 * Creates a RenderBuffer with the given size.
@@ -152,5 +160,65 @@ public class RenderBuffer implements Serializable{
 	 */
 	public int getHeight() {
 		return height;
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeInt(width);
+		out.writeInt(height);
+		for (int i = 0; i < length; i++) {
+			out.writeInt(frameBufferData[i]);
+		}
+		for (int i = 0; i < length; i++) {
+			out.writeInt(depthBuffer[i]);
+		}
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		final int width = in.readInt();
+		final int height = in.readInt();
+		setSize(width, height);
+		for (int i = 0; i < length; i++) {
+			frameBufferData[i] = in.readInt();
+		}
+		for (int i = 0; i < length; i++) {
+			depthBuffer[i] = in.readInt();
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + Arrays.hashCode(depthBuffer);
+		result = prime * result + ((frameBuffer == null) ? 0 : frameBuffer.hashCode());
+		result = prime * result + Arrays.hashCode(frameBufferData);
+		result = prime * result + height;
+		result = prime * result + length;
+		result = prime * result + width;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RenderBuffer other = (RenderBuffer) obj;
+		if (!Arrays.equals(depthBuffer, other.depthBuffer))
+			return false;
+		if (!Arrays.equals(frameBufferData, other.frameBufferData))
+			return false;
+		if (height != other.height)
+			return false;
+		if (length != other.length)
+			return false;
+		if (width != other.width)
+			return false;
+		return true;
 	}
 }

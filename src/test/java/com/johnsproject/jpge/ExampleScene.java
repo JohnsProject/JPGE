@@ -28,8 +28,8 @@ public class ExampleScene implements JPGE{
 	public ExampleScene() {		
 		try {
 //			mesh1 = SOMImporter.load("/home/john/Development/test.som");
-			mesh1 = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_MONKEY));
-			mesh2 = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_SPHERE));
+			mesh1 = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_ALL));
+			mesh2 = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_ALL));
 //			mesh2 = SOMImporter.load("/home/john/Development/test.som");
 		} catch (ImportExeption e) {
 			e.printStackTrace();

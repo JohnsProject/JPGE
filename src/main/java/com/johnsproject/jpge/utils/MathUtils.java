@@ -303,7 +303,7 @@ public class MathUtils {
 	 */
 	public static int pow(int base, int exp) {
 		int result = base;
-		for (int i = 0; i < exp; i++) {
+		for (int i = 1; i < exp; i++) {
 			result *= base;
 		}
 		return result;

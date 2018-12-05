@@ -1,10 +1,11 @@
 package com.johnsproject.jpge.dto;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.johnsproject.jpge.physics.PhysicsSettings;
 
 /**
  * The Scene class contains {@link SceneObject sceneobjects}, 
@@ -12,14 +13,16 @@ import com.johnsproject.jpge.physics.PhysicsSettings;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Scene implements Serializable{
+public class Scene implements Externalizable{
 
 	private static final long serialVersionUID = -209301980209001616L;
 	
-	private final List<SceneObject> sceneObjects = new ArrayList<SceneObject>();
-	private final List<Camera> cameras = new ArrayList<Camera>();
-	private final List<Light> lights = new ArrayList<Light>();
+	private final List<SceneObject> sceneObjects = new ArrayList<SceneObject>(0);
+	private final List<Camera> cameras = new ArrayList<Camera>(0);
+	private final List<Light> lights = new ArrayList<Light>(0);
 	private PhysicsSettings physicsSettings = new PhysicsSettings();
+	
+	public Scene() {}
 	
 	/**
 	 * Adds the given {@link SceneObject} to this scene.
@@ -109,5 +112,88 @@ public class Scene implements Serializable{
 	 */
 	public PhysicsSettings getPhysicsSettings() {
 		return physicsSettings;
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		final int soSize = sceneObjects.size();
+		out.writeInt(soSize);
+		for (int i = 0; i < soSize; i++) {
+			out.writeObject(sceneObjects.get(i));
+		}
+		final int camSize = cameras.size();
+		out.writeInt(camSize);
+		for (int i = 0; i < camSize; i++) {
+			out.writeObject(cameras.get(i));
+		}
+		final int lightSize = lights.size();
+		out.writeInt(lightSize);
+		for (int i = 0; i < lightSize; i++) {
+			out.writeObject(lights.get(i));
+		}
+		out.writeObject(physicsSettings);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		sceneObjects.clear();
+		cameras.clear();
+		lights.clear();
+		final int soSize = in.readInt();
+		for (int i = 0; i < soSize; i++) {
+			sceneObjects.add((SceneObject) in.readObject());
+		}
+		final int camSize = in.readInt();
+		for (int i = 0; i < camSize; i++) {
+			cameras.add((Camera) in.readObject());
+		}
+		final int lightSize = in.readInt();
+		for (int i = 0; i < lightSize; i++) {
+			lights.add((Light) in.readObject());
+		}
+		physicsSettings = (PhysicsSettings) in.readObject();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((cameras == null) ? 0 : cameras.hashCode());
+		result = prime * result + ((lights == null) ? 0 : lights.hashCode());
+		result = prime * result + ((physicsSettings == null) ? 0 : physicsSettings.hashCode());
+		result = prime * result + ((sceneObjects == null) ? 0 : sceneObjects.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Scene other = (Scene) obj;
+		if (cameras == null) {
+			if (other.cameras != null)
+				return false;
+		} else if (!other.cameras.containsAll(cameras))
+			return false;
+		if (lights == null) {
+			if (other.lights != null)
+				return false;
+		} else if (!other.lights.containsAll(lights))
+			return false;
+		if (physicsSettings == null) {
+			if (other.physicsSettings != null)
+				return false;
+		} else if (!physicsSettings.equals(other.physicsSettings))
+			return false;
+		if (sceneObjects == null) {
+			if (other.sceneObjects != null)
+				return false;
+		} else if (!other.sceneObjects.containsAll(sceneObjects))
+			return false;
+		return true;
 	}
 }

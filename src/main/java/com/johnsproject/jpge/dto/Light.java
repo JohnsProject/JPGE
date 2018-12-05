@@ -1,6 +1,9 @@
 package com.johnsproject.jpge.dto;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 import com.johnsproject.jpge.utils.ColorUtils;
 
@@ -9,14 +12,16 @@ import com.johnsproject.jpge.utils.ColorUtils;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Light implements Serializable{
+public class Light implements Externalizable{
 	
 	private static final long serialVersionUID = 3540500112050837747L;
-	private String name;
-	private Transform transform;
+	private String name = "Default";
+	private Transform transform = new Transform();
 	private int type = 0;
 	private int strength = 100;
 	private int color = 0;
+	
+	public Light() {}
 	
 	/**
 	 * Creates a new instance of the Light class filled with the given values.
@@ -100,5 +105,63 @@ public class Light implements Serializable{
 	 */
 	public void setColor(int color) {
 		this.color = color;
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeUTF(name);
+		out.writeObject(transform);
+		out.writeInt(type);
+		out.writeInt(strength);
+		out.writeInt(color);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		name = in.readUTF();
+		transform = (Transform) in.readObject();
+		type = in.readInt();
+		strength = in.readInt();
+		color = in.readInt();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + color;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + strength;
+		result = prime * result + ((transform == null) ? 0 : transform.hashCode());
+		result = prime * result + type;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Light other = (Light) obj;
+		if (color != other.color)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (strength != other.strength)
+			return false;
+		if (transform == null) {
+			if (other.transform != null)
+				return false;
+		} else if (!transform.equals(other.transform))
+			return false;
+		if (type != other.type)
+			return false;
+		return true;
 	}
 }

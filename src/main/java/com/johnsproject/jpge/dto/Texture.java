@@ -4,7 +4,10 @@ import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.Serializable;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.Arrays;
+import java.io.Externalizable;
 
 import com.johnsproject.jpge.io.FileIO;
 import com.johnsproject.jpge.utils.MathUtils;
@@ -14,12 +17,14 @@ import com.johnsproject.jpge.utils.MathUtils;
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Texture implements Serializable{
+public class Texture implements Externalizable {
 
 	private static final long serialVersionUID = -1930284191151225776L;
 	
-	private int[] image = null;
+	private int[] image = new int[0];
 	private int width = 0, height = 0;
+	
+	public Texture() {}
 	
 	/**
 	 * Creates a new empty instance of the Texture class with the given width and height.
@@ -137,5 +142,54 @@ public class Texture implements Serializable{
 	 */
 	public int getHeight(){
 		return height;
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeInt(image.length);
+		for (int i = 0; i < image.length; i++) {
+			out.writeInt(image[i]);
+		}
+		out.writeInt(width);
+		out.writeInt(height);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		final int lenght = in.readInt();
+		image = new int[lenght];
+		for (int i = 0; i < image.length; i++) {
+			image[i] = in.readInt();
+		}
+		width = in.readInt();
+		height = in.readInt();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + height;
+		result = prime * result + Arrays.hashCode(image);
+		result = prime * result + width;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Texture other = (Texture) obj;
+		if (height != other.height)
+			return false;
+		if (!Arrays.equals(image, other.image))
+			return false;
+		if (width != other.width)
+			return false;
+		return true;
 	}
 }

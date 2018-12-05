@@ -151,7 +151,7 @@ public class MathUtilsTest {
 	
 	@Test
 	public void randomTest() throws Exception {
-		int[] values = new int[100000000];
+		int[] values = new int[10000];
 		for (int i = 0; i < values.length; i++) {
 			values[i] = MathUtils.random();
 		}

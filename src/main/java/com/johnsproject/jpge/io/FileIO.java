@@ -7,9 +7,13 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import javax.imageio.ImageIO;
 
@@ -43,6 +47,49 @@ public class FileIO {
 	}
 
 	/**
+	 * Writes the object to the file at the given path using serialization.
+	 * 
+	 * @param fileName file path.
+	 * @param obj object to write. Needs to be serializable.
+	 * @throws IOException
+	 */
+	public static void writeObjectToFile(String fileName, Object obj) throws IOException {
+		FileOutputStream fileOutputStream = null;
+		try {
+			fileOutputStream = new FileOutputStream(fileName);
+			ObjectOutputStream out = new ObjectOutputStream(fileOutputStream);
+			out.writeObject(obj);
+			out.close();
+			fileOutputStream.close();
+		}catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Reads the object from the file at the given path using serialization.
+	 * 
+	 * @param fileName file path.
+	 * @throws IOException
+	 */
+	public static Object readObjectFromFile(String fileName) throws IOException {
+		Object result = null;
+		FileInputStream fileInputStream = null;
+		try {
+			fileInputStream = new FileInputStream(fileName);
+			ObjectInputStream in = new ObjectInputStream(fileInputStream);
+			result = in.readObject();
+			in.close();
+			fileInputStream.close();
+		}catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		return result;
+	}
+	
+	/**
 	 * Reads the content of the given {@link InputStream} and returns it.
 	 * 
 	 * @param stream {@link InputStream} to read from.
@@ -53,7 +100,6 @@ public class FileIO {
 		BufferedReader in = new BufferedReader(new InputStreamReader(stream));
 
 		StringBuilder stringBuilder = new StringBuilder();
-
 		for (String line = in.readLine(); line != null; line = in.readLine()) {
 			stringBuilder.append(line);
 			stringBuilder.append("\n");

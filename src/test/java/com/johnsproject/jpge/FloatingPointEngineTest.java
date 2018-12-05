@@ -42,7 +42,7 @@ public class FloatingPointEngineTest extends JPanel{
 		this.setSize(WIDTH, HEIGHT);
 		this.viewBuffer = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB_PRE);
 		this.viewBufferData = ((DataBufferInt)viewBuffer.getRaster().getDataBuffer()).getData();
-		loadMesh("/home/john/Development/test.som");
+		loadMesh();
 		initializeFrame();
 		Thread renderLoop = new Thread(new Runnable() {
 			
@@ -75,10 +75,10 @@ public class FloatingPointEngineTest extends JPanel{
 		frame.add(this);
 	}
 	
-	public void loadMesh(String path) {
+	public void loadMesh() {
 		Mesh mesh = null;
 		try {
-			mesh = SOMImporter.load(path);
+			mesh = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_MONKEY));
 		} catch (ImportExeption e) {
 			e.printStackTrace();
 		}

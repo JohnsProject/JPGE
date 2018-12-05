@@ -1,33 +1,35 @@
 package com.johnsproject.jpge.dto;
 
-import java.io.Serializable;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 
 import com.johnsproject.jpge.graphics.Renderer;
-import com.johnsproject.jpge.graphics.SceneWindow;
 
 /**
- * The Camera class is used to view a {@link Scene}.
- * The {@link Renderer} will take all cameras of the {@link Scene} 
- * used by the {@link SceneWindow} and render what is in the camera view.
+ * The Camera class is a object used to view a {@link Scene}.
  * 
  * @author John´s Project - John Konrad Ferraz Salomon
  */
-public class Camera implements Serializable{
+public class Camera implements Externalizable{
 	
 	private static final long serialVersionUID = -175574154748016681L;
-	private String name;
+	private String name = "Default";
 	private int x = 0;
 	private int y = 0;
 	private int width = 0;
 	private int height = 0;
 	private int halfWidth = 0;
 	private int halfHeight = 0;
-	private int FieldOfView = 60;
+	private int fieldOfView = 60;
 	private int nearClippingPlane = 300;
 	private int farClippingPlane = 100000;
-	private int scaleFactor;
-	private Transform transform;
+	private int scaleFactor = 0;
+	private Transform transform = new Transform();
 	private boolean changed = false;
+	
+	public Camera () {}
 	
 	/**
 	 * Creates a new instance of the Camera class filled with the given values.
@@ -143,6 +145,7 @@ public class Camera implements Serializable{
 		this.height = height;
 		this.halfWidth = width >> 1;
 		this.halfHeight = height >> 1;
+		this.scaleFactor = ((width + height) >> 7) + 1;
 		changed = true;
 	}
 
@@ -152,7 +155,7 @@ public class Camera implements Serializable{
 	 * @return field of view of this camera.
 	 */
 	public int getFieldOfView() {
-		return FieldOfView;
+		return fieldOfView;
 	}
 
 	/**
@@ -161,7 +164,7 @@ public class Camera implements Serializable{
 	 * @param fieldOfView field of view to set.
 	 */
 	public void setFieldOfView(int fieldOfView) {
-		FieldOfView = fieldOfView;
+		this.fieldOfView = fieldOfView;
 		changed = true;
 	}
 
@@ -238,5 +241,87 @@ public class Camera implements Serializable{
 	 */
 	public void changed(boolean changed) {
 		this.changed = changed;
+	}
+
+	@Override
+	public void writeExternal(ObjectOutput out) throws IOException {
+		out.writeUTF(name);
+		out.writeInt(x);
+		out.writeInt(y);
+		out.writeInt(width);
+		out.writeInt(height);
+		out.writeInt(fieldOfView);
+		out.writeInt(nearClippingPlane);
+		out.writeInt(farClippingPlane);
+		out.writeObject(transform);
+	}
+
+	@Override
+	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+		name = in.readUTF();
+		x = in.readInt();
+		y = in.readInt();
+		final int width = in.readInt();
+		final int height = in.readInt();
+		fieldOfView = in.readInt();
+		nearClippingPlane = in.readInt();
+		farClippingPlane = in.readInt();
+		transform = (Transform) in.readObject();
+		setScreenSize(width, height);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + farClippingPlane;
+		result = prime * result + fieldOfView;
+		result = prime * result + halfHeight;
+		result = prime * result + halfWidth;
+		result = prime * result + height;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + nearClippingPlane;
+		result = prime * result + scaleFactor;
+		result = prime * result + ((transform == null) ? 0 : transform.hashCode());
+		result = prime * result + width;
+		result = prime * result + x;
+		result = prime * result + y;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Camera other = (Camera) obj;
+		if (farClippingPlane != other.farClippingPlane)
+			return false;
+		if (fieldOfView != other.fieldOfView)
+			return false;
+		if (height != other.height)
+			return false;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (nearClippingPlane != other.nearClippingPlane)
+			return false;
+		if (transform == null) {
+			if (other.transform != null)
+				return false;
+		} else if (!transform.equals(other.transform))
+			return false;
+		if (width != other.width)
+			return false;
+		if (x != other.x)
+			return false;
+		if (y != other.y)
+			return false;
+		return true;
 	}
 }
