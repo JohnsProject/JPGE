@@ -249,7 +249,7 @@ public class MathUtils {
 		return value;
 	}
 
-	static int r = 545;
+	private static int r = 545;
 	/**
 	 * Returns a pseudo generated random value.
 	 * 
