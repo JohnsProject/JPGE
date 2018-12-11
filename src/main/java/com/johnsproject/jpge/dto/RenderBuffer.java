@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge.dto;
 
 import java.awt.image.BufferedImage;
@@ -97,11 +120,11 @@ public class RenderBuffer implements Externalizable{
 	}
 	
 	/**
-	 * Sets a pixel of this RenderBuffer at the given position, but only if it passes the depth test.
+	 * Sets a pixel of this RenderBuffer at the given location, but only if it passes the depth test.
 	 * 
-	 * @param x position of pixel in the x axis.
-	 * @param y position of pixel in the y axis.
-	 * @param z position of pixel in the z axis.
+	 * @param x location of pixel in the x axis.
+	 * @param y location of pixel in the y axis.
+	 * @param z location of pixel in the z axis.
 	 * @param color color of pixel.
 	 */
 	public void setPixel(int x, int y, int z, int color) {
@@ -119,8 +142,8 @@ public class RenderBuffer implements Externalizable{
 	/**
 	 * Returns the color of the pixel at the given coordinates.
 	 * 
-	 * @param x position of pixel in the x axis.
-	 * @param y position of pixel in the y axis.
+	 * @param x location of pixel in the x axis.
+	 * @param y location of pixel in the y axis.
 	 * @return color of the pixel at the given coordinates.
 	 */
 	public int getPixel(int x, int y) {
@@ -133,8 +156,8 @@ public class RenderBuffer implements Externalizable{
 	/**
 	 * Returns the depth of the pixel at the given coordinates.
 	 * 
-	 * @param x position of pixel in the x axis.
-	 * @param y position of pixel in the y axis.
+	 * @param x location of pixel in the x axis.
+	 * @param y location of pixel in the y axis.
 	 * @return depth of the pixel at the given coordinates.
 	 */
 	public int getPixelDepth(int x, int y) {

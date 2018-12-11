@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge;
 
 import java.awt.event.KeyEvent;
@@ -71,7 +94,7 @@ public class ExampleScene implements JPGE, JPGEKeyListener{
 //		if (mouseInput.getKey(MouseInputManager.LEFT)) {
 //			int x = (mouseInput.getMouseX()) - (windowWidth/2);
 //			int y = (mouseInput.getMouseY()) - (windowHeight/2);
-//			sceneObject1.getTransform().setPosition(x*5, y*5, 0);
+//			sceneObject1.getTransform().setLocation(x*5, y*5, 0);
 ////			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);
 //		}
 ////		if (sceneObject2.getRigidbody().isColliding("test")) {
@@ -205,7 +228,7 @@ public class ExampleScene implements JPGE, JPGEKeyListener{
 //	@Override
 //	public void leftClick(JPGEMouseEvent event) {
 //		dragged = !dragged;
-//		postition = event.getPosition();
+//		postition = event.getLocation();
 //	}
 //
 //	@Override
@@ -219,12 +242,12 @@ public class ExampleScene implements JPGE, JPGEKeyListener{
 //	}
 //
 //	@Override
-//	public void positionUpdate(JPGEMouseEvent event) {
+//	public void locationUpdate(JPGEMouseEvent event) {
 //		if (dragged) {
-//			int fx = (int)Engine.getInstance().getSceneWindow().getPositionX();
-//			int fy = (int)Engine.getInstance().getSceneWindow().getPositionY();
-//			int x = (event.getPosition()[VectorUtils.X]-fx) - (windowWidth/2);
-//			int y = (event.getPosition()[VectorUtils.Y]-fy) - (windowHeight/2);
+//			int fx = (int)Engine.getInstance().getSceneWindow().getLocationX();
+//			int fy = (int)Engine.getInstance().getSceneWindow().getLocationY();
+//			int x = (event.getLocation()[VectorUtils.X]-fx) - (windowWidth/2);
+//			int y = (event.getLocation()[VectorUtils.Y]-fy) - (windowHeight/2);
 ////			int z = camera.getTransform().getRotation()[VectorUtils.Z];
 //			//System.out.println("x " + x + ", y " + y + ", z " + z);
 //			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);

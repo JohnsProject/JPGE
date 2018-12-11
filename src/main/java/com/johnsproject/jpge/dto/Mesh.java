@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge.dto;
 
 import java.io.Externalizable;
@@ -89,7 +112,7 @@ public class Mesh implements Externalizable {
 	 * Returns all buffered vertexes of this mesh.
 	 * The buffered vertexes are used by the {@link Renderer} at the rendering process.
 	 * This vertexes are transformed, rotated and projected. 
-	 * the vertex buffer is a buffer used to prevent loosing original position of vertexes.
+	 * the vertex buffer is a buffer used to prevent loosing original location of vertexes.
 	 * 
 	 * @return all buffered vertexes of this mesh.
 	 */
@@ -101,7 +124,7 @@ public class Mesh implements Externalizable {
 	 * Returns the buffered vertex at the given index.
 	 * The buffered vertexes are used by the {@link Renderer} at the rendering process.
 	 * This vertexes are transformed, rotated and projected. 
-	 * the vertex buffer is a buffer used to prevent loosing original position of vertexes.
+	 * the vertex buffer is a buffer used to prevent loosing original location of vertexes.
 	 * 
 	 * 
 	 * @param index index of buffered vertex.
@@ -115,7 +138,7 @@ public class Mesh implements Externalizable {
 		for (int i = 0; i < vertexes.length; i++) {
 			if (vertexes[i] != null) {
 				vertexesBuffer[i] = new Vertex(
-						vertexes[i].getPosition().clone(),
+						vertexes[i].getLocation().clone(),
 						vertexes[i].getNormal().clone(),
 						vertexes[i].getBone(),
 						vertexes[i].getMaterial()
@@ -126,13 +149,13 @@ public class Mesh implements Externalizable {
 	
 	/**
 	 * Resets the vertex buffer of this mesh.
-	 * the vertex buffer is a buffer used to prevent loosing original position of vertexes.
+	 * the vertex buffer is a buffer used to prevent loosing original location of vertexes.
 	 */
 	public void resetBuffer() {
 		for (int i = 0; i < vertexes.length; i++) {
-			vertexesBuffer[i].getPosition()[vx] = vertexes[i].getPosition()[vx];
-			vertexesBuffer[i].getPosition()[vy] = vertexes[i].getPosition()[vy];
-			vertexesBuffer[i].getPosition()[vz] = vertexes[i].getPosition()[vz];
+			vertexesBuffer[i].getLocation()[vx] = vertexes[i].getLocation()[vx];
+			vertexesBuffer[i].getLocation()[vy] = vertexes[i].getLocation()[vy];
+			vertexesBuffer[i].getLocation()[vz] = vertexes[i].getLocation()[vz];
 			vertexesBuffer[i].getNormal()[vx] = vertexes[i].getNormal()[vx];
 			vertexesBuffer[i].getNormal()[vy] = vertexes[i].getNormal()[vy];
 			vertexesBuffer[i].getNormal()[vz] = vertexes[i].getNormal()[vz];

@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge.io;
 
 import java.io.IOException;
@@ -69,22 +92,22 @@ public class SOMImporter {
 	static Vertex[] parseVertexes(String rawData) throws IOException {
 		String vCountData = rawData.split("vCount<")[1].split(">vCount", 2)[0];
 		Vertex[] vertexes = new Vertex[toInt(vCountData)];
-		String[] vPositionData = rawData.split("vPosition<")[1].split(">vPosition", 2)[0].split(",");
+		String[] vLocationData = rawData.split("vPosition<")[1].split(">vPosition", 2)[0].split(",");
 		String[] vNormalData = rawData.split("vNormal<")[1].split(">vNormal", 2)[0].split(",");
 		String[] vBoneData = rawData.split("vBone<")[1].split(">vBone", 2)[0].split(",");
 		String[] vMaterialData = rawData.split("vMaterial<")[1].split(">vMaterial", 2)[0].split(",");
 		for (int i = 0; i < vertexes.length * 3; i += 3) {
-			int[] position = new int[3];
-			position[vx] = toInt(vPositionData[i + vx]);
-			position[vy] = toInt(vPositionData[i + vy]);
-			position[vz] = toInt(vPositionData[i + vz]);
+			int[] location = new int[3];
+			location[vx] = toInt(vLocationData[i + vx]);
+			location[vy] = toInt(vLocationData[i + vy]);
+			location[vz] = toInt(vLocationData[i + vz]);
 			int[] normal = new int[3];
 			normal[vx] = toInt(vNormalData[i + vx]);
 			normal[vy] = toInt(vNormalData[i + vy]);
 			normal[vz] = toInt(vNormalData[i + vz]);
 			int bone = toInt(vBoneData[i / 3]);
 			int material = toInt(vMaterialData[i / 3]);
-			vertexes[i / 3] = new Vertex(position, normal, bone, material);
+			vertexes[i / 3] = new Vertex(location, normal, bone, material);
 		}
 		return vertexes;
 	}

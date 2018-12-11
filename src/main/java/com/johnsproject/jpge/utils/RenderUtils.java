@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge.utils;
 
 import com.johnsproject.jpge.dto.Animation;
@@ -71,12 +94,12 @@ public class RenderUtils {
 		int boneIndex = vertex.getBone();
 		for (int i = 0; i <= boneIndex; i++) {
 			Transform bone = animation.getBone(i, animation.getCurrentFrame());
-			int[] pos = vertex.getPosition();
+			int[] pos = vertex.getLocation();
 			//Transform bone = animation.getBone(i, animation.getCurrentFrame());
-			pos = Vector3MathUtils.subtract(pos, bone.getPosition(), pos);
+			pos = Vector3MathUtils.subtract(pos, bone.getLocation(), pos);
 			pos = Vector3MathUtils.movePointByScale(pos, bone.getScale(), pos);
 			pos = Vector3MathUtils.movePointByAnglesXYZ(pos, bone.getRotation(), pos);
-			pos = Vector3MathUtils.add(pos, bone.getPosition(), pos);
+			pos = Vector3MathUtils.add(pos, bone.getLocation(), pos);
 		}
 		return vertex;
 	}
@@ -91,9 +114,9 @@ public class RenderUtils {
 	 */
 	public static boolean isInsideViewFrustum(Face face, Mesh mesh, Camera camera) {
 		face.setCulled(false);
-		int[] v1 = mesh.getBufferedVertex(face.getVertex1()).getPosition();
-		int[] v2 = mesh.getBufferedVertex(face.getVertex2()).getPosition();
-		int[] v3 = mesh.getBufferedVertex(face.getVertex3()).getPosition();
+		int[] v1 = mesh.getBufferedVertex(face.getVertex1()).getLocation();
+		int[] v2 = mesh.getBufferedVertex(face.getVertex2()).getLocation();
+		int[] v3 = mesh.getBufferedVertex(face.getVertex3()).getLocation();
 		int ncp = camera.getNearClippingPlane();
 		int fcp = camera.getFarClippingPlane();
 		int w = camera.getWidth();
@@ -122,9 +145,9 @@ public class RenderUtils {
 	 */
 	public static boolean isBackface(Face face, Mesh mesh) {
 		face.setCulled(false);
-		int[] v1 = mesh.getBufferedVertex(face.getVertex1()).getPosition();
-		int[] v2 = mesh.getBufferedVertex(face.getVertex2()).getPosition();
-		int[] v3 = mesh.getBufferedVertex(face.getVertex3()).getPosition();
+		int[] v1 = mesh.getBufferedVertex(face.getVertex1()).getLocation();
+		int[] v2 = mesh.getBufferedVertex(face.getVertex2()).getLocation();
+		int[] v3 = mesh.getBufferedVertex(face.getVertex3()).getLocation();
 		int v1x = v1[vx], v1y = v1[vy];
 		int v2x = v2[vx], v2y = v2[vy];
 		int v3x = v3[vx], v3y = v3[vy];
@@ -141,11 +164,11 @@ public class RenderUtils {
 	/**
 	 * Draws a line on the given {@link Camera} using Brenseham's line algorithm.
 	 * 
-	 * @param x1 start x position.
-	 * @param y1 start y position.
-	 * @param x2 end x position.
-	 * @param y2 end y position.
-	 * @param z z position used by the zBuffer.
+	 * @param x1 start x location.
+	 * @param y1 start y location.
+	 * @param x2 end x location.
+	 * @param y2 end y location.
+	 * @param z z location used by the zBuffer.
 	 * @param color color of the line.
 	 * @param camera {@link Camera} to draw on.
 	 * @param renderBuffer {@link RenderBuffer} to use.
@@ -199,10 +222,10 @@ public class RenderUtils {
 		Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
 		Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
 		Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
-		// get position of vertexes
-		int[] vp1 = vt1.getPosition();
-		int[] vp2 = vt2.getPosition();
-		int[] vp3 = vt3.getPosition();
+		// get location of vertexes
+		int[] vp1 = vt1.getLocation();
+		int[] vp2 = vt2.getLocation();
+		int[] vp3 = vt3.getLocation();
 		// get uvs of face
 		int[] uv1 = face.getUV1();
 		int[] uv2 = face.getUV2();
@@ -251,22 +274,22 @@ public class RenderUtils {
 		int r1 = ColorUtils.getRed(vc1), g1 = ColorUtils.getGreen(vc1), b1 = ColorUtils.getBlue(vc1), a1 = ColorUtils.getAlpha(vc1);
 		int r2 = ColorUtils.getRed(vc2), g2 = ColorUtils.getGreen(vc2), b2 = ColorUtils.getBlue(vc2), a2 = ColorUtils.getAlpha(vc2);
 		int r3 = ColorUtils.getRed(vc3), g3 = ColorUtils.getGreen(vc3), b3 = ColorUtils.getBlue(vc3), a3 = ColorUtils.getAlpha(vc3);
-		// x deltas for each y position
+		// x deltas for each y location
 		int dx1 = 0, dx2 = 0, dx3 = 0;
-		// z deltas for each y position
+		// z deltas for each y location
 		int dz1 = 0, dz2 = 0, dz3 = 0;
-		// color deltas for each y position
+		// color deltas for each y location
 		int dr1 = 0, dg1 = 0, db1 = 0, da1 = 0;
 		int dr2 = 0, dg2 = 0, db2 = 0, da2 = 0;
 		int dr3 = 0, dg3 = 0, db3 = 0, da3 = 0;
-		// deltas for each x position
+		// deltas for each x location
 		int dz = 0, dr = 0, dg = 0, db = 0, da = 0;
 		int dxdx = 0;
 		// precalculate used values to save performance
 		int y2y1 = y2 - y1;
 		int y3y1 = y3 - y1;
 		int y3y2 = y3 - y2;
-		// calculate deltas needed to get values for each y position
+		// calculate deltas needed to get values for each y location
 		if (y2y1 > 0) {
 			// bitshift left to increase precision
 			dx1 = ((x2 - x1) << SHIFT) / (y2y1);
@@ -304,7 +327,7 @@ public class RenderUtils {
 	    if (dx1 > dx2) {
 	    	// precalculate used values to save performance
 	    	dxdx = dx1 - dx2;
-	    	// calculate deltas needed to get shade factor values for each x position
+	    	// calculate deltas needed to get shade factor values for each x location
 			if (dxdx > 0) {
 				dz = ((dz1 - dz2) << SHIFT) / (dxdx);
 				dr = ((dr1 - dr2) << SHIFT) / (dxdx);
@@ -323,7 +346,7 @@ public class RenderUtils {
 		    	sb += db2;
 		    	sa += da2;
 	    	}
-		    // make sure that correct x position is used to draw the other part
+		    // make sure that correct x location is used to draw the other part
 		    ex = x2 << SHIFT;
 			dxdx = dx3 - dx2;
 			if (dxdx > 0) {
@@ -408,10 +431,10 @@ public class RenderUtils {
 		Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
 		Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
 		Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
-		// get position of vertexes
-		int[] vp1 = vt1.getPosition();
-		int[] vp2 = vt2.getPosition();
-		int[] vp3 = vt3.getPosition();
+		// get location of vertexes
+		int[] vp1 = vt1.getLocation();
+		int[] vp2 = vt2.getLocation();
+		int[] vp3 = vt3.getLocation();
 		// get uvs of face
 		int[] uv1 = face.getUV1();
 		int[] uv2 = face.getUV2();
@@ -466,26 +489,26 @@ public class RenderUtils {
 		int r1 = ColorUtils.getRed(vc1), g1 = ColorUtils.getGreen(vc1), b1 = ColorUtils.getBlue(vc1), a1 = ColorUtils.getAlpha(vc1);
 		int r2 = ColorUtils.getRed(vc2), g2 = ColorUtils.getGreen(vc2), b2 = ColorUtils.getBlue(vc2), a2 = ColorUtils.getAlpha(vc2);
 		int r3 = ColorUtils.getRed(vc3), g3 = ColorUtils.getGreen(vc3), b3 = ColorUtils.getBlue(vc3), a3 = ColorUtils.getAlpha(vc3);	
-		// x deltas for each y position
+		// x deltas for each y location
 		int dx1 = 0, dx2 = 0, dx3 = 0;
-		// z deltas for each y position
+		// z deltas for each y location
 		int dz1 = 0, dz2 = 0, dz3 = 0;
-		// u deltas for each y position
+		// u deltas for each y location
 		int du1 = 0, du2 = 0, du3 = 0;
-		// v deltas for each y position
+		// v deltas for each y location
 		int dv1 = 0, dv2 = 0, dv3 = 0;
-		// color deltas for each y position
+		// color deltas for each y location
 		int dr1 = 0, dg1 = 0, db1 = 0, da1 = 0;
 		int dr2 = 0, dg2 = 0, db2 = 0, da2 = 0;
 		int dr3 = 0, dg3 = 0, db3 = 0, da3 = 0;
-		// deltas for each x position
+		// deltas for each x location
 		int dz = 0,du = 0, dv = 0, dr = 0, dg = 0, db = 0, da = 0;
 		int dxdx = 0;
 		// precalculate used values to save performance
 		int y2y1 = y2 - y1;
 		int y3y1 = y3 - y1;
 		int y3y2 = y3 - y2;
-		// calculate deltas needed to get values for each y position
+		// calculate deltas needed to get values for each y location
 		if (y2y1 > 0) {
 			// bitshift left to increase precision
 			dx1 = ((x2 - x1) << SHIFT) / (y2y1);
@@ -531,7 +554,7 @@ public class RenderUtils {
 	    if (dx1 > dx2) {
 	    	// precalculate used values to save performance
 	    	dxdx = dx1 - dx2;
-	    	// calculate deltas needed to get shade factor values for each x position
+	    	// calculate deltas needed to get shade factor values for each x location
 	    	if (dxdx > 0) {
 				dz = ((dz1 - dz2) << SHIFT) / (dxdx);
 				du = ((du1 - du2) << SHIFT) / (dxdx);
@@ -554,7 +577,7 @@ public class RenderUtils {
 		    	sb += db2;
 		    	sa += da2;
 			}
-		    // make sure that correct x position is used to draw the other part
+		    // make sure that correct x location is used to draw the other part
 			ex = x2 << SHIFT;
 			dxdx = dx3 - dx2;
 	    	if (dxdx > 0) {
@@ -656,7 +679,7 @@ public class RenderUtils {
 	public static void setPixel(int x, int y, int z, int color, Camera camera, RenderBuffer renderBuffer) {
 		// check if pixel is inside camera
 		if (x > 0 && x < camera.getWidth() && y > 0 && y < camera.getHeight()) {
-			renderBuffer.setPixel(camera.getPositionX() + x, camera.getPositionY() + y, z, color);
+			renderBuffer.setPixel(camera.getLocationX() + x, camera.getLocationY() + y, z, color);
 		}
 	}
 }

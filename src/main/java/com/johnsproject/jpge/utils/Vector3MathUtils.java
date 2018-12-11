@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge.utils;
 
 /**
@@ -174,10 +197,10 @@ public class Vector3MathUtils extends MathUtils {
 	/**
 	 * Moves the given vector by the given angle around the z axis.
 	 * 
-	 * @param vector vector that contains position to move.
-	 * @param angle  angle used to move position.
+	 * @param vector vector that contains location to move.
+	 * @param angle  angle used to move location.
 	 * @param out vector used to store result.
-	 * @return moved position.
+	 * @return moved location.
 	 */
 	public static int[] movePointByAngleZ(int[] vector, int angle, int[] out) {
 		int sin = sin(angle), cos = cos(angle);
@@ -191,10 +214,10 @@ public class Vector3MathUtils extends MathUtils {
 	/**
 	 * Moves the given vector by the given angle around the y axis.
 	 * 
-	 * @param vector vector that contains position to move.
-	 * @param angle  angle used to move position.
+	 * @param vector vector that contains location to move.
+	 * @param angle  angle used to move location.
 	 * @param out vector used to store result.
-	 * @return moved position.
+	 * @return moved location.
 	 */
 	public static int[] movePointByAngleY(int[] vector, int angle, int[] out) {
 		int sin = sin(angle), cos = cos(angle);
@@ -208,10 +231,10 @@ public class Vector3MathUtils extends MathUtils {
 	/**
 	 * Moves the given vector by the given angle around the x axis.
 	 * 
-	 * @param vector vector that contains position to move.
-	 * @param angle  angle used to move position.
+	 * @param vector vector that contains location to move.
+	 * @param angle  angle used to move location.
 	 * @param out vector used to store result.
-	 * @return moved position.
+	 * @return moved location.
 	 */
 	public static int[] movePointByAngleX(int[] vector, int angle, int[] out) {
 		int sin = sin(angle), cos = cos(angle);
@@ -225,10 +248,10 @@ public class Vector3MathUtils extends MathUtils {
 	/**
 	 * Moves the given vector by the given angles around the x, y and z axis.
 	 * 
-	 * @param vector vector that contains position to move.
+	 * @param vector vector that contains location to move.
 	 * @param angles vector that contains angles.
 	 * @param out vector used to store result.
-	 * @return moved position.
+	 * @return moved location.
 	 */
 	public static int[] movePointByAnglesXYZ(int[] vector, int[] angles, int[] out) {
 		out = movePointByAngleX(vector, angles[vx], out);
@@ -240,10 +263,10 @@ public class Vector3MathUtils extends MathUtils {
 	/**
 	 * Moves the given vector by the given scale.
 	 * 
-	 * @param vector vector that contains position to move.
+	 * @param vector vector that contains location to move.
 	 * @param scale  vector that contains scale.
 	 * @param out vector used to store result.
-	 * @return moved position.
+	 * @return moved location.
 	 */
 	public static int[] movePointByScale(int[] vector, int[] scale, int[] out) {
 		return multiply(vector, scale, out);

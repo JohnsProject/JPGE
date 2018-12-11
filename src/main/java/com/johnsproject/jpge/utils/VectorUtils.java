@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge.utils;
 
 /**
@@ -16,11 +39,11 @@ public class VectorUtils {
 	 * <br> new int[] {x, y, z};
 	 * <br></code>
 	 * <br>
-	 * This vector can be used as position, rotation or scale vector.
+	 * This vector can be used as location, rotation or scale vector.
 	 * 
-	 * @param x vector position at x axis.
-	 * @param y vector position at y axis.
-	 * @param z vector position at z axis.
+	 * @param x vector location at x axis.
+	 * @param y vector location at y axis.
+	 * @param z vector location at z axis.
 	 * @return vector generated using the given values.
 	 */
 	public static int[] generate(int x, int y, int z) {
@@ -34,10 +57,10 @@ public class VectorUtils {
 	 * <br> new int[] {x, y};
 	 * <br></code>
 	 * <br>
-	 * This vector can be used as position, rotation or scale vector.
+	 * This vector can be used as location, rotation or scale vector.
 	 * 
-	 * @param x vector position at x axis.
-	 * @param y vector position at y axis.
+	 * @param x vector location at x axis.
+	 * @param y vector location at y axis.
 	 * @return vector generated using the given values.
 	 */
 	public static int[] generate(int x, int y) {

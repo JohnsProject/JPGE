@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge.dto;
 import java.io.Externalizable;
 import java.io.IOException;
@@ -9,7 +32,7 @@ import com.johnsproject.jpge.utils.Vector3MathUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
- * The Transform class contains position, rotation and scale data of a object.
+ * The Transform class contains location, rotation and scale data of a object.
  *
  * @author John´s Project - John Salomon
  */
@@ -19,7 +42,7 @@ public class Transform implements Externalizable {
 
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
-	private int[] position = new int[3];
+	private int[] location = new int[3];
 	private int[] rotation = new int[3];
 	private int[] scale = new int[3];
 	private int[] cache = new int[3];
@@ -29,12 +52,12 @@ public class Transform implements Externalizable {
 	/**
 	 * Creates a new instance of the Transform class filled with the given values.
 	 * 
-	 * @param position position of this transform.
+	 * @param location location of this transform.
 	 * @param rotation rotation of this transform.
 	 * @param scale scale of this transform.
 	 */
-	public Transform(int[] position, int[] rotation, int[] scale) {
-		this.position = position;
+	public Transform(int[] location, int[] rotation, int[] scale) {
+		this.location = location;
 		this.rotation = rotation;
 		this.scale = scale;
 	}
@@ -47,9 +70,9 @@ public class Transform implements Externalizable {
 	 * @param z how much to move in the z axis.
 	 */
 	public void translate(int x, int y, int z) {
-		position[vx] += x;
-		position[vy] += y;
-		position[vz] += z;
+		location[vx] += x;
+		location[vy] += y;
+		location[vz] += z;
 	}
 	
 	/**
@@ -64,7 +87,7 @@ public class Transform implements Externalizable {
 		cache[vy] = y;
 		cache[vz] = z;
 		cache = Vector3MathUtils.movePointByAnglesXYZ(cache, VectorUtils.invert3(rotation), cache);
-		position = Vector3MathUtils.add(position, cache, position);
+		location = Vector3MathUtils.add(location, cache, location);
 		VectorUtils.invert3(rotation);
 	}
 	
@@ -88,7 +111,7 @@ public class Transform implements Externalizable {
 	 * @param vector vector containing translate values.
 	 */
 	public void translate(int[] vector) {
-		position = Vector3MathUtils.add(position, vector, position);
+		location = Vector3MathUtils.add(location, vector, location);
 	}
 	
 	/**
@@ -101,25 +124,25 @@ public class Transform implements Externalizable {
 	}
 
 	/**
-	 * Returns the position of this transform.
+	 * Returns the location of this transform.
 	 * 
-	 * @return position of this transform.
+	 * @return location of this transform.
 	 */
-	public int[] getPosition() {
-		return position;
+	public int[] getLocation() {
+		return location;
 	}
 
 	/**
-	 * Sets the position of this transform.
+	 * Sets the location of this transform.
 	 * 
-	 * @param x position at the x axis.
-	 * @param y position at the y axis.
-	 * @param z position at the z axis.
+	 * @param x location at the x axis.
+	 * @param y location at the y axis.
+	 * @param z location at the z axis.
 	 */
-	public void setPosition(int x, int y, int z) {
-		position[vx] = x;
-		position[vy] = y;
-		position[vz] = z;
+	public void setLocation(int x, int y, int z) {
+		location[vx] = x;
+		location[vy] = y;
+		location[vz] = z;
 	}
 
 	/**
@@ -168,16 +191,16 @@ public class Transform implements Externalizable {
 
 	@Override
 	public String toString() {
-		return "Transform [position=" + VectorUtils.toString(position)
+		return "Transform [location=" + VectorUtils.toString(location)
 		+ ", rotation=" + VectorUtils.toString(rotation)
 		+ ", scale=" + VectorUtils.toString(scale) + "]";
 	}
 
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
-		out.writeInt(position[vx]);
-		out.writeInt(position[vy]);
-		out.writeInt(position[vz]);
+		out.writeInt(location[vx]);
+		out.writeInt(location[vy]);
+		out.writeInt(location[vz]);
 		out.writeInt(rotation[vx]);
 		out.writeInt(rotation[vy]);
 		out.writeInt(rotation[vz]);
@@ -188,9 +211,9 @@ public class Transform implements Externalizable {
 
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		position[vx] = in.readInt();
-		position[vy] = in.readInt();
-		position[vz] = in.readInt();
+		location[vx] = in.readInt();
+		location[vy] = in.readInt();
+		location[vz] = in.readInt();
 		rotation[vx] = in.readInt();
 		rotation[vy] = in.readInt();
 		rotation[vz] = in.readInt();
@@ -203,7 +226,7 @@ public class Transform implements Externalizable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + Arrays.hashCode(position);
+		result = prime * result + Arrays.hashCode(location);
 		result = prime * result + Arrays.hashCode(rotation);
 		result = prime * result + Arrays.hashCode(scale);
 		return result;
@@ -218,7 +241,7 @@ public class Transform implements Externalizable {
 		if (getClass() != obj.getClass())
 			return false;
 		Transform other = (Transform) obj;
-		if (!Arrays.equals(position, other.position))
+		if (!Arrays.equals(location, other.location))
 			return false;
 		if (!Arrays.equals(rotation, other.rotation))
 			return false;

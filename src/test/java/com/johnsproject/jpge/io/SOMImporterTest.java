@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge.io;
 
 import org.junit.Test;
@@ -32,7 +55,7 @@ public class SOMImporterTest {
 //			" Materials contains the material (red, green, blue, alpha) data of all visible objects in the scene.\n" + 
 //			" Animations contains the animation data of all visible objects in the scene,\n" + 
 //			" a animation contains the data of bones at each keyframe and a bone is composed of (px, py, pz, rx, ry, rz, sx, sy, sz),\n" + 
-//			" where p = position, r = rotation and s = scale.\n" + 
+//			" where p = location, r = rotation and s = scale.\n" + 
 //			"\n" + 
 //			"Vertexes < 100,99,-100,57,57,-57,0,100,-100,-100,57,-57,-57,0,-100,-99,-100,-57,-57,-57,0,-99,100,-100,-57,57,-57,0,100,99,100,57,57,57,0,99,-100,100,57,-57,57,0,-100,-99,100,-57,-57,57,0,-99,100,100,-57,57,57,0 > Vertexes\n" + 
 //			"\n" + 
@@ -49,9 +72,9 @@ public class SOMImporterTest {
 //		String rawData = template.replace(" ", "").replace("\n", "");
 //		String[] rawVertexesData = rawData.split("Vertexes<")[1].split(">Vertexes", 2)[0].split(",");
 //		Vertex[] vertexes = SOMImporter.parseVertexes(rawVertexesData);
-//		assert(vertexes[1].getPosition()[vx] == 100);
-//		assert(vertexes[1].getPosition()[vy] == -100);
-//		assert(vertexes[1].getPosition()[vz] == -100);
+//		assert(vertexes[1].getLocation()[vx] == 100);
+//		assert(vertexes[1].getLocation()[vy] == -100);
+//		assert(vertexes[1].getLocation()[vz] == -100);
 //		assert(vertexes[1].getNormal()[vx] == 57);
 //		assert(vertexes[1].getNormal()[vy] == -57);
 //		assert(vertexes[1].getNormal()[vz] == -57);

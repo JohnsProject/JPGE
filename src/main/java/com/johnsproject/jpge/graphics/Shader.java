@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge.graphics;
 
 import java.util.List;
@@ -59,7 +82,7 @@ public class Shader {
 	private Vertex shadeVertex(Vertex vertex, Mesh mesh, Transform objectTransform, List<Light> lights, Camera camera) {
 		Transform objt = objectTransform;
 		Transform camt = camera.getTransform();
-		int[] vector = vertex.getPosition();
+		int[] vector = vertex.getLocation();
 		int[] normal = vertex.getNormal();
 		// transform normal in object space
 		normal = Vector3MathUtils.movePointByAnglesXYZ(normal, objt.getRotation(), normal);
@@ -71,9 +94,9 @@ public class Shader {
 			vertex.setColor(shade(lights, vector, normal));
 		}
 		// transform vertex to world space
-		vector = Vector3MathUtils.add(vector, objt.getPosition(), vector);
+		vector = Vector3MathUtils.add(vector, objt.getLocation(), vector);
 		// transform vertex to camera space
-		vector = Vector3MathUtils.subtract(vector, camt.getPosition(), vector);
+		vector = Vector3MathUtils.subtract(vector, camt.getLocation(), vector);
 		vector = Vector3MathUtils.movePointByAnglesXYZ(vector, camt.getRotation(), vector);
 		// transform / project vertex to screen space
 		if (projectionType == PROJECT_ORTHOGRAPHIC) {
@@ -96,7 +119,7 @@ public class Shader {
 				Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
 				if (shadingType == SHADE_FLAT) {
 					// calculate shaded color for 1 vertex
-					int result = shade(lights, objectTransform.getPosition(), vt1.getNormal());
+					int result = shade(lights, objectTransform.getLocation(), vt1.getNormal());
 					// and apply that color to all vertexes
 					vt1.setColor(result);
 					vt2.setColor(result);
@@ -134,10 +157,10 @@ public class Shader {
 		int lightColor = 0;
 		for (int i = 0; i < lights.size(); i++) {
 			Light light = lights.get(i);
-			int[] lightPosition = light.getTransform().getPosition();
+			int[] lightLocation = light.getTransform().getLocation();
 			switch (light.getType()) {
 			case LIGHT_DIRECTIONAL:
-				factor += Vector3MathUtils.dotProduct(lightPosition, normal);
+				factor += Vector3MathUtils.dotProduct(lightLocation, normal);
 				factor /= light.getStrength();
 				break;
 			}
@@ -148,10 +171,10 @@ public class Shader {
 	}
 	
 	private void drawVertex(Vertex vt1, Vertex vt2, Vertex vt3, int color, Camera camera, RenderBuffer RenderBuffer) {
-		// get position of vertexes
-		int[] vp1 = vt1.getPosition();
-		int[] vp2 = vt2.getPosition();
-		int[] vp3 = vt3.getPosition();
+		// get location of vertexes
+		int[] vp1 = vt1.getLocation();
+		int[] vp2 = vt2.getLocation();
+		int[] vp3 = vt3.getLocation();
 		int x1 = vp1[vx], y1 = vp1[vy], z1 = vp1[vz],
 			x2 = vp2[vx], y2 = vp2[vy], z2 = vp2[vz],
 			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];
@@ -163,10 +186,10 @@ public class Shader {
 	}
 	
 	private void drawWireframe(Vertex vt1, Vertex vt2, Vertex vt3, int color, Camera camera, RenderBuffer RenderBuffer) {
-		// get position of vertexes
-		int[] vp1 = vt1.getPosition();
-		int[] vp2 = vt2.getPosition();
-		int[] vp3 = vt3.getPosition();
+		// get location of vertexes
+		int[] vp1 = vt1.getLocation();
+		int[] vp2 = vt2.getLocation();
+		int[] vp3 = vt3.getLocation();
 		int x1 = vp1[vx], y1 = vp1[vy], z1 = vp1[vz],
 			x2 = vp2[vx], y2 = vp2[vy], z2 = vp2[vz],
 			x3 = vp3[vx], y3 = vp3[vy], z3 = vp3[vz];

@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge.dto;
 
 import java.io.Externalizable;
@@ -19,7 +42,7 @@ public class Vertex implements Externalizable {
 	
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
-	private int[] position = new int[3];
+	private int[] location = new int[3];
 	private int[] normal = new int[3];
 	private int color = 0;
 	private int material = 0;
@@ -30,15 +53,15 @@ public class Vertex implements Externalizable {
 	/**
 	 * Creates a new instance of the Vertex class filled with the given values.
 	 * 
-	 * @param position	position of this vertex.
+	 * @param location	location of this vertex.
 	 * @param normal 	normal vector of this vertex.
 	 * @param material	index of the {@link Material} of this vertex in the {@link Material} 
 	 * array of the {@link Mesh} this vertex belongs to.
 	 * @param bone	index of the bone that modifies this vertex in the bone array of the 
 	 * {@link Mesh} this vertex belongs to.
 	 */
-	public Vertex(int[] position, int[] normal, int bone, int material) {
-		this.position = position;
+	public Vertex(int[] location, int[] normal, int bone, int material) {
+		this.location = location;
 		this.normal = normal;
 		this.bone = bone;
 		this.color = 0;
@@ -46,12 +69,12 @@ public class Vertex implements Externalizable {
 	}
 
 	/**
-	 * Returns the position of this vertex.
+	 * Returns the location of this vertex.
 	 * 
-	 * @return position of this vertex.
+	 * @return location of this vertex.
 	 */
-	public int[] getPosition() {
-		return position;
+	public int[] getLocation() {
+		return location;
 	}
 
 	/**
@@ -109,9 +132,9 @@ public class Vertex implements Externalizable {
 
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
-		out.writeInt(position[vx]);
-		out.writeInt(position[vy]);
-		out.writeInt(position[vz]);
+		out.writeInt(location[vx]);
+		out.writeInt(location[vy]);
+		out.writeInt(location[vz]);
 		out.writeInt(normal[vx]);
 		out.writeInt(normal[vy]);
 		out.writeInt(normal[vz]);
@@ -122,9 +145,9 @@ public class Vertex implements Externalizable {
 
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		position[vx] = in.readInt();
-		position[vy] = in.readInt();
-		position[vz] = in.readInt();
+		location[vx] = in.readInt();
+		location[vy] = in.readInt();
+		location[vz] = in.readInt();
 		normal[vx] = in.readInt();
 		normal[vy] = in.readInt();
 		normal[vz] = in.readInt();
@@ -141,7 +164,7 @@ public class Vertex implements Externalizable {
 		result = prime * result + color;
 		result = prime * result + material;
 		result = prime * result + Arrays.hashCode(normal);
-		result = prime * result + Arrays.hashCode(position);
+		result = prime * result + Arrays.hashCode(location);
 		return result;
 	}
 
@@ -162,7 +185,7 @@ public class Vertex implements Externalizable {
 			return false;
 		if (!Arrays.equals(normal, other.normal))
 			return false;
-		if (!Arrays.equals(position, other.position))
+		if (!Arrays.equals(location, other.location))
 			return false;
 		return true;
 	}

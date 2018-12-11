@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge.dto;
 
 import java.io.Externalizable;
@@ -36,8 +59,8 @@ public class Camera implements Externalizable{
 	 * 
 	 * @param name name of this camera.
 	 * @param transform {@link Transform} of this camera.
-	 * @param x x position of camera in screen.
-	 * @param y y position of camera in screen.
+	 * @param x x location of camera in screen.
+	 * @param y y location of camera in screen.
 	 * @param width width of camera in screen.
 	 * @param height height of camera in screen.
 	 */
@@ -95,30 +118,30 @@ public class Camera implements Externalizable{
 	}
 	
 	/**
-	 * Returns the x position of this camera in screen.
+	 * Returns the x location of this camera in screen.
 	 * 
-	 * @return x position of this camera in screen.
+	 * @return x location of this camera in screen.
 	 */
-	public int getPositionX() {
+	public int getLocationX() {
 		return x;
 	}
 
 	/**
-	 * Returns the y position of this camera in screen.
+	 * Returns the y location of this camera in screen.
 	 * 
-	 * @return y position of this camera in screen.
+	 * @return y location of this camera in screen.
 	 */
-	public int getPositionY() {
+	public int getLocationY() {
 		return y;
 	}
 
 	/**
 	 * Sets the postition of this camera in screen.
 	 * 
-	 * @param x position in the x axis.
-	 * @param y position in the y axis.
+	 * @param x location in the x axis.
+	 * @param y location in the y axis.
 	 */
-	public void setPosition(int x, int y) {
+	public void setLocation(int x, int y) {
 		this.x = x;
 		this.y = y;
 	}
