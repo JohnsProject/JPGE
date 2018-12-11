@@ -10,7 +10,7 @@ import com.johnsproject.jpge.graphics.Renderer;
 /**
  * The Camera class is a object used to view a {@link Scene}.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Camera implements Externalizable{
 	

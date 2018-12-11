@@ -4,7 +4,7 @@ package com.johnsproject.jpge.utils;
  * The ColorUtils class provides useful functionalities for handling colors.
  * <br>
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  *
  */
 public class ColorUtils {

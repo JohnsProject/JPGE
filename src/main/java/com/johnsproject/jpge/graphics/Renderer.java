@@ -11,7 +11,7 @@ import com.johnsproject.jpge.dto.SceneObject;
  * It takes the {@link SceneObject SceneObjects} in the view of all {@link Camera Cameras} in the {@link Scene}, 
  * transforms, projects and draws them.
  *
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Renderer {
 	

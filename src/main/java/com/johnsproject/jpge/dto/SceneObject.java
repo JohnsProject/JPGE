@@ -9,7 +9,7 @@ import java.io.ObjectOutput;
 /**
  * The SceneObject class contains data of a object in the {@link Scene}.
  *
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class SceneObject implements Externalizable {
 

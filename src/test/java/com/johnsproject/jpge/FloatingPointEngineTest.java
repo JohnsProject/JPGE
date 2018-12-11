@@ -3,6 +3,7 @@ package com.johnsproject.jpge;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.IOException;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -10,7 +11,6 @@ import javax.swing.JPanel;
 import org.junit.Test;
 
 import com.johnsproject.jpge.dto.Mesh;
-import com.johnsproject.jpge.io.ImportExeption;
 import com.johnsproject.jpge.io.SOMImporter;
 import com.johnsproject.jpge.utils.ColorUtils;
 
@@ -79,7 +79,7 @@ public class FloatingPointEngineTest extends JPanel{
 		Mesh mesh = null;
 		try {
 			mesh = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_MONKEY));
-		} catch (ImportExeption e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		if (mesh != null) {

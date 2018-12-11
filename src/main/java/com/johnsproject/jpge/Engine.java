@@ -1,3 +1,26 @@
+/**
+ * MIT License
+ *
+ * Copyright (c) 2018 John Salomon - John´s Project
+ *  
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ */
 package com.johnsproject.jpge;
 
 import java.util.ArrayList;
@@ -8,34 +31,30 @@ import com.johnsproject.jpge.dto.Scene;
 import com.johnsproject.jpge.graphics.Animator;
 import com.johnsproject.jpge.graphics.Renderer;
 import com.johnsproject.jpge.graphics.SceneWindow;
-import com.johnsproject.jpge.io.KeyInputManager;
-import com.johnsproject.jpge.io.MouseInputManager;
+import com.johnsproject.jpge.io.InputManager;
 import com.johnsproject.jpge.physics.PhysicsAnimator;
 
 /**
  * The Engine class initializes the needed components 
  * and manages the threads used to call the update methods.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Engine {
 	
-	private static Engine instance;
+	private static Engine instance = new Engine();
 	public static Engine getInstance() {
-		if (instance == null) {
-			instance = new Engine();
-		}
-		synchronized (instance) {
-			return instance;
-		}
+		return instance;
 	}
 	
 	private Thread graphicsThread;
 	private Thread jpgeThread;
+	private Thread inputThread;
 	private Thread physicsThread;
 	
 	private int graphicsUpdateRate = 30;
 	private int jpgeUpdateRate = 30;
+	private int inputUpdateRate = 30;
 	private int physicsUpdateRate = 30;
 	
 	private long startTime = System.currentTimeMillis();
@@ -43,14 +62,14 @@ public class Engine {
 	
 	private int lastJPGETime = 0;
 	private int lastGraphicsTime = 0;
+	private int lastInputTime = 0;
 	private int lastPhysicsTime = 0;
 	private int lastRendereredFaces = 0;
 	
 	private Scene scene = new Scene();
 	private Renderer renderer = new Renderer();
 	private Animator animator = new Animator();
-	private KeyInputManager keyManager = new KeyInputManager();
-	private MouseInputManager mouseManager = new MouseInputManager();
+	private InputManager inputManager = new InputManager();
 	private PhysicsAnimator physicsAnimator = new PhysicsAnimator();
 	private RenderBuffer renderBuffer = new RenderBuffer(320, 240);
 	private SceneWindow sceneWindow = null;
@@ -59,6 +78,7 @@ public class Engine {
 	
 	public Engine() {
 		startGraphicsThread();
+		startInputThread();
 		startPhysicsThread();
 		startJPGEThread();
 	}
@@ -70,7 +90,9 @@ public class Engine {
 		if (!isPlaying()) {
 			setPlaying(true);
 			startGraphicsThread();
+			startInputThread();
 			startPhysicsThread();
+			startJPGEThread();
 		}
 	}
 	
@@ -142,21 +164,12 @@ public class Engine {
 	}
 	
 	/**
-	 * Returns the {@link KeyInputManager} used by the engine.
+	 * Returns the {@link InputManager} used by the engine.
 	 * 
-	 * @return {@link KeyInputManager} used by the engine.
+	 * @return {@link InputManager} used by the engine.
 	 */
-	public KeyInputManager getKeyInputManager() {
-		return keyManager;
-	}
-	
-	/**
-	 * Returns the {@link MouseInputManager} used by the engine.
-	 * 
-	 * @return {@link MouseInputManager} used by the engine.
-	 */
-	public MouseInputManager getMouseInputManager() {
-		return mouseManager;
+	public InputManager getInputManager() {
+		return inputManager;
 	}
 	
 	/**
@@ -236,6 +249,26 @@ public class Engine {
 	}
 
 	/**
+	 * Returns how often input should be updated in a second.
+	 * Default is 30.
+	 * 
+	 * @return how often input should be updated in a second.
+	 */
+	public int getInputUpdateRate() {
+		return inputUpdateRate;
+	}
+
+	/**
+	 * Sets how often input should be updated in a second.
+	 * Default is 30.
+	 * 
+	 * @param inputUpdateRate value to set.
+	 */
+	public void setInputUpdateRate(int inputUpdateRate) {
+		this.inputUpdateRate = inputUpdateRate;
+	}
+	
+	/**
 	 * Returns how often physics should be updated in a second.
 	 * Default is 30.
 	 * 
@@ -271,6 +304,15 @@ public class Engine {
 	 */
 	public int getLastJPGETime() {
 		return lastJPGETime;
+	}
+	
+	/**
+	 * Returns how long the input thread took in the last update.
+	 * 
+	 * @return how long the input thread took in the last update.
+	 */
+	public int getLastInputTime() {
+		return lastInputTime;
 	}
 	
 	/**
@@ -313,7 +355,7 @@ public class Engine {
 		jpgeThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				while (true) {
+				while (isPlaying()) {
 					lastJPGETime = updateJPGE(lastJPGETime);
 				}
 			}
@@ -331,6 +373,18 @@ public class Engine {
 			}
 		});
 		graphicsThread.start();
+	}
+	
+	private void startInputThread() {
+		inputThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				while (isPlaying()) {
+					lastInputTime = updateInput(lastInputTime);
+				}
+			}
+		});
+		inputThread.start();
 	}
 	
 	private void startPhysicsThread() {
@@ -369,6 +423,18 @@ public class Engine {
 		int elapsed = (int)(System.currentTimeMillis() - before);
 		try {
 			Thread.sleep(1000/getGraphicsUpdateRate());
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return elapsed;
+	}
+	
+	private int updateInput(int lastElapsed) {
+		long before = System.currentTimeMillis();
+		inputManager.update();
+		int elapsed = (int)(System.currentTimeMillis() - before);
+		try {
+			Thread.sleep(1000/getInputUpdateRate());
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

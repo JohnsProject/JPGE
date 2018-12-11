@@ -11,7 +11,7 @@ import com.johnsproject.jpge.utils.VectorUtils;
 /**
  * The Transform class contains position, rotation and scale data of a object.
  *
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Transform implements Externalizable {
 	

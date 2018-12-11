@@ -10,7 +10,7 @@ import com.johnsproject.jpge.utils.ColorUtils;
 /**
  * The Light class contains data of a light object in the {@link Scene}.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Light implements Externalizable{
 	

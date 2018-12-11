@@ -12,7 +12,7 @@ import com.johnsproject.jpge.dto.Vertex;
 /**
  * The RenderUtils class provides methods needed at the rendering process.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class RenderUtils {
 

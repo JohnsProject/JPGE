@@ -15,7 +15,7 @@ import com.johnsproject.jpge.utils.MathUtils;
 /**
  * The Texture class contains data of a texture used by the {@link Material} class.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Texture implements Externalizable {
 

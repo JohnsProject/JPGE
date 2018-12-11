@@ -11,7 +11,7 @@ import com.johnsproject.jpge.utils.VectorUtils;
 /**
  * The Face class contains data of a face.
  *
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Face implements Externalizable {
 

@@ -11,7 +11,7 @@ import java.util.List;
  * The Scene class contains {@link SceneObject sceneobjects}, 
  * {@link Camera cameras} and {@link Light lights}.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Scene implements Externalizable{
 

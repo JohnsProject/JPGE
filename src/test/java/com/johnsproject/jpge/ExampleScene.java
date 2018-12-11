@@ -13,7 +13,7 @@ import com.johnsproject.jpge.dto.Transform;
 import com.johnsproject.jpge.graphics.*;
 import com.johnsproject.jpge.io.*;
 
-public class ExampleScene implements JPGE{
+public class ExampleScene implements JPGE, JPGEKeyListener{
 	
 	public static void main(String[] args){
 		new ExampleScene();
@@ -31,7 +31,7 @@ public class ExampleScene implements JPGE{
 			mesh1 = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_ALL));
 			mesh2 = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_ALL));
 //			mesh2 = SOMImporter.load("/home/john/Development/test.som");
-		} catch (ImportExeption e) {
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		sceneObject1 = new SceneObject("test", new Transform(new int[] {0, 0, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh1);
@@ -60,201 +60,145 @@ public class ExampleScene implements JPGE{
 		Engine.getInstance().getScene().addCamera(camera);
 		Engine.getInstance().getScene().addCamera(camera2);
 		Engine.getInstance().addJPGEListener(this);
-		Profiler.getInstance().start();
+		Engine.getInstance().getInputManager().addKeyListener(this);
+		new Profiler(Engine.getInstance());
 	}
 	
 	
 	@Override
 	public void update() {
-		KeyInputManager keyInput = Engine.getInstance().getKeyInputManager();
-		applyCameraMove(keyInput);
-		applySceneObjectMove(keyInput);
-		applyLightMove(keyInput);
-		MouseInputManager mouseInput = Engine.getInstance().getMouseInputManager();
-		if (mouseInput.getKey(MouseInputManager.LEFT)) {
-			int x = (mouseInput.getMouseX()) - (windowWidth/2);
-			int y = (mouseInput.getMouseY()) - (windowHeight/2);
-			sceneObject1.getTransform().setPosition(x*5, y*5, 0);
-//			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);
-		}
-//		if (sceneObject2.getRigidbody().isColliding("test")) {
-//			sceneObject2.getRigidbody().addForce(0, -100, 0);
+//		MouseInputManager mouseInput = Engine.getInstance().getMouseInputManager();
+//		if (mouseInput.getKey(MouseInputManager.LEFT)) {
+//			int x = (mouseInput.getMouseX()) - (windowWidth/2);
+//			int y = (mouseInput.getMouseY()) - (windowHeight/2);
+//			sceneObject1.getTransform().setPosition(x*5, y*5, 0);
+////			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);
 //		}
+////		if (sceneObject2.getRigidbody().isColliding("test")) {
+////			sceneObject2.getRigidbody().addForce(0, -100, 0);
+////		}
 	}
-	
-	public void applyCameraMove(KeyInputManager input) {
-		if (input.getKey(KeyEvent.VK_W)) {
+
+
+	@Override
+	public void keyPressed(KeyEvent e) {	}
+
+
+	@Override
+	public void keyReleased(KeyEvent e) {	}
+
+
+	@Override
+	public void keyTyped(KeyEvent e) {	}
+
+
+	@Override
+	public void keyDown(KeyEvent e) {
+		switch (e.getKeyChar()) {
+		case 'w':
 			camera.getTransform().translateLocal(0, 0, 60);
-		}
-		if (input.getKey(KeyEvent.VK_S)) {
+			break;
+		case 's':
 			camera.getTransform().translateLocal(0, 0, -60);
-		}
-		if (input.getKey(KeyEvent.VK_A)) {
+			break;
+		case 'a':
 			camera.getTransform().translateLocal(-60, 0, 0);
-		}
-		if (input.getKey(KeyEvent.VK_D)) {
+			break;
+		case 'd':
 			camera.getTransform().translateLocal(60, 0, 0);
-		}
-		if (input.getKey(KeyEvent.VK_E)) {
-			camera.getTransform().translateLocal(0, -60, 0);
-		}
-		if (input.getKey(KeyEvent.VK_Y)) {
+			break;
+		case 'e':
 			camera.getTransform().translateLocal(0, 60, 0);
-		}
-	}
-	
-	public void applySceneObjectMove(KeyInputManager input) {
-		if (input.getKey(KeyEvent.VK_B)) {
+			break;
+		case 'y':
+			camera.getTransform().translateLocal(0, -60, 0);
+			break;
+		case 'b':
 			sceneObject1.getTransform().rotate(0, 3, 0);
 			sceneObject2.getTransform().rotate(0, 3, 0);
-		}
-		if (input.getKey(KeyEvent.VK_N)) {
+			break;
+		case 'n':
 			sceneObject1.getTransform().rotate(3, 0, 0);
 			sceneObject2.getTransform().rotate(3, 0, 0);
+			break;
+		case 'k':
+			camera.getTransform().rotate(0, 1, 0);
+			break;
+		case 'l':
+			camera.getTransform().rotate(0, -1, 0);
+			break;
+		case 'o':
+			camera.getTransform().rotate(1, 0, 0);
+			break;
+		case '.':
+			camera.getTransform().rotate(-1, 0, 0);
+			break;
+		case 'p':
+			camera.getTransform().rotate(0, 0, 1);
+			break;
+		case ',':
+			camera.getTransform().rotate(0, 0, -1);
+			break;
+		case '1':
+			sceneObject1.getShader().setDrawingType(Shader.DRAW_VERTEX);
+			sceneObject2.getShader().setDrawingType(Shader.DRAW_VERTEX);
+			break;
+		case '2':
+			sceneObject1.getShader().setDrawingType(Shader.DRAW_WIREFRAME);
+			sceneObject2.getShader().setDrawingType(Shader.DRAW_WIREFRAME);
+			break;
+		case '3':
+			sceneObject1.getShader().setDrawingType(Shader.DRAW_FLAT);
+			sceneObject2.getShader().setDrawingType(Shader.DRAW_FLAT);
+			break;
+		case '4':
+			sceneObject1.getShader().setDrawingType(Shader.DRAW_TEXTURED);
+			sceneObject2.getShader().setDrawingType(Shader.DRAW_TEXTURED);
+			break;
+		case '6':
+			sceneObject1.getShader().setProjectionType(Shader.PROJECT_ORTHOGRAPHIC);
+			sceneObject2.getShader().setProjectionType(Shader.PROJECT_ORTHOGRAPHIC);
+			break;
+		case '7':
+			sceneObject1.getShader().setProjectionType(Shader.PROJECT_PERSPECTIVE);
+			sceneObject2.getShader().setProjectionType(Shader.PROJECT_PERSPECTIVE);
+		case '8':
+			sceneObject1.getShader().setShadingType(Shader.SHADE_FLAT);
+			sceneObject2.getShader().setShadingType(Shader.SHADE_FLAT);
+			break;
+		case '9':
+			sceneObject1.getShader().setShadingType(Shader.SHADE_GOURAUD);
+			sceneObject2.getShader().setShadingType(Shader.SHADE_GOURAUD);
+			break;
+		case 'v':
+			sceneObject2.getRigidbody().accelerate(0, -10, 0);
+			break;
+		case '+':
+			light.setStrength(light.getStrength()+1);
+			break;
+		case '-':
+			light.setStrength(light.getStrength()-1);
+			break;
 		}
-		sceneObject1.getRigidbody().useGravity(false);
-		if (input.getKey(KeyEvent.VK_G)) {
-			sceneObject2.getRigidbody().addForce(0, -100, 0);
+		if (e.getKeyCode() == 116) { 
+			Engine.getInstance().play();
+		}
+		if (e.getKeyCode() == 117) { 
+			Engine.getInstance().pause();
+		}
+		if (e.getKeyCode() == 38) { 
+			light.getTransform().translate(0, 0, 1);
+		}
+		if (e.getKeyCode() == 40) { 
+			light.getTransform().translate(0, 0, -1);
+		}
+		if (e.getKeyCode() == 37) { 
+			light.getTransform().translate(1, 0, 0);
+		}
+		if (e.getKeyCode() == 39) { 
+			light.getTransform().translate(-1, 0, 0);
 		}
 	}
-	
-	public void applyLightMove(KeyInputManager input) {
-		if (input.getKey(KeyEvent.VK_I)) {
-			light.getTransform().translateLocal(0, 0, -1);
-		}
-		if (input.getKey(KeyEvent.VK_K)) {
-			light.getTransform().translateLocal(0, 0, 1);
-		}
-		if (input.getKey(KeyEvent.VK_J)) {
-			light.getTransform().translateLocal(1, 0, 0);
-		}
-		if (input.getKey(KeyEvent.VK_L)) {
-			light.getTransform().translateLocal(-1, 0, 0);
-		}
-		if (input.getKey(KeyEvent.VK_M)) {
-			light.getTransform().translateLocal(0, 1, 0);
-		}
-		if (input.getKey(KeyEvent.VK_O)) {
-			light.getTransform().translateLocal(0, -1, 0);
-		}
-	}
-	
-//	public void keyPressed(JPGEKeyEvent event) {
-//		switch (event.getKey()) {
-//		case 'w':
-//			camera.getTransform().translateLocal(0, 0, 60);
-//			break;
-//		case 's':
-//			camera.getTransform().translateLocal(0, 0, -60);
-//			break;
-//		case 'a':
-//			camera.getTransform().translateLocal(-60, 0, 0);
-//			break;
-//		case 'd':
-//			camera.getTransform().translateLocal(60, 0, 0);
-//			break;
-//		case 'e':
-//			camera.getTransform().translateLocal(0, 60, 0);
-//			break;
-//		case 'y':
-//			camera.getTransform().translateLocal(0, -60, 0);
-//			break;
-//		case 'b':
-//			sceneObject.getTransform().rotate(0, 3, 0);
-//			sceneObject2.getTransform().rotate(0, 3, 0);
-//			break;
-//		case 'n':
-//			sceneObject.getTransform().rotate(3, 0, 0);
-//			sceneObject2.getTransform().rotate(3, 0, 0);
-//			break;
-//		case 'k':
-//			camera.getTransform().rotate(0, 1, 0);
-//			break;
-//		case 'l':
-//			camera.getTransform().rotate(0, -1, 0);
-//			break;
-//		case 'o':
-//			camera.getTransform().rotate(1, 0, 0);
-//			break;
-//		case '.':
-//			camera.getTransform().rotate(-1, 0, 0);
-//			break;
-//		case 'p':
-//			camera.getTransform().rotate(0, 0, 1);
-//			break;
-//		case ',':
-//			camera.getTransform().rotate(0, 0, -1);
-//			break;
-//		case '1':
-//			sceneObject.getShader().setDrawingType(Shader.DRAW_VERTEX);
-//			sceneObject2.getShader().setDrawingType(Shader.DRAW_VERTEX);
-//			break;
-//		case '2':
-//			sceneObject.getShader().setDrawingType(Shader.DRAW_WIREFRAME);
-//			sceneObject2.getShader().setDrawingType(Shader.DRAW_WIREFRAME);
-//			break;
-//		case '3':
-//			sceneObject.getShader().setDrawingType(Shader.DRAW_FLAT);
-//			sceneObject2.getShader().setDrawingType(Shader.DRAW_FLAT);
-//			break;
-//		case '4':
-//			sceneObject.getShader().setDrawingType(Shader.DRAW_TEXTURED);
-//			sceneObject2.getShader().setDrawingType(Shader.DRAW_TEXTURED);
-//			break;
-//		case '6':
-//			sceneObject.getShader().setProjectionType(Shader.PROJECT_ORTHOGRAPHIC);
-//			sceneObject2.getShader().setProjectionType(Shader.PROJECT_ORTHOGRAPHIC);
-//			break;
-//		case '7':
-//			sceneObject.getShader().setProjectionType(Shader.PROJECT_PERSPECTIVE);
-//			sceneObject2.getShader().setProjectionType(Shader.PROJECT_PERSPECTIVE);
-//		case '8':
-//			sceneObject.getShader().setShadingType(Shader.SHADE_FLAT);
-//			sceneObject2.getShader().setShadingType(Shader.SHADE_FLAT);
-//			break;
-//		case '9':
-//			sceneObject.getShader().setShadingType(Shader.SHADE_GOURAUD);
-//			sceneObject2.getShader().setShadingType(Shader.SHADE_GOURAUD);
-//			break;
-//		case '+':
-//			light.setStrength(light.getStrength()+1);
-//			break;
-//		case '-':
-//			light.setStrength(light.getStrength()-1);
-//			break;
-//		}
-//		if (event.getKeyCode() == 112) { 
-//			Profiler.getInstance().start();
-//		}
-//		if (event.getKeyCode() == 113) { 
-//			Profiler.getInstance().stop();
-//		}
-//		if (event.getKeyCode() == 114) { 
-//			Profiler.getInstance().startLogging();
-//		}
-//		if (event.getKeyCode() == 115) { 
-//			Profiler.getInstance().stopLogging();
-//		}
-//		if (event.getKeyCode() == 116) { 
-//			Engine.getInstance().play();
-//		}
-//		if (event.getKeyCode() == 117) { 
-//			Engine.getInstance().pause();
-//		}
-//		if (event.getKeyCode() == 38) { 
-//			light.getTransform().translate(0, 0, 1);
-//		}
-//		if (event.getKeyCode() == 40) { 
-//			light.getTransform().translate(0, 0, -1);
-//		}
-//		if (event.getKeyCode() == 37) { 
-//			light.getTransform().translate(1, 0, 0);
-//		}
-//		if (event.getKeyCode() == 39) { 
-//			light.getTransform().translate(-1, 0, 0);
-//		}
-////		System.out.println(event.getKeyCode());
-//	}
 
 //	boolean dragged = false;
 //	int[] postition = new int[2];

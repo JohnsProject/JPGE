@@ -20,7 +20,7 @@ import javax.imageio.ImageIO;
 /**
  * The FileIO class provides useful file loading methods.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  *
  */
 public class FileIO {

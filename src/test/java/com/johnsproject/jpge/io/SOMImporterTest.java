@@ -14,7 +14,7 @@ import com.johnsproject.jpge.utils.VectorUtils;
 /**
  * Test class for {@link SOMImporter}.
  * 
- * @author John's Project - John Konrad Ferraz Salomon
+ * @author John's Project - John Salomon
  *
  */
 public class SOMImporterTest {

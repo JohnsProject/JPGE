@@ -4,7 +4,7 @@ package com.johnsproject.jpge;
  * The JPGE interface is used by the {@link Engine} 
  * to send update from the jpge thread to all jpge listeners.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public interface JPGE {
 	

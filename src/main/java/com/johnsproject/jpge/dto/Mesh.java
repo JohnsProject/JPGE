@@ -13,7 +13,7 @@ import com.johnsproject.jpge.utils.VectorUtils;
 /**
  * The Mesh class contains the data of {@link SceneObject} meshes imported by {@link SOMImporter}.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Mesh implements Externalizable {
 

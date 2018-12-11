@@ -3,7 +3,7 @@ package com.johnsproject.jpge.utils;
 /**
  * The VectorUtils provides methods for generating and handling vectors.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  * 
  */
 public class VectorUtils {

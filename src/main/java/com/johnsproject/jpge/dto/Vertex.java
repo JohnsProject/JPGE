@@ -11,7 +11,7 @@ import com.johnsproject.jpge.utils.VectorUtils;
 /**
  * The Vertex class contains data of a vertex point.
  *
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Vertex implements Externalizable {
 

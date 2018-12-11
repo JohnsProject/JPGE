@@ -11,8 +11,8 @@ import com.johnsproject.jpge.utils.VectorUtils;
 public class PhysicsAnimator {
 
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
-	private int[] vectorCache1 = new int[3];
-	private int[] vectorCache2 = new int[3];
+	private static int[] vectorCache1 = new int[3];
+	private static int[] vectorCache2 = new int[3];
 	
 	public void animate(Scene scene) {
 		for (int i = 0; i < scene.getSceneObjects().size(); i++) {
@@ -31,7 +31,7 @@ public class PhysicsAnimator {
 	}
 	
 	
-	void applyGravity (Rigidbody rigidbody, int[] gravity) {
+	private void applyGravity (Rigidbody rigidbody, int[] gravity) {
 		if(rigidbody.useGravity()) {
 			long fallTime = System.currentTimeMillis() - rigidbody.getLastCollisionTime();
 			int t = (int)(fallTime * fallTime);
@@ -44,7 +44,7 @@ public class PhysicsAnimator {
 		}
 	}
 	
-	void detectCollision(Scene scene, SceneObject sceneObject) {
+	private void detectCollision(Scene scene, SceneObject sceneObject) {
 		for (int j = 0; j < scene.getSceneObjects().size(); j++) {
 			SceneObject so = scene.getSceneObjects().get(j);
 			if (detectCollision(sceneObject, so)) {
@@ -55,7 +55,7 @@ public class PhysicsAnimator {
 		}
 	}
 	
-	boolean detectCollision(SceneObject sceneObject1, SceneObject sceneObject2) {
+	private boolean detectCollision(SceneObject sceneObject1, SceneObject sceneObject2) {
 		Rigidbody rb1 = sceneObject1.getRigidbody();
 		Rigidbody rb2 = sceneObject2.getRigidbody();
 		if(!sceneObject2.getName().equals(sceneObject1.getName())) {
@@ -75,7 +75,7 @@ public class PhysicsAnimator {
 		return false;
 	}
 	
-	boolean sphereToSphere(SceneObject sceneObject1, SceneObject sceneObject2) {
+	private boolean sphereToSphere(SceneObject sceneObject1, SceneObject sceneObject2) {
 		Rigidbody rigidbody1 = sceneObject1.getRigidbody();
 		Rigidbody rigidbody2 = sceneObject2.getRigidbody();
 		int[] pos1 = sceneObject1.getTransform().getPosition();
@@ -90,7 +90,7 @@ public class PhysicsAnimator {
 		return false;
 	}
 	
-	boolean sphereToMesh(SceneObject sceneObject1, SceneObject sceneObject2) {
+	private boolean sphereToMesh(SceneObject sceneObject1, SceneObject sceneObject2) {
 		Transform transform1 = sceneObject1.getTransform();
 		Transform transform2 = sceneObject2.getTransform();
 		int radius = sceneObject1.getRigidbody().getColliderRadius();
@@ -108,7 +108,7 @@ public class PhysicsAnimator {
 		return false;
 	}
 	
-	boolean meshToMesh(SceneObject sceneObject1, SceneObject sceneObject2) {
+	private boolean meshToMesh(SceneObject sceneObject1, SceneObject sceneObject2) {
 		Transform transform1 = sceneObject1.getTransform();
 		Transform transform2 = sceneObject2.getTransform();
 		for (int i = 0; i < sceneObject1.getMesh().getVertexes().length; i++) {
@@ -132,7 +132,7 @@ public class PhysicsAnimator {
 		return false;
 	}
 	
-	int getRadius(SceneObject sceneObject) {
+	private int getRadius(SceneObject sceneObject) {
 		int radius = 0;
 		for (int i = 0; i < sceneObject.getMesh().getVertexes().length; i++) {
 			int[] pos = sceneObject.getMesh().getVertex(i).getPosition();

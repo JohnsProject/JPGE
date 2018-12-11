@@ -12,7 +12,7 @@ import java.util.Arrays;
 /**
  * The Animation class contains the data of imported {@link Mesh} animations.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Animation implements Externalizable{
 	

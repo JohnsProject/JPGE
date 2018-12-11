@@ -8,7 +8,7 @@ import com.johnsproject.jpge.dto.SceneObject;
  * The Animator class updates the frame of the current {@link Animation} 
  * of each {@link SceneObject} in a {@link Scene}.
  *
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Animator {
 	

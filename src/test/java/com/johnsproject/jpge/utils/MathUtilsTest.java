@@ -7,7 +7,7 @@ import com.johnsproject.jpge.dto.Camera;
 /**
  * Test class for {@link MathUtils}.
  * 
- * @author John's Project - John Konrad Ferraz Salomon
+ * @author John's Project - John Salomon
  *
  */
 public class MathUtilsTest {

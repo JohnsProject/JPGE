@@ -15,9 +15,8 @@ import com.johnsproject.jpge.utils.VectorUtils;
 /**
  * The SOMImporter class provides import methods for the som (Scene Object Mesh) file format
  * that is exported with the blend2SOM som exporter, the som exporter currently only supports Blender.
- * <br>
- * - https://www.blender.org/
- * @author John´s Project - John Konrad Ferraz Salomon
+ *
+ * @author John´s Project - John Salomon
  *
  */
 public class SOMImporter {
@@ -29,15 +28,10 @@ public class SOMImporter {
 	 * 
 	 * @param path path of the som file.
 	 * @return a mesh containing the parsed som file data.
-	 * @throws ImportExeption
+	 * @throws IOException
 	 */
-	public static Mesh load(String path) throws ImportExeption {
-		String content = "";
-		try {
-			content = FileIO.readFile(path);
-		} catch (IOException e) {
-			throw new ImportExeption(e);
-		}
+	public static Mesh load(String path) throws IOException {
+		String content = FileIO.readFile(path);
 		return loadFromRaw(content);
 	}
 	
@@ -47,15 +41,10 @@ public class SOMImporter {
 	 * 
 	 * @param stream {@link InputStream} to read from.
 	 * @return a mesh containing the parsed som file data.
-	 * @throws ImportExeption
+	 * @throws IOException
 	 */
-	public static Mesh load(InputStream stream) throws ImportExeption {
-		String content = "";
-		try {
-			content = FileIO.readStream(stream);
-		} catch (IOException e) {
-			throw new ImportExeption(e);
-		}
+	public static Mesh load(InputStream stream) throws IOException {
+		String content = FileIO.readStream(stream);
 		return loadFromRaw(content);
 	}
 	
@@ -64,9 +53,9 @@ public class SOMImporter {
 	 * 
 	 * @param data data of the som file.
 	 * @return a mesh containing the parsed som file data.
-	 * @throws ImportExeption
+	 * @throws IOException
 	 */
-	public static Mesh loadFromRaw(String data) throws ImportExeption {
+	public static Mesh loadFromRaw(String data) throws IOException {
 		String rawData = data.replace(" ", "").replace("\n", "");
 		Vertex[] vertexes = parseVertexes(rawData);
 		Face[] faces = parseFaces(rawData);
@@ -77,7 +66,7 @@ public class SOMImporter {
 		return result;
 	}
 	
-	static Vertex[] parseVertexes(String rawData) throws ImportExeption {
+	static Vertex[] parseVertexes(String rawData) throws IOException {
 		String vCountData = rawData.split("vCount<")[1].split(">vCount", 2)[0];
 		Vertex[] vertexes = new Vertex[toInt(vCountData)];
 		String[] vPositionData = rawData.split("vPosition<")[1].split(">vPosition", 2)[0].split(",");
@@ -100,7 +89,7 @@ public class SOMImporter {
 		return vertexes;
 	}
 	
-	static Face[] parseFaces(String rawData) throws ImportExeption {
+	static Face[] parseFaces(String rawData) throws IOException {
 		String fCountData = rawData.split("fCount<")[1].split(">fCount", 2)[0];
 		Face[] faces = new Face[toInt(fCountData)];
 		String[] fVertex1Data = rawData.split("fVertex1<")[1].split(">fVertex1", 2)[0].split(",");
@@ -147,7 +136,7 @@ public class SOMImporter {
 		return materials;
 	}
 	
-	static Animation[] parseAnimations(String rawData) throws ImportExeption {
+	static Animation[] parseAnimations(String rawData) throws IOException {
 		String[] rawAnimationsData = rawData.split("Animations<")[1].split(">Animations", 2)[0].split("Animation<");
 //		int bonesCount = toInt(rawAnimationsData[0].split("BonesCount<")[1].split(">BonesCount")[0]);
 		Animation[] animations = new Animation[rawAnimationsData.length-1];

@@ -18,7 +18,7 @@ import com.johnsproject.jpge.utils.VectorUtils;
  * The Shader class is used to used shade the vertexes and the polygons that are
  * being rendered by the {@link Renderer}.
  *
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Shader {
 

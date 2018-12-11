@@ -9,7 +9,7 @@ import java.io.ObjectOutput;
  *The Material class contains appearance data of a {@link Mesh}.
  *It contains the color data, texture data and so on.
  *
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class Material implements Externalizable{
 

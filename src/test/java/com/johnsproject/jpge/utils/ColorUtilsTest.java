@@ -7,7 +7,7 @@ import org.junit.Test;
 /**
  * Test class for {@link ColorUtils}.
  * 
- * @author John's Project - John Konrad Ferraz Salomon
+ * @author John's Project - John Salomon
  *
  */
 public class ColorUtilsTest {

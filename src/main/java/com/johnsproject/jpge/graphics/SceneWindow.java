@@ -14,7 +14,7 @@ import com.johnsproject.jpge.io.FileIO;
 /**
  * The SceneWindow class is used to show a {@link Scene}.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class SceneWindow extends JFrame{
 

@@ -17,7 +17,7 @@ import com.johnsproject.jpge.graphics.SceneWindow;
  * The {@link Renderer} draws on it at the rendering process and after that 
  * this buffer is drawn on the {@link SceneWindow} used by the {@link Engine} if available.
  *
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  */
 public class RenderBuffer implements Externalizable{
 	

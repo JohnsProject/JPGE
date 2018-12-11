@@ -4,7 +4,7 @@ package com.johnsproject.jpge.utils;
  * The MathUtils class provides fast methods for math operations. 
  * Due to performance reasons the methods only use fixed point math.
  * 
- * @author John´s Project - John Konrad Ferraz Salomon
+ * @author John´s Project - John Salomon
  * 
  */
 public class MathUtils {
