@@ -114,9 +114,9 @@ public class RenderUtils {
 	 */
 	public static boolean isInsideViewFrustum(Face face, Mesh mesh, Camera camera) {
 		face.setCulled(false);
-		int[] v1 = mesh.getBufferedVertex(face.getVertex1()).getLocation();
-		int[] v2 = mesh.getBufferedVertex(face.getVertex2()).getLocation();
-		int[] v3 = mesh.getBufferedVertex(face.getVertex3()).getLocation();
+		int[] v1 = mesh.getVertex(face.getVertex1()).getLocation();
+		int[] v2 = mesh.getVertex(face.getVertex2()).getLocation();
+		int[] v3 = mesh.getVertex(face.getVertex3()).getLocation();
 		int ncp = camera.getNearClippingPlane();
 		int fcp = camera.getFarClippingPlane();
 		int w = camera.getWidth();
@@ -145,9 +145,9 @@ public class RenderUtils {
 	 */
 	public static boolean isBackface(Face face, Mesh mesh) {
 		face.setCulled(false);
-		int[] v1 = mesh.getBufferedVertex(face.getVertex1()).getLocation();
-		int[] v2 = mesh.getBufferedVertex(face.getVertex2()).getLocation();
-		int[] v3 = mesh.getBufferedVertex(face.getVertex3()).getLocation();
+		int[] v1 = mesh.getVertex(face.getVertex1()).getLocation();
+		int[] v2 = mesh.getVertex(face.getVertex2()).getLocation();
+		int[] v3 = mesh.getVertex(face.getVertex3()).getLocation();
 		int v1x = v1[vx], v1y = v1[vy];
 		int v2x = v2[vx], v2y = v2[vy];
 		int v3x = v3[vx], v3y = v3[vy];
@@ -219,9 +219,9 @@ public class RenderUtils {
 	 * @param renderBuffer {@link RenderBuffer} to use.
 	 */
 	public static void drawFaceGouraud(Face face, Mesh mesh, Camera camera, RenderBuffer renderBuffer) {
-		Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
-		Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
-		Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
+		Vertex vt1 = mesh.getVertex(face.getVertex1());
+		Vertex vt2 = mesh.getVertex(face.getVertex2());
+		Vertex vt3 = mesh.getVertex(face.getVertex3());
 		// get location of vertexes
 		int[] vp1 = vt1.getLocation();
 		int[] vp2 = vt2.getLocation();
@@ -409,7 +409,7 @@ public class RenderUtils {
 		for (; sx < ex; sx++) {
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
 			// no need to shift sz as the z test is just check if its a higher value
-			setPixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 500), camera, renderBuffer);
+			setPixel(sx, sy, sz >> SHIFT, ColorUtils.lerpRBG(iColor, color, 500), camera, renderBuffer);
 			sz += dz;
 			sr += dr;
 			sg += dg;
@@ -428,9 +428,9 @@ public class RenderUtils {
 	 * @param renderBuffer {@link RenderBuffer} to use.
 	 */
 	public static void drawFaceAffine(Face face, Mesh mesh, Camera camera, RenderBuffer renderBuffer) {
-		Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
-		Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
-		Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
+		Vertex vt1 = mesh.getVertex(face.getVertex1());
+		Vertex vt2 = mesh.getVertex(face.getVertex2());
+		Vertex vt3 = mesh.getVertex(face.getVertex3());
 		// get location of vertexes
 		int[] vp1 = vt1.getLocation();
 		int[] vp2 = vt2.getLocation();
@@ -655,7 +655,7 @@ public class RenderUtils {
 			int color = img.getPixel(su >> SHIFT, sv >> SHIFT);
 			int iColor = ColorUtils.convert(sr >> SHIFT, sg >> SHIFT, sb >> SHIFT, sa >> SHIFT);
 			// no need to shift sz as the z test is just check if its a higher value
-			setPixel(sx, sy, sz, ColorUtils.lerpRBG(iColor, color, 500), camera, renderBuffer);
+			setPixel(sx, sy, sz >> SHIFT, ColorUtils.lerpRBG(iColor, color, 500), camera, renderBuffer);
 			sz += dz;
 			su += du;
 			sv += dv;

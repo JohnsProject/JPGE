@@ -24,6 +24,7 @@
 package com.johnsproject.jpge;
 
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 
 import com.johnsproject.jpge.dto.Camera;
@@ -36,7 +37,7 @@ import com.johnsproject.jpge.dto.Transform;
 import com.johnsproject.jpge.graphics.*;
 import com.johnsproject.jpge.io.*;
 
-public class ExampleScene implements JPGE, JPGEKeyListener{
+public class ExampleScene implements JPGE, JPGEKeyListener, JPGEMouseListener{
 	
 	public static void main(String[] args){
 		new ExampleScene();
@@ -51,8 +52,8 @@ public class ExampleScene implements JPGE, JPGEKeyListener{
 	public ExampleScene() {		
 		try {
 //			mesh1 = SOMImporter.load("/home/john/Development/test.som");
-			mesh1 = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_ALL));
-			mesh2 = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_ALL));
+			mesh1 = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_CUBE));
+			mesh2 = SOMImporter.load(getClass().getResourceAsStream(Mesh.RESOURCES_CUBE));
 //			mesh2 = SOMImporter.load("/home/john/Development/test.som");
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -61,6 +62,8 @@ public class ExampleScene implements JPGE, JPGEKeyListener{
 		sceneObject2 = new SceneObject("test2", new Transform(new int[] {0, -3000, 0}, new int[] {90, 0, 0}, new int[] {1, 1, 1}), mesh2);
 //		sceneObject1.getRigidbody().setCollisionType(Rigidbody.COLLISION_MESH);
 //		sceneObject2.getRigidbody().setCollisionType(Rigidbody.COLLISION_MESH);
+		sceneObject1.getRigidbody().setKinematic(true);
+		sceneObject1.getRigidbody().setMass(20);
 		try {
 			Texture t = new Texture(getClass().getResourceAsStream("/JohnsProject.png"));
 			for (int i = 0; i < mesh1.getMaterials().length; i++) {
@@ -84,6 +87,7 @@ public class ExampleScene implements JPGE, JPGEKeyListener{
 		Engine.getInstance().getScene().addCamera(camera2);
 		Engine.getInstance().addJPGEListener(this);
 		Engine.getInstance().getInputManager().addKeyListener(this);
+		Engine.getInstance().getInputManager().addMouseListener(this);
 		new Profiler(Engine.getInstance());
 	}
 	
@@ -95,7 +99,7 @@ public class ExampleScene implements JPGE, JPGEKeyListener{
 //			int x = (mouseInput.getMouseX()) - (windowWidth/2);
 //			int y = (mouseInput.getMouseY()) - (windowHeight/2);
 //			sceneObject1.getTransform().setLocation(x*5, y*5, 0);
-////			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);
+//			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);
 //		}
 ////		if (sceneObject2.getRigidbody().isColliding("test")) {
 ////			sceneObject2.getRigidbody().addForce(0, -100, 0);
@@ -104,15 +108,15 @@ public class ExampleScene implements JPGE, JPGEKeyListener{
 
 
 	@Override
-	public void keyPressed(KeyEvent e) {	}
+	public void keyPressed(KeyEvent e) {}
 
 
 	@Override
-	public void keyReleased(KeyEvent e) {	}
+	public void keyReleased(KeyEvent e) {}
 
 
 	@Override
-	public void keyTyped(KeyEvent e) {	}
+	public void keyTyped(KeyEvent e) {}
 
 
 	@Override
@@ -222,6 +226,37 @@ public class ExampleScene implements JPGE, JPGEKeyListener{
 			light.getTransform().translate(-1, 0, 0);
 		}
 	}
+
+
+	@Override
+	public void mousePressed(MouseEvent e) {}
+
+
+	@Override
+	public void mouseDown(MouseEvent e) {
+		if (e.getButton() == MouseEvent.BUTTON1) {
+			int x = (e.getX()) - (windowWidth/2);
+			int y = (e.getY()) - (windowHeight/2);
+			sceneObject1.getTransform().setLocation(x*5, y*5, 0);
+//			camera.getTransform().rotate(y/(windowHeight>>3), x/(windowWidth>>3), 0);
+		}
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent e) {}
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+
+
+	@Override
+	public void mouseExited(MouseEvent e) {}
+
+
+	@Override
+	public void mouseEntered(MouseEvent e) {}
 
 //	boolean dragged = false;
 //	int[] postition = new int[2];

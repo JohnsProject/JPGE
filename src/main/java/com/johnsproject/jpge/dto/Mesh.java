@@ -29,9 +29,7 @@ import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.Arrays;
 
-import com.johnsproject.jpge.graphics.Renderer;
 import com.johnsproject.jpge.io.SOMImporter;
-import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * The Mesh class contains the data of {@link SceneObject} meshes imported by {@link SOMImporter}.
@@ -41,8 +39,6 @@ import com.johnsproject.jpge.utils.VectorUtils;
 public class Mesh implements Externalizable {
 
 	private static final long serialVersionUID = -5344798038852090833L;
-
-	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
 	/**
 	 * Path to default models under the resources folder.
@@ -63,7 +59,6 @@ public class Mesh implements Externalizable {
 								RESOURCES_ALL = "/meshes.som";
 	
 	private Vertex[] vertexes = new Vertex[0];
-	private Vertex[] vertexesBuffer = new Vertex[0];
 	private Face[] faces = new Face[0];
 	private Material[] materials = new Material[0];
 	private Animation[] animations = new Animation[0];
@@ -81,8 +76,6 @@ public class Mesh implements Externalizable {
 	 */
 	public Mesh (Vertex[] vertexes, Face[] faces, Material[] materials, Animation[] animations) {
 		this.vertexes = vertexes;
-		this.vertexesBuffer = new Vertex[vertexes.length];
-		initializeBuffer();
 		this.faces = faces;
 		this.materials = materials;
 		this.animations = animations;
@@ -106,60 +99,6 @@ public class Mesh implements Externalizable {
 	 */
 	public Vertex getVertex(int index){
 		return vertexes[index];
-	}
-	
-	/**
-	 * Returns all buffered vertexes of this mesh.
-	 * The buffered vertexes are used by the {@link Renderer} at the rendering process.
-	 * This vertexes are transformed, rotated and projected. 
-	 * the vertex buffer is a buffer used to prevent loosing original location of vertexes.
-	 * 
-	 * @return all buffered vertexes of this mesh.
-	 */
-	public Vertex[] getBufferedVertexes(){
-		return vertexesBuffer;
-	}
-	
-	/**
-	 * Returns the buffered vertex at the given index.
-	 * The buffered vertexes are used by the {@link Renderer} at the rendering process.
-	 * This vertexes are transformed, rotated and projected. 
-	 * the vertex buffer is a buffer used to prevent loosing original location of vertexes.
-	 * 
-	 * 
-	 * @param index index of buffered vertex.
-	 * @return buffered vertex at the given index.
-	 */
-	public Vertex getBufferedVertex(int index){
-		return vertexesBuffer[index];
-	}
-	
-	private void initializeBuffer() {
-		for (int i = 0; i < vertexes.length; i++) {
-			if (vertexes[i] != null) {
-				vertexesBuffer[i] = new Vertex(
-						vertexes[i].getLocation().clone(),
-						vertexes[i].getNormal().clone(),
-						vertexes[i].getBone(),
-						vertexes[i].getMaterial()
-				);
-			}
-		}
-	}
-	
-	/**
-	 * Resets the vertex buffer of this mesh.
-	 * the vertex buffer is a buffer used to prevent loosing original location of vertexes.
-	 */
-	public void resetBuffer() {
-		for (int i = 0; i < vertexes.length; i++) {
-			vertexesBuffer[i].getLocation()[vx] = vertexes[i].getLocation()[vx];
-			vertexesBuffer[i].getLocation()[vy] = vertexes[i].getLocation()[vy];
-			vertexesBuffer[i].getLocation()[vz] = vertexes[i].getLocation()[vz];
-			vertexesBuffer[i].getNormal()[vx] = vertexes[i].getNormal()[vx];
-			vertexesBuffer[i].getNormal()[vy] = vertexes[i].getNormal()[vy];
-			vertexesBuffer[i].getNormal()[vz] = vertexes[i].getNormal()[vz];
-		}
 	}
 	
 	/**

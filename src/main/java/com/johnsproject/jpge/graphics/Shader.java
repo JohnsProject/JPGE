@@ -61,11 +61,10 @@ public class Shader {
 	private int drawingType = DRAW_TEXTURED;	
 	
 	public int shade(Mesh mesh, Transform objectTransform, Camera camera, RenderBuffer renderBuffer, List<Light> lights) {
-		// reset mesh buffer
-		mesh.resetBuffer();
 		// animate and shade vertexes
-		for (int i = 0; i < mesh.getBufferedVertexes().length; i++) {
-			Vertex vertex = mesh.getBufferedVertex(i);
+		for (int i = 0; i < mesh.getVertexes().length; i++) {
+			Vertex vertex = mesh.getVertex(i);
+			vertex.reset();
 			vertex = shadeVertex(vertex, mesh, objectTransform, lights, camera);
 		}
 		int rendFaces = 0;
@@ -114,9 +113,9 @@ public class Shader {
 		if (!RenderUtils.isInsideViewFrustum(face, mesh, camera)) {
 			if (!RenderUtils.isBackface(face, mesh)) {
 				// get vertexes
-				Vertex vt1 = mesh.getBufferedVertex(face.getVertex1());
-				Vertex vt2 = mesh.getBufferedVertex(face.getVertex2());
-				Vertex vt3 = mesh.getBufferedVertex(face.getVertex3());
+				Vertex vt1 = mesh.getVertex(face.getVertex1());
+				Vertex vt2 = mesh.getVertex(face.getVertex2());
+				Vertex vt3 = mesh.getVertex(face.getVertex3());
 				if (shadingType == SHADE_FLAT) {
 					// calculate shaded color for 1 vertex
 					int result = shade(lights, objectTransform.getLocation(), vt1.getNormal());

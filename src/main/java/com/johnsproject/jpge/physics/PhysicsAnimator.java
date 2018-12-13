@@ -28,6 +28,7 @@ import com.johnsproject.jpge.dto.Rigidbody;
 import com.johnsproject.jpge.dto.Scene;
 import com.johnsproject.jpge.dto.SceneObject;
 import com.johnsproject.jpge.dto.Transform;
+import com.johnsproject.jpge.utils.MathUtils;
 import com.johnsproject.jpge.utils.Vector3MathUtils;
 import com.johnsproject.jpge.utils.VectorUtils;
 
@@ -69,14 +70,37 @@ public class PhysicsAnimator {
 
 	private void detectCollision(Scene scene, SceneObject sceneObject) {
 		for (int j = 0; j < scene.getSceneObjects().size(); j++) {
-			SceneObject so = scene.getSceneObjects().get(j);
-			if (detectCollision(sceneObject, so)) {
-				sceneObject.getRigidbody().collisionEnter(so.getName());
+			SceneObject sceneObject2 = scene.getSceneObjects().get(j);
+			if (detectCollision(sceneObject, sceneObject2)) {
+				sceneObject.getRigidbody().collisionEnter(sceneObject2.getName());
+//				moveToCorner(sceneObject, sceneObject2);
 			} else {
-				sceneObject.getRigidbody().collisionExit(so.getName());
+				sceneObject.getRigidbody().collisionExit(sceneObject2.getName());
 			}
 		}
 	}
+	
+//	private void moveToCorner(SceneObject sceneObject1, SceneObject sceneObject2) {
+//		int[] loc1 = sceneObject1.getTransform().getLocation();
+//		int[] loc2 = sceneObject2.getTransform().getLocation();
+//		Rigidbody rb1 = sceneObject1.getRigidbody();
+//		Rigidbody rb2 = sceneObject2.getRigidbody();
+//		int rad1 = rb1.getColliderRadius();
+//		int rad2 = rb2.getColliderRadius();
+//		int distX = (loc2[vx] + rad2) - (loc1[vx] + rad1);
+//		int distY = (loc2[vy] + rad2) - (loc1[vy] + rad1);
+//		int distZ = (loc2[vz] + rad2) - (loc1[vz] + rad1);
+//		if (rb2.getMass() < rb1.getMass()) {
+//			loc2[vx] += distX;
+//			loc2[vy] += distY;
+//			loc2[vz] += distZ;
+//		}else if (rb2.getMass() > rb1.getMass()){
+//			loc1[vx] += distX;
+//			loc1[vy] += distY;
+//			loc1[vz] += distZ;
+//		}
+//		
+//	}
 
 	private boolean detectCollision(SceneObject sceneObject1, SceneObject sceneObject2) {
 		Rigidbody rb1 = sceneObject1.getRigidbody();

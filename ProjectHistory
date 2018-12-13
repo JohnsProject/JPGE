@@ -281,8 +281,10 @@ v0.2 - 27/10/2018
 * Removed Profiler singleton
 * Updated License
 * Refactored
-
-
+13/12/2018
+* Added startLocation to Vertex (using location in rendering instead of vertexBuffer in Mesh)
+* Fixed mouseDown event bug
+* Fixed bug in RenderUtils
 
 
 

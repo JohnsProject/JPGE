@@ -42,6 +42,7 @@ public class Vertex implements Externalizable {
 	
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
 	
+	private int[] startLocation = new int[3];
 	private int[] location = new int[3];
 	private int[] normal = new int[3];
 	private int color = 0;
@@ -61,7 +62,8 @@ public class Vertex implements Externalizable {
 	 * {@link Mesh} this vertex belongs to.
 	 */
 	public Vertex(int[] location, int[] normal, int bone, int material) {
-		this.location = location;
+		this.startLocation = location;
+		this.location = location.clone();
 		this.normal = normal;
 		this.bone = bone;
 		this.color = 0;
@@ -69,14 +71,56 @@ public class Vertex implements Externalizable {
 	}
 
 	/**
-	 * Returns the location of this vertex.
+	 * Returns the undeformed location of this vertex.
+	 * 
+	 * @return location of this vertex.
+	 */
+	public int[] getStartLocation() {
+		return startLocation;
+	}
+	
+	/**
+	 * Returns the current location of this vertex.
 	 * 
 	 * @return location of this vertex.
 	 */
 	public int[] getLocation() {
 		return location;
 	}
+	
+	
+	/**
+	 *  Sets the location of this vertex.
+	 * 
+	 * @param location location to set.
+	 */
+	public void setLocation(int[] location) {
+		this.location = location;
+	}
+	
+	
+	/**
+	 * Sets the location of this vertex.
+	 * 
+	 * @param x location at the x axis.
+	 * @param y location at the y axis.
+	 * @param z location at the z axis.
+	 */
+	public void setLocation(int x, int y, int z) {
+		this.location[vx] = x;
+		this.location[vy] = y;
+		this.location[vz] = z;
+	}
 
+	/**
+	 * Sets the location of this vertex equals to the start location.
+	 */
+	public void reset() {
+		this.location[vx] = startLocation[vx];
+		this.location[vy] = startLocation[vy];
+		this.location[vz] = startLocation[vz];
+	}
+	
 	/**
 	 * Returns the normal vector of this vertex.
 	 * 
@@ -132,9 +176,9 @@ public class Vertex implements Externalizable {
 
 	@Override
 	public void writeExternal(ObjectOutput out) throws IOException {
-		out.writeInt(location[vx]);
-		out.writeInt(location[vy]);
-		out.writeInt(location[vz]);
+		out.writeInt(startLocation[vx]);
+		out.writeInt(startLocation[vy]);
+		out.writeInt(startLocation[vz]);
 		out.writeInt(normal[vx]);
 		out.writeInt(normal[vy]);
 		out.writeInt(normal[vz]);
@@ -145,9 +189,9 @@ public class Vertex implements Externalizable {
 
 	@Override
 	public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-		location[vx] = in.readInt();
-		location[vy] = in.readInt();
-		location[vz] = in.readInt();
+		startLocation[vx] = in.readInt();
+		startLocation[vy] = in.readInt();
+		startLocation[vz] = in.readInt();
 		normal[vx] = in.readInt();
 		normal[vy] = in.readInt();
 		normal[vz] = in.readInt();
@@ -164,7 +208,7 @@ public class Vertex implements Externalizable {
 		result = prime * result + color;
 		result = prime * result + material;
 		result = prime * result + Arrays.hashCode(normal);
-		result = prime * result + Arrays.hashCode(location);
+		result = prime * result + Arrays.hashCode(startLocation);
 		return result;
 	}
 
@@ -185,7 +229,7 @@ public class Vertex implements Externalizable {
 			return false;
 		if (!Arrays.equals(normal, other.normal))
 			return false;
-		if (!Arrays.equals(location, other.location))
+		if (!Arrays.equals(startLocation, other.startLocation))
 			return false;
 		return true;
 	}

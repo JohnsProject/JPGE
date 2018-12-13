@@ -24,6 +24,7 @@
 package com.johnsproject.jpge.io;
 
 import java.awt.AWTEvent;
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.AWTEventListener;
@@ -51,6 +52,7 @@ public class InputManager {
 	private List<MouseMotionListener> motionListeners = new ArrayList<MouseMotionListener>();
 	private List<MouseWheelListener> wheelListeners = new ArrayList<MouseWheelListener>();
 	private Point mouseLocation = new Point();
+	private Point mouseLocationOnScreen = new Point();
 
 	public InputManager() {
 		Toolkit.getDefaultToolkit().addAWTEventListener(new AWTEventListener() {
@@ -61,7 +63,8 @@ public class InputManager {
 				}
 				if (event instanceof MouseEvent) {
 					MouseEvent e = (MouseEvent) event;
-					mouseLocation = e.getLocationOnScreen();
+					mouseLocation = e.getPoint();
+					mouseLocationOnScreen = e.getLocationOnScreen();
 					handleMouseEvent(e);
 					handleMouseMotionEvent(e);
 				}
@@ -204,13 +207,20 @@ public class InputManager {
 		for (int i = 0; i < mouseEvents.length; i++) {
 			MouseEvent mouseEvent = mouseEvents[i];
 			if (mouseEvent != null) {
+				mouseEvent = new MouseEvent((Component) mouseEvent.getSource(),
+														mouseEvent.getID(),
+														mouseEvent.getWhen(),
+														mouseEvent.getModifiers(),
+														(int) mouseLocation.getX(),
+														(int) mouseLocation.getY(),
+														mouseEvent.getClickCount(), false);
 				for (int j = 0; j < mouseListeners.size(); j++) {
 					mouseListeners.get(j).mouseDown(mouseEvent);
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Returns all keys being pressed.
 	 * 
@@ -228,16 +238,25 @@ public class InputManager {
 	public MouseEvent[] getPressedMouseButtons() {
 		return mouseEvents;
 	}
+
+	/**
+	 * Returns the location of the mouse relative to the source component.
+	 * 
+	 * @return location of the mouse relative to the source component.
+	 */
+	public Point getMouseLocation() {
+		return mouseLocation;
+	}
 	
 	/**
 	 * Returns the location of the mouse on screen.
 	 * 
 	 * @return location of the mouse on screen.
 	 */
-	public Point getMouseLocation() {
-		return mouseLocation;
+	public Point getMouseLocationOnScreen() {
+		return mouseLocationOnScreen;
 	}
-	
+
 	/**
 	 * Adds the given {@link JPGEKeyListener} to the listeners of this class.
 	 * 
