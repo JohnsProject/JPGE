@@ -224,4 +224,14 @@ public class Vector2MathUtilsTest {
 		assert (result[vx] == -2);
 		assert (result[vy] == -2);
 	}
+	
+	@Test
+	public void clampTest() throws Exception {
+		int x1 = 2, y1 = -2;
+		int[] vector1 = new int[] {x1, y1};
+		int[] result = new int[2];
+		result = Vector2MathUtils.clamp(vector1, -1, 1, result);
+		assert (result[vx] == 1);
+		assert (result[vy] == -1);
+	}
 }

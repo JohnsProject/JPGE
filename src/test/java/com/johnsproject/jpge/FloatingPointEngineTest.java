@@ -39,8 +39,9 @@ import com.johnsproject.jpge.utils.ColorUtils;
 
 public class FloatingPointEngineTest extends JPanel{
 	
+	private static final long serialVersionUID = 8267891175562906558L;
 	private static final int FOV = 500;
-	private static final int NCP = 90;
+//	private static final int NCP = 90;
 	private static final int WIDTH = 1024;
 	private static final int HEIGHT = 860;
 	private static final int HALFWIDTH = WIDTH / 2;

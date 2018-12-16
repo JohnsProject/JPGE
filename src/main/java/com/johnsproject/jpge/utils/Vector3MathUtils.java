@@ -398,4 +398,22 @@ public class Vector3MathUtils extends MathUtils {
 		out[vz] = -Math.abs(a[vz]);
 		return out;
 	}
+	
+	/**
+	 * Returns the given vector containing only values from min to max.
+	 * if value < min return min.
+	 * if value > max return max.
+	 * 
+	 * @param a vector.
+	 * @param min smallest value.
+	 * @param max highest value.
+	 * @param out vector used to store result.
+	 * @return vector containing only values from min to max.
+	 */
+	public static int[] clamp(int[] a, int min, int max, int[] out) {
+		out[vx] = MathUtils.clamp(a[vx], min, max);
+		out[vy] = MathUtils.clamp(a[vy], min, max);
+		out[vz] = MathUtils.clamp(a[vz], min, max);
+		return out;
+	}
 }

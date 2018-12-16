@@ -257,7 +257,7 @@ public class MathUtils {
 	}
 	
 	/**
-	 * Returns the given value as min or max.
+	 * Returns the given value from min to max.
 	 * if value < min return min.
 	 * if value > max return max.
 	 * 

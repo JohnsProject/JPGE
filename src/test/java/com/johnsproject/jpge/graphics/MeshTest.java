@@ -26,10 +26,6 @@ package com.johnsproject.jpge.graphics;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Test;
-
-import com.johnsproject.jpge.dto.Mesh;
-import com.johnsproject.jpge.io.FileIO;
 
 
 public class MeshTest {

@@ -25,8 +25,6 @@ package com.johnsproject.jpge.utils;
 
 import org.junit.Test;
 
-import com.johnsproject.jpge.dto.Camera;
-
 /**
  * Test class for {@link MathUtils}.
  * 

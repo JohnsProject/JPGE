@@ -23,16 +23,16 @@
  */
 package com.johnsproject.jpge.io;
 
-import org.junit.Test;
-
-import com.johnsproject.jpge.dto.Animation;
-import com.johnsproject.jpge.dto.Face;
-import com.johnsproject.jpge.dto.Material;
-import com.johnsproject.jpge.dto.Mesh;
-import com.johnsproject.jpge.dto.Transform;
-import com.johnsproject.jpge.dto.Vertex;
-import com.johnsproject.jpge.utils.ColorUtils;
-import com.johnsproject.jpge.utils.VectorUtils;
+//import org.junit.Test;
+//
+//import com.johnsproject.jpge.dto.Animation;
+//import com.johnsproject.jpge.dto.Face;
+//import com.johnsproject.jpge.dto.Material;
+//import com.johnsproject.jpge.dto.Mesh;
+//import com.johnsproject.jpge.dto.Transform;
+//import com.johnsproject.jpge.dto.Vertex;
+//import com.johnsproject.jpge.utils.ColorUtils;
+//import com.johnsproject.jpge.utils.VectorUtils;
 
 /**
  * Test class for {@link SOMImporter}.

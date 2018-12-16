@@ -27,6 +27,11 @@ import org.junit.Test;
 
 public class SceneObjectTest {
 	
+	@Test
+	public void test() {
+		
+	}
+	
 //	@Test
 //	public void getCloneTest() throws Exception {
 //		SceneObject sceneObject1 = new SceneObject("test", new int[]{0, 0, -50}, new int[]{0, 0, 0}, new int[]{1, 1, 1},

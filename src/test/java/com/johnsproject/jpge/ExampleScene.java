@@ -30,7 +30,6 @@ import java.io.IOException;
 import com.johnsproject.jpge.dto.Camera;
 import com.johnsproject.jpge.dto.Light;
 import com.johnsproject.jpge.dto.Mesh;
-import com.johnsproject.jpge.dto.Rigidbody;
 import com.johnsproject.jpge.dto.SceneObject;
 import com.johnsproject.jpge.dto.Texture;
 import com.johnsproject.jpge.dto.Transform;

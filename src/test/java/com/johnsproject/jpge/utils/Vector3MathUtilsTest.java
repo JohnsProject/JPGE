@@ -278,4 +278,15 @@ public class Vector3MathUtilsTest {
 		assert (result[vy] == -2);
 		assert (result[vz] == -2);
 	}
+	
+	@Test
+	public void clampTest() throws Exception {
+		int x1 = 2, y1 = -2, z1 = 2;
+		int[] vector1 = new int[] {x1, y1, z1};
+		int[] result = new int[3];
+		result = Vector3MathUtils.clamp(vector1, -1, 1, result);
+		assert (result[vx] == 1);
+		assert (result[vy] == -1);
+		assert (result[vz] == 1);
+	}
 }
