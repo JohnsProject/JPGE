@@ -33,11 +33,13 @@ package com.johnsproject.jpge.utils;
 public class MathUtils {
 
 	// sin table from 0-90 degrees
-	private static final byte[] sinLUT = { -128, -125, -120, -116, -111, -107, -102, -98, -93, -89, -85, -80, -76, -71,
-			-67, -63, -58, -54, -50, -46, -41, -37, -33, -29, -25, -21, -17, -13, -9, -5, -1, 3, 7, 10, 14, 18, 21, 25,
-			29, 32, 36, 39, 42, 46, 49, 52, 55, 58, 61, 64, 67, 70, 73, 75, 78, 81, 83, 86, 88, 90, 93, 95, 97, 99, 101,
-			103, 105, 107, 108, 110, 112, 113, 114, 116, 117, 118, 119, 120, 121, 122, 123, 124, 125, 125, 126, 126,
-			126, 127, 127, 127, 127, };
+	private static byte[] sinLUT = {-128, -125, -120, -116, -111, -107, -102, -98, -93, -89, -85, -80, -76, -71, -67, -63, 
+			-58, -54, -50, -46, -41, -37, -33, -29, -25, -21, -17, -13, -9, -5, -1, 
+			3, 7, 10, 14, 18, 21, 25, 29, 32, 36, 39, 42, 46, 49, 52, 
+			55, 58, 61, 64, 67, 70, 73, 75, 78, 81, 83, 86, 88, 90, 93, 
+			95, 97, 99, 101, 103, 105, 107, 108, 110, 112, 113, 114, 116, 117, 118, 
+			119, 120, 121, 122, 123, 124, 125, 125, 126, 126, 126, 127, 127, 127, 127, 
+			};
 	
 	/**
 	 * This value is used to normalize the values that needs to be modified by sin, cos.
@@ -50,7 +52,7 @@ public class MathUtils {
 	 * </code>
 	 */
 	public static final byte SHIFT = 8;
-	private final static int HALF_SHIFT = (1 << (SHIFT-1)) + 1;
+	private static final int HALF_SHIFT = (1 << (SHIFT-1)) + 1;
 	
 	/**
 	 * Returns the sine value of the given angle.

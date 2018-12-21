@@ -40,7 +40,7 @@ import com.johnsproject.jpge.dto.Vertex;
 public class RenderUtils {
 
 	private static final int vx = VectorUtils.X, vy = VectorUtils.Y, vz = VectorUtils.Z;
-	private static final int SHIFT = 10;
+	private static final int SHIFT = 11;
 	
 	/**
 	 * Projects a vector to from world (3D) to screen (2D) coordinates
@@ -174,39 +174,24 @@ public class RenderUtils {
 	 * @param renderBuffer {@link RenderBuffer} to use.
 	 */
 	public static void drawLine(int x1, int y1, int x2, int y2, int z, int color,
-						Camera camera, RenderBuffer renderBuffer) {
-		int w = x2 - x1;
-		int h = y2 - y1;
-		// deltas
-		int dx1 = 0, dy1 = 0, dz1 = 0,
-			dx2 = 0, dy2 = 0, dz2 = 0;
-		if (w < 0) dx1 = -1; else if (w > 0) dx1 = 1;
-		if (h < 0) dy1 = -1; else if (h > 0) dy1 = 1;
-		if (w < 0) dx2 = -1; else if (w > 0) dx2 = 1;
-		int longest = Math.abs(w);
-		int shortest = Math.abs(h);
-		if (longest < shortest) {
-			longest = Math.abs(h);
-			shortest = Math.abs(w);
-			if (h < 0) dy2 = -1;
-			else if (h > 0) dy2 = 1;
-			dx2 = 0;
-		}
-		int numerator = longest >> 1;
-		for (int i = 0; i < longest; i++, numerator += shortest) {
-			// set pixel
+						Camera camera, RenderBuffer renderBuffer) {		
+		int dx = Math.abs(x2 - x1), sx = x1 < x2 ? 1 : -1;
+		int dy = -Math.abs(y2 - y1), sy = y1 < y2 ? 1 : -1;
+		int err = dx + dy, e2; /* error value e_xy */
+
+		while (true) {
 			setPixel(x1, y1, z, color, camera, renderBuffer);
-			// increase deltas
-			if (numerator > longest) {
-				numerator -= longest;
-				x1 += dx1;
-				y1 += dy1;
-				z += dz1;
-			} else {
-				x1 += dx2;
-				y1 += dy2;
-				z += dz2;
-			}
+			if (x1 == x2 && y1 == y2)
+				break;
+			e2 = 2 * err;
+			if (e2 > dy) {
+				err += dy;
+				x1 += sx;
+			} /* e_xy+e_x > 0 */
+			if (e2 < dx) {
+				err += dx;
+				y1 += sy;
+			} /* e_xy+e_y < 0 */
 		}
 	}
 	
@@ -262,14 +247,12 @@ public class RenderUtils {
 		   				tmp = v2; v2 = v1; v1 = tmp; 
 		   				tmp = u2; u2 = u1; u1 = tmp;
 		   				tmp = vc2; vc2 = vc1; vc1 = tmp;}
-		if (y1 == y2) y2++;
-		if (y2 == y3) y3++;
 		face(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, color, camera, renderBuffer);
 	}
 	
 	// face drawing and filling with fixed point scanline algorithm that supports gouraud shading
 	static void face(int x1, int y1, int z1, int vc1, int x2, int y2, int z2, int vc2, int x3, int y3, int z3, int vc3,
-							int color, Camera cam, RenderBuffer renderBuffer) {
+							int color, Camera cam, RenderBuffer renderBuffer) {				
 		// get color values
 		int r1 = ColorUtils.getRed(vc1), g1 = ColorUtils.getGreen(vc1), b1 = ColorUtils.getBlue(vc1), a1 = ColorUtils.getAlpha(vc1);
 		int r2 = ColorUtils.getRed(vc2), g2 = ColorUtils.getGreen(vc2), b2 = ColorUtils.getBlue(vc2), a2 = ColorUtils.getAlpha(vc2);
@@ -286,9 +269,9 @@ public class RenderUtils {
 		int dz = 0, dr = 0, dg = 0, db = 0, da = 0;
 		int dxdx = 0;
 		// precalculate used values to save performance
-		int y2y1 = y2 - y1;
-		int y3y1 = y3 - y1;
-		int y3y2 = y3 - y2;
+		int y2y1 = y2 == y1 ? 1 : y2 - y1;
+		int y3y1 = y3 == y1 ? 1 : y3 - y1;
+		int y3y2 = y3 == y2 ? 1 : y3 - y2;
 		// calculate deltas needed to get values for each y location
 		if (y2y1 > 0) {
 			// bitshift left to increase precision
@@ -323,7 +306,6 @@ public class RenderUtils {
 		int sg = g1 << SHIFT;
 		int sb = b1 << SHIFT;
 		int sa = a1 << SHIFT;
-	    int sy = y1;
 	    if (dx1 > dx2) {
 	    	// precalculate used values to save performance
 	    	dxdx = dx1 - dx2;
@@ -335,9 +317,9 @@ public class RenderUtils {
 				db = ((db1 - db2) << SHIFT) / (dxdx);
 				da = ((da1 - da2) << SHIFT) / (dxdx);
 			}
-		    for (; sy < y2; sy++) {
+			for (int y = 0; y < y2y1; y++) {
 		    	// bitshift right to get right values
-		    	drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, cam, renderBuffer);
+		    	drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, y1 + y, color, cam, renderBuffer);
 		    	// increase left and right values by the calculated delta
 		    	sx += dx2; ex += dx1;
 		    	sz += dz2;
@@ -356,8 +338,8 @@ public class RenderUtils {
 				db = ((db3 - db2) << SHIFT) / (dxdx);
 				da = ((da3 - da2) << SHIFT) / (dxdx);
 			}
-			for (; sy < y3; sy++) {
-				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, cam, renderBuffer);
+			for (int y = 0; y < y3y2; y++) {
+				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, y2 + y, color, cam, renderBuffer);
 				sx += dx2; ex += dx3;
 				sz += dz2;
 				sr += dr2;
@@ -374,8 +356,8 @@ public class RenderUtils {
 				db = ((db2 - db1) << SHIFT) / (dxdx);
 				da = ((da2 - da1) << SHIFT) / (dxdx);
 			}
-	    	for (; sy < y2; sy++) {
-	    		drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, cam, renderBuffer);
+			for (int y = 0; y < y2y1; y++) {
+	    		drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, y1 + y, color, cam, renderBuffer);
 	    		sx += dx1; ex += dx2;
 	    		sz += dz1;
 	    		sr += dr1;
@@ -392,8 +374,8 @@ public class RenderUtils {
 				db = ((db2 - db3) << SHIFT) / (dxdx);
 				da = ((da2 - da3) << SHIFT) / (dxdx);
 			}
-			for (; sy < y3; sy++) {
-				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, sy, color, cam, renderBuffer);
+			for (int y = 0; y < y3y2; y++) {
+				drawHLine(sx >> SHIFT, ex >> SHIFT, sz, dz, sr, dr, sg, dg, sb, db, sa, da, y2 + y, color, cam, renderBuffer);
 				sx += dx3; ex += dx2;
 				sz += dz3;
 				sr += dr3;
@@ -471,8 +453,6 @@ public class RenderUtils {
 		   				tmp = v2; v2 = v1; v1 = tmp; 
 		   				tmp = u2; u2 = u1; u1 = tmp;
 		   				tmp = vc2; vc2 = vc1; vc1 = tmp;}
-		if (y1 == y2) y2++;
-		if (y2 == y3) y3++;
 		faceAffine(x1, y1, z1, vc1, x2, y2, z2, vc2, x3, y3, z3, vc3, u1, v1, u2, v2, u3, v3, img, camera, renderBuffer);
 	}
 	
@@ -505,9 +485,9 @@ public class RenderUtils {
 		int dz = 0,du = 0, dv = 0, dr = 0, dg = 0, db = 0, da = 0;
 		int dxdx = 0;
 		// precalculate used values to save performance
-		int y2y1 = y2 - y1;
-		int y3y1 = y3 - y1;
-		int y3y2 = y3 - y2;
+		int y2y1 = y2 == y1 ? 1 : y2 - y1;
+		int y3y1 = y3 == y1 ? 1 : y3 - y1;
+		int y3y2 = y3 == y2 ? 1 : y3 - y2;
 		// calculate deltas needed to get values for each y location
 		if (y2y1 > 0) {
 			// bitshift left to increase precision
@@ -550,7 +530,6 @@ public class RenderUtils {
 		int sg = g1 << SHIFT;
 		int sb = b1 << SHIFT;
 		int sa = a1 << SHIFT;
-	    int sy = y1;
 	    if (dx1 > dx2) {
 	    	// precalculate used values to save performance
 	    	dxdx = dx1 - dx2;
@@ -564,9 +543,9 @@ public class RenderUtils {
 				db = ((db1 - db2) << SHIFT) / (dxdx);
 				da = ((da1 - da2) << SHIFT) / (dxdx);
 			}
-		    for (; sy < y2; sy++) {
+		    for (int y = 0; y < y2y1; y++) {
 		    	// bitshift right to get right values
-		    	drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, cam, renderBuffer);
+		    	drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, y1 + y, img, cam, renderBuffer);
 		    	// increase left and right values by the calculated delta
 				sx += dx2; ex += dx1;
 				sz += dz2;
@@ -589,8 +568,8 @@ public class RenderUtils {
 				db = ((db3 - db2) << SHIFT) / (dxdx);
 				da = ((da3 - da2) << SHIFT) / (dxdx);
 			}
-			for (; sy < y3; sy++) {
-				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, cam, renderBuffer);
+	    	for (int y = 0; y < y3y2; y++) {
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, y2 + y, img, cam, renderBuffer);
 				sx += dx2; ex += dx3;
 				sz += dz2;
 				su += du2;
@@ -611,8 +590,8 @@ public class RenderUtils {
 				db = ((db2 - db1) << SHIFT) / (dxdx);
 				da = ((da2 - da1) << SHIFT) / (dxdx);
 			}
-			for (; sy < y2; sy++) {
-				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, cam, renderBuffer);
+	    	for (int y = 0; y < y2y1; y++) {
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, y1 + y, img, cam, renderBuffer);
 				sx += dx1; ex += dx2;
 				sz += dz1;
 				su += du1;
@@ -633,8 +612,8 @@ public class RenderUtils {
 				db = ((db2 - db3) << SHIFT) / (dxdx);
 				da = ((da2 - da3) << SHIFT) / (dxdx);
 			}
-			for (; sy < y3; sy++) {
-				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, sy, img, cam, renderBuffer);
+	    	for (int y = 0; y < y3y2; y++) {
+				drawHLineAffine(sx >> SHIFT, ex >> SHIFT, sz, dz, su, du, sv, dv, sr, dr, sg, dg, sb, db, sa, da, y2 + y, img, cam, renderBuffer);
 				sx += dx3; ex += dx2;
 				sz += dz3;
 				su += du3;

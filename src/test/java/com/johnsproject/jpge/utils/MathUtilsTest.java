@@ -50,9 +50,9 @@ public class MathUtilsTest {
 //	public void genLookupTableTest() throws Exception {
 //		int langle = 0;
 //		int multValue = 1 << MathUtils.SHIFT;
-//		System.out.print("private static short[] valuesSin = {");
+//		System.out.print("private static short[] sinLUT = {");
 //		for (int angle = 0; angle < 91; angle++) {
-//			System.out.print((int)Math.round((Math.sin(Math.toRadians(angle)) * multValue)-129) + ", ");
+//			System.out.print((int)Math.round((Math.sin(Math.toRadians(angle)) * multValue)-MathUtils.HALF_SHIFT) + ", ");
 //			if (angle >= langle + 15) {
 //				System.out.println("");
 //				langle = angle;
