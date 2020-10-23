@@ -31,7 +31,7 @@
 		<maven.compiler.source>1.6</maven.compiler.source>
 
 		<!-- JUnit Version -->
-		<version.junit>4.12</version.junit>
+		<version.junit>4.13.1</version.junit>
 		
 		<!-- JHM Version -->
 		<version.jhm>1.19</version.jhm>
